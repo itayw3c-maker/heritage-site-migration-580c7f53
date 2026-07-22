@@ -123,7 +123,7 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body className="elementor-kit-7">
+      <body className="rtl home wp-singular page-template page-template-elementor_header_footer page page-id-57 wp-custom-logo wp-embed-responsive wp-theme-hello-elementor eio-default manage-default ally-default esm-default hello-elementor-default elementor-default elementor-template-full-width elementor-kit-7 elementor-page elementor-page-57">
         {children}
         <Scripts />
       </body>
@@ -137,9 +137,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <SiteHeader />
-      <main>
-        <Outlet />
-      </main>
+      <Outlet />
       <SiteFooter />
     </QueryClientProvider>
   );
