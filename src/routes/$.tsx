@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { SingleTemplate, type SingleRecord } from "@/components/SingleTemplate";
 
 export const Route = createFileRoute("/$")({
   component: PlaceholderPage,
@@ -6,7 +8,39 @@ export const Route = createFileRoute("/$")({
 
 function PlaceholderPage() {
   const { _splat } = Route.useParams();
-  const path = "/" + decodeURIComponent(_splat ?? "");
+  const slug = decodeURIComponent(_splat ?? "").replace(/^\/+|\/+$/g, "");
+  const path = "/" + slug;
+  const [record, setRecord] = useState<SingleRecord | null>(null);
+  const [status, setStatus] = useState<"loading" | "found" | "missing">("loading");
+
+  useEffect(() => {
+    let cancelled = false;
+    setStatus("loading");
+    setRecord(null);
+    fetch(`/content/${slug}.json`, { headers: { accept: "application/json" } })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((data: SingleRecord) => {
+        if (cancelled) return;
+        setRecord(data);
+        setStatus("found");
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setStatus("missing");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  if (status === "found" && record) {
+    return <SingleTemplate record={record} />;
+  }
+
+  if (status === "loading") {
+    return <div style={{ minHeight: "60vh" }} />;
+  }
+
   return (
     <div
       style={{
