@@ -157,6 +157,10 @@ function injectVideos(root: ParentNode) {
       "allow",
       "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
     );
+    iframe.setAttribute(
+      "style",
+      "width:100%;height:100%;border:0;display:block",
+    );
     videoEl.appendChild(iframe);
   });
 }
@@ -259,6 +263,7 @@ function revealAnimations(root: ParentNode) {
 export function enhanceElementor(root: ParentNode = document) {
   hydrateLazyMedia(root);
   injectVideos(root);
+  hydrateRllYoutube(root);
   initSwipers(root);
   setupOffCanvas(document);
   revealAnimations(root);
@@ -266,6 +271,32 @@ export function enhanceElementor(root: ParentNode = document) {
   applyStickies(root);
   mountTrustindex();
   mountRpiBadge();
+}
+
+function hydrateRllYoutube(root: ParentNode) {
+  const players = root.querySelectorAll<HTMLElement>("div.rll-youtube-player[data-id]");
+  players.forEach((el) => {
+    if ((el as HTMLElement & { _rllInited?: boolean })._rllInited) return;
+    (el as HTMLElement & { _rllInited?: boolean })._rllInited = true;
+    const id = el.getAttribute("data-id") ?? "";
+    const alt = el.getAttribute("data-alt") ?? "";
+    const query = el.getAttribute("data-query") ?? "";
+    if (!id) return;
+    if (el.children.length === 0) {
+      const img = document.createElement("img");
+      img.src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+      img.alt = alt;
+      img.loading = "lazy";
+      const play = document.createElement("div");
+      play.className = "play";
+      el.appendChild(img);
+      el.appendChild(play);
+    }
+    el.addEventListener("click", () => {
+      const q = query ? `&${query}` : "";
+      el.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1${q}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    });
+  });
 }
 
 function addSubmenuArrows(root: ParentNode) {
