@@ -301,26 +301,30 @@ function mountTrustindex() {
   ) as HTMLTemplateElement | null;
   if (!tpl) return;
 
-  // Remove any leftover WP Rocket delayed loader div sitting next to the template.
-  const parent = tpl.parentElement;
-  if (parent) {
-    parent.querySelectorAll("div[data-src*='loader.js'], script[data-src*='loader.js']").forEach((n) => n.remove());
+  // Insert the carrier <div> right after the template (matches WP original).
+  // The loader locates it via [src*=".trustindex."][src*="loader.js"] on data-src
+  // and reads data-template-id / data-css-url off this element (not the <script>).
+  if (!tpl.parentElement?.querySelector("div[data-ti-carrier]")) {
+    const carrier = document.createElement("div");
+    carrier.setAttribute("data-ti-carrier", "1");
+    carrier.setAttribute("data-src", "https://cdn.trustindex.io/loader.js?wp-widget");
+    carrier.setAttribute("data-template-id", "trustindex-google-widget-html");
+    carrier.setAttribute(
+      "data-css-url",
+      "https://www.rrshamaut.co.il/wp-content/uploads/trustindex-google-widget.css?1783314896",
+    );
+    tpl.insertAdjacentElement("afterend", carrier);
   }
 
-  // Only inject once.
-  if (tpl.parentElement?.querySelector("script[data-ti-loader]")) return;
-  if (document.querySelector("script[data-ti-loader]")) return;
-
-  const s = document.createElement("script");
-  s.setAttribute("data-ti-loader", "1");
-  s.src = "/cdn.trustindex.loader.js?wp-widget";
-  s.setAttribute("data-template-id", "trustindex-google-widget-html");
-  s.setAttribute(
-    "data-css-url",
-    "https://www.rrshamaut.co.il/wp-content/uploads/trustindex-google-widget.css?1783314896",
-  );
-  s.async = true;
-  tpl.insertAdjacentElement("afterend", s);
+  // Load the loader script itself once, WITHOUT a query string so the loader
+  // skips it as a widget candidate and just renders the carrier <div> above.
+  if (!document.querySelector("script[data-ti-loader]")) {
+    const s = document.createElement("script");
+    s.setAttribute("data-ti-loader", "1");
+    s.src = "/cdn.trustindex.loader.js";
+    s.async = true;
+    document.body.appendChild(s);
+  }
 }
 
 
