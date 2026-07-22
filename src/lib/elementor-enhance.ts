@@ -47,8 +47,14 @@ function initSwipers(root: ParentNode) {
     const perViewMobile = numOr(s.slides_to_show_mobile, 1) as number;
 
     const nav = String(s.navigation ?? "");
-    const wantArrows = nav === "arrows" || nav === "both";
-    const wantDots = nav === "dots" || nav === "both";
+    const pagKey = String(s.pagination ?? "");
+    const wantArrows =
+      nav === "arrows" || nav === "both" || s.arrows === "yes";
+    const wantDots =
+      nav === "dots" ||
+      nav === "both" ||
+      pagKey === "bullets" ||
+      pagKey === "yes";
 
     const modules = [] as unknown[];
     if (wantArrows) modules.push(Navigation);
