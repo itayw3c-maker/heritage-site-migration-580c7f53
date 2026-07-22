@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AccessibilityWidget } from "@/components/AccessibilityWidget";
+import { CookieBanner } from "@/components/CookieBanner";
 import { enhanceElementor } from "@/lib/elementor-enhance";
 
 function NotFoundComponent() {
@@ -151,6 +152,7 @@ function RootComponent() {
       </div>
       <SiteFooter />
       <AccessibilityWidget />
+      <CookieBanner />
     </QueryClientProvider>
   );
 }
