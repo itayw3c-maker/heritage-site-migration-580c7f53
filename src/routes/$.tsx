@@ -34,7 +34,7 @@ function PlaceholderPage() {
   }, [slug]);
 
   if (status === "found" && record) {
-    return <SingleTemplate record={record} />;
+    return <SingleTemplate record={record} slug={slug} />;
   }
 
   if (status === "loading") {
