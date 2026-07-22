@@ -77,6 +77,16 @@ export function SingleTemplate({ record }: { record: SingleRecord }) {
       document.body.className = bodyClassFor(record.type, record.id);
     }
 
+    if (record.meta_description) {
+      let metaEl = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+      if (!metaEl) {
+        metaEl = document.createElement("meta");
+        metaEl.name = "description";
+        document.head.appendChild(metaEl);
+      }
+      metaEl.content = record.meta_description;
+    }
+
     let styleEl: HTMLStyleElement | null = null;
     if (record.type === "static" && record.styles_css) {
       const styleId = `page-css-${record.id}`;

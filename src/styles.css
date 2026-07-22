@@ -11,6 +11,41 @@
 .elementor-widget-loop-carousel .swiper-slide { height: auto; display: flex; }
 .elementor-widget-loop-carousel .swiper-slide > .e-con { height: 100%; width: 100%; }
 
+/* Archive pagination — replaces the missing infinite-scroll JS */
+.elementor-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 2.5rem auto 3rem;
+  direction: rtl;
+  font-family: "Assistant", sans-serif;
+  font-size: 16px;
+}
+.elementor-pagination .page-numbers {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 6px;
+  color: #056FC4;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+.elementor-pagination a.page-numbers:hover {
+  background-color: rgba(5, 111, 196, 0.08);
+  border-color: #056FC4;
+}
+.elementor-pagination .page-numbers.current {
+  color: #fff;
+  background-color: #CBA436;
+  font-weight: 700;
+}
+
 /*
  * Design system definition.
  *
