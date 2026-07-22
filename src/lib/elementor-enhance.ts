@@ -310,21 +310,6 @@ function mountTrustindex() {
     document.head.appendChild(link);
   }
 
-  // Insert the carrier <div> right after the template (matches WP original).
-  // The loader locates it via [src*=".trustindex."][src*="loader.js"] on data-src
-  // and reads data-template-id / data-css-url off this element (not the <script>).
-  if (!tpl.parentElement?.querySelector("div[data-ti-carrier]")) {
-    const carrier = document.createElement("div");
-    carrier.setAttribute("data-ti-carrier", "1");
-    carrier.setAttribute("data-src", "https://cdn.trustindex.io/loader.js?wp-widget");
-    carrier.setAttribute("data-template-id", "trustindex-google-widget-html");
-    carrier.setAttribute(
-      "data-css-url",
-      "https://www.rrshamaut.co.il/wp-content/uploads/trustindex-google-widget.css?1783314896",
-    );
-    tpl.insertAdjacentElement("afterend", carrier);
-  }
-
   // Load the loader script itself once, WITHOUT a query string so the loader
   // skips it as a widget candidate and just renders the carrier <div> above.
   if (!document.querySelector("script[data-ti-loader]")) {
