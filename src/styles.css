@@ -6,6 +6,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Equal-height slides for loop carousels */
+.elementor-widget-loop-carousel .swiper-wrapper { align-items: stretch; }
+.elementor-widget-loop-carousel .swiper-slide { height: auto; display: flex; }
+.elementor-widget-loop-carousel .swiper-slide > .e-con { height: 100%; width: 100%; }
+
 /*
  * Design system definition.
  *

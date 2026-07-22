@@ -47,8 +47,14 @@ function initSwipers(root: ParentNode) {
     const perViewMobile = numOr(s.slides_to_show_mobile, 1) as number;
 
     const nav = String(s.navigation ?? "");
-    const wantArrows = nav === "arrows" || nav === "both";
-    const wantDots = nav === "dots" || nav === "both";
+    const pagKey = String(s.pagination ?? "");
+    const wantArrows =
+      nav === "arrows" || nav === "both" || s.arrows === "yes";
+    const wantDots =
+      nav === "dots" ||
+      nav === "both" ||
+      pagKey === "bullets" ||
+      pagKey === "yes";
 
     const modules = [] as unknown[];
     if (wantArrows) modules.push(Navigation);
@@ -135,14 +141,14 @@ function injectVideos(root: ParentNode) {
     const url = String(s.youtube_url ?? "");
     const id = url ? extractYoutubeId(url) : null;
     if (!id) return;
-    const container = widget.querySelector<HTMLElement>(".elementor-widget-container") ?? widget;
     const controls = s.controls === "yes" ? "1" : "0";
-    const wrap = document.createElement("div");
-    wrap.className = "elementor-wrapper elementor-open-inline elementor-fit-aspect-ratio";
-    wrap.style.position = "relative";
-    wrap.style.width = "100%";
-    wrap.style.aspectRatio = "16 / 9";
+    const videoEl =
+      widget.querySelector<HTMLElement>(".elementor-video") ??
+      widget.querySelector<HTMLElement>(".elementor-wrapper") ??
+      widget.querySelector<HTMLElement>(".elementor-widget-container") ??
+      widget;
     const iframe = document.createElement("iframe");
+    iframe.className = "elementor-video-iframe";
     iframe.src = `https://www.youtube.com/embed/${id}?controls=${controls}&rel=0`;
     iframe.title = "YouTube video";
     iframe.loading = "lazy";
@@ -151,13 +157,7 @@ function injectVideos(root: ParentNode) {
       "allow",
       "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
     );
-    iframe.style.position = "absolute";
-    iframe.style.inset = "0";
-    iframe.style.width = "100%";
-    iframe.style.height = "100%";
-    iframe.style.border = "0";
-    wrap.appendChild(iframe);
-    container.appendChild(wrap);
+    videoEl.appendChild(iframe);
   });
 }
 
@@ -262,4 +262,58 @@ export function enhanceElementor(root: ParentNode = document) {
   initSwipers(root);
   setupOffCanvas(document);
   revealAnimations(root);
+  addSubmenuArrows(root);
+  applyStickies(root);
+  mountTrustindex();
+  mountRpiBadge();
+}
+
+function addSubmenuArrows(root: ParentNode) {
+  const items = root.querySelectorAll<HTMLElement>(".menu-item-has-children > a");
+  items.forEach((a) => {
+    if (a.querySelector(".sub-arrow")) return;
+    a.classList.add("has-submenu");
+    const span = document.createElement("span");
+    span.className = "sub-arrow";
+    span.innerHTML =
+      '<svg aria-hidden="true" class="e-font-icon-svg e-fas-caret-down" viewBox="0 0 320 512" xmlns="http://www.w3.org/2000/svg"><path d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"></path></svg>';
+    a.appendChild(span);
+  });
+}
+
+function applyStickies(root: ParentNode) {
+  const els = root.querySelectorAll<HTMLElement>("[data-settings]");
+  els.forEach((el) => {
+    const s = parseSettings(el);
+    if (!s) return;
+    if (s.sticky !== "top") return;
+    if ((el as HTMLElement & { _stickyApplied?: boolean })._stickyApplied) return;
+    el.style.position = "sticky";
+    el.style.top = "0px";
+    el.style.zIndex = "99";
+    (el as HTMLElement & { _stickyApplied?: boolean })._stickyApplied = true;
+  });
+}
+
+function mountTrustindex() {
+  if (!document.getElementById("trustindex-google-widget-html")) return;
+  const flag = "__trustindexLoaded";
+  const w = window as unknown as Record<string, unknown>;
+  if (w[flag]) return;
+  w[flag] = true;
+  const script = document.createElement("script");
+  script.src = "https://cdn.trustindex.io/loader.js?wp-widget";
+  script.async = true;
+  document.body.appendChild(script);
+}
+
+function mountRpiBadge() {
+  if (document.getElementById("rpi-6226-static")) return;
+  const div = document.createElement("div");
+  div.id = "rpi-6226-static";
+  div.className = "rpi";
+  div.setAttribute("data-id", "6226");
+  div.innerHTML =
+    '<div class="rpi-badge-cnt rpi-badge-right"><div class="rpi-badge" data-id="ChIJRSmMi4xWVSURJZWuczwr72w" data-provider="google" style="display:inline-block"><div class="rpi-badge-line"></div><a class="rpi-badge-body rpi-flex rpi-badge-clickable" href="https://search.google.com/local/reviews?placeid=ChIJRSmMi4xWVSURJZWuczwr72w" target="_blank" rel="nofollow noopener" style="text-decoration:none;color:inherit"><div class="rpi-logo rpi-logo-google"></div><div class="rpi-info"><div class="rpi-name">Google ג גוגל</div><span class="rpi-stars" style="--rating:5.0">5.0</span><div class="rpi-based">מבוסס על 520 ביקורות</div></div></a></div></div>';
+  document.body.appendChild(div);
 }
