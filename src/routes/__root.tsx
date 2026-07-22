@@ -11,6 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 function NotFoundComponent() {
   return (
@@ -77,14 +79,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "רפאל שמאות רכוש | RR - ניהול תביעות ביטוח, הערכת נזקים" },
+      {
+        name: "description",
+        content:
+          "רפאל שמאות רכוש - שמאי רכוש פרטי לניהול תביעות ביטוח, הערכת נזקים, ייעוץ וליווי מול חברות הביטוח.",
+      },
+      { property: "og:title", content: "רפאל שמאות רכוש | RR" },
+      {
+        property: "og:description",
+        content: "שמאי רכוש פרטי לניהול תביעות ביטוח והערכת נזקים.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -92,6 +99,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      {
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+        crossOrigin: "anonymous",
+      },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Roboto:wght@100..900&family=Roboto+Slab:wght@100..900&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -102,11 +119,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="he-IL" dir="rtl">
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="elementor-kit-7">
         {children}
         <Scripts />
       </body>
@@ -119,8 +136,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <SiteHeader />
+      <main>
+        <Outlet />
+      </main>
+      <SiteFooter />
     </QueryClientProvider>
   );
 }
