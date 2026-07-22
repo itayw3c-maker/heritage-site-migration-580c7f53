@@ -275,6 +275,48 @@ export function enhanceElementor(root: ParentNode = document) {
   applyStickies(root);
   mountTrustindex();
   mountRpiBadge();
+  decodeCfEmails(root);
+}
+
+function cfDecode(hex: string): string {
+  try {
+    const r = parseInt(hex.slice(0, 2), 16);
+    let out = "";
+    for (let i = 2; i < hex.length; i += 2) {
+      out += String.fromCharCode(parseInt(hex.slice(i, i + 2), 16) ^ r);
+    }
+    return out;
+  } catch {
+    return "";
+  }
+}
+
+function decodeCfEmails(root: ParentNode) {
+  const links = root.querySelectorAll<HTMLAnchorElement>(
+    'a[href*="/cdn-cgi/l/email-protection#"]',
+  );
+  links.forEach((a) => {
+    if ((a as HTMLElement & { _cfDecoded?: boolean })._cfDecoded) return;
+    const href = a.getAttribute("href") ?? "";
+    const hash = href.split("#")[1] ?? "";
+    const email = cfDecode(hash);
+    if (!email) return;
+    a.setAttribute("href", `mailto:${email}`);
+    a.querySelectorAll<HTMLElement>("span.__cf_email__").forEach((s) => {
+      s.replaceWith(document.createTextNode(email));
+    });
+    if (a.textContent && /\[email.*protected\]/i.test(a.textContent)) {
+      a.textContent = email;
+    }
+    (a as HTMLElement & { _cfDecoded?: boolean })._cfDecoded = true;
+  });
+  const spans = root.querySelectorAll<HTMLElement>("span.__cf_email__[data-cfemail]");
+  spans.forEach((s) => {
+    const hex = s.getAttribute("data-cfemail") ?? "";
+    const email = cfDecode(hex);
+    if (!email) return;
+    s.replaceWith(document.createTextNode(email));
+  });
 }
 
 function hydrateRllYoutube(root: ParentNode) {
