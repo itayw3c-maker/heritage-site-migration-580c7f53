@@ -201,9 +201,65 @@ function setupOffCanvas(root: Document | HTMLElement) {
   });
 }
 
+function revealAnimations(root: ParentNode) {
+  const els = root.querySelectorAll<HTMLElement>(".elementor-invisible");
+  const reveal = (el: HTMLElement) => {
+    const s = parseSettings(el) ?? {};
+    const anim =
+      (s._animation as string | undefined) ||
+      (s.animation as string | undefined) ||
+      "";
+    const delayRaw =
+      (s._animation_delay as number | string | undefined) ??
+      (s.animation_delay as number | string | undefined);
+    const delay = typeof delayRaw === "number" ? delayRaw : Number(delayRaw);
+    const apply = () => {
+      if (anim && anim !== "none") {
+        el.classList.add("animated", anim);
+      }
+      el.classList.remove("elementor-invisible");
+    };
+    if (!Number.isNaN(delay) && delay > 0) {
+      window.setTimeout(apply, delay);
+    } else {
+      apply();
+    }
+  };
+
+  if (typeof IntersectionObserver === "undefined") {
+    els.forEach(reveal);
+    return;
+  }
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          reveal(entry.target as HTMLElement);
+          io.unobserve(entry.target);
+        }
+      });
+    },
+    { rootMargin: "0px 0px -10% 0px", threshold: 0.01 },
+  );
+
+  els.forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    const inView =
+      rect.top < (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.bottom > 0;
+    if (inView) {
+      reveal(el);
+    } else {
+      io.observe(el);
+    }
+  });
+}
+
 export function enhanceElementor(root: ParentNode = document) {
   hydrateLazyMedia(root);
   injectVideos(root);
   initSwipers(root);
   setupOffCanvas(document);
+  revealAnimations(root);
 }
