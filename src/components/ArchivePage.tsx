@@ -232,9 +232,12 @@ export function ArchivePage({
     if (!index) return "";
     let posts: IndexPost[];
     if (kind === "category") {
-      // find category by slug
       const cats = index.categories;
-      const catId = Object.entries(cats).find(([, v]) => v.slug === categorySlug)?.[0];
+      const norm = (s: string) => {
+        try { return decodeURIComponent(s); } catch { return s; }
+      };
+      const target = norm(categorySlug ?? "");
+      const catId = Object.entries(cats).find(([, v]) => norm(v.slug) === target)?.[0];
       const catNum = catId ? Number(catId) : null;
       posts = index.posts.filter((p) => (catNum == null ? false : p.categories?.includes(catNum)));
     } else if (kind === "shorts") {
