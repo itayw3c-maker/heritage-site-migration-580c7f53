@@ -1,4 +1,5 @@
+import footerHtml from "@/generated/footer.html?raw";
+
 export function SiteFooter() {
-  // TODO: build from original HTML in next message
-  return <footer data-site-footer />;
+  return <div dangerouslySetInnerHTML={{ __html: footerHtml }} />;
 }
