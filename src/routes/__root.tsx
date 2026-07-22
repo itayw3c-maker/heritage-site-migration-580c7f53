@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { enhanceElementor } from "@/lib/elementor-enhance";
 
 function NotFoundComponent() {
   return (
@@ -133,6 +134,13 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    const run = () => enhanceElementor(document);
+    run();
+    const t = window.setTimeout(run, 50);
+    return () => window.clearTimeout(t);
+  });
 
   return (
     <QueryClientProvider client={queryClient}>
