@@ -301,6 +301,15 @@ function mountTrustindex() {
   ) as HTMLTemplateElement | null;
   if (!tpl) return;
 
+  const cssHref =
+    "https://www.rrshamaut.co.il/wp-content/uploads/trustindex-google-widget.css?1783314896";
+  if (!document.querySelector(`link[href="${cssHref}"]`)) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = cssHref;
+    document.head.appendChild(link);
+  }
+
   // Insert the carrier <div> right after the template (matches WP original).
   // The loader locates it via [src*=".trustindex."][src*="loader.js"] on data-src
   // and reads data-template-id / data-css-url off this element (not the <script>).
