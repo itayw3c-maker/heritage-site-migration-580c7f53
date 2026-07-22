@@ -9,6 +9,10 @@ Widgets replaced with markers:
 - `data-widget_type="theme-post-content.default"` × 1 → `__HOLE_CONTENT__` (innerHTML of .elementor-widget-container replaced)
 - `data-widget_type="breadcrumbs.default"` × 1 → `__HOLE_BREADCRUMB__` (innerHTML of .elementor-widget-container replaced)
 - `data-widget_type="post-info.default"` × 1 → `__HOLE_DATE__` (innerHTML of .elementor-widget-container replaced)
+- `data-widget_type="posts.classic"` (data-id `147aa03`, "מאמרים נוספים") × 1 → `__HOLE_RELATED_1__` (innerHTML of `.elementor-posts-container` replaced; outer widget + container preserved). Filled at runtime by SingleTemplate with up to 4 posts sharing at least one category with the current post (excludes self); each item uses the same `article.elementor-post` markup as the original (title link, excerpt, read-more).
+- Global footer widget `data-id="92ba2bb"` ("מאמרים חשובים", `posts.classic` in `src/generated/footer.html`) → NOT marker-based. At runtime, SingleTemplate replaces the `.elementor-posts-container` innerHTML with up to 8 related-by-category posts (title-only markup as in the original footer) and restores the original HTML on unmount so non-post pages keep the static list.
+
+If the index (`/content/_indexes.json`) fails to load, both widgets are left empty (widget 1) or unchanged (widget 2, footer) — never broken.
 
 ## shorts — `data-elementor-type="single-post" data-elementor-id="4437"`
 Source sample: `tpl-shorts-4437-sample.html`
