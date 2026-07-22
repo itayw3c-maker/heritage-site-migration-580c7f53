@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { AccessibilityWidget } from "@/components/AccessibilityWidget";
 import { enhanceElementor } from "@/lib/elementor-enhance";
 
 function NotFoundComponent() {
@@ -145,8 +146,11 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <SiteHeader />
-      <Outlet />
+      <div id="main-content" tabIndex={-1}>
+        <Outlet />
+      </div>
       <SiteFooter />
+      <AccessibilityWidget />
     </QueryClientProvider>
   );
 }
