@@ -1,0 +1,68 @@
+import { useEffect, useMemo } from "react";
+import postTpl from "@/generated/templates/post.html?raw";
+import shortsTpl from "@/generated/templates/shorts.html?raw";
+import movieTpl from "@/generated/templates/movie.html?raw";
+import successTpl from "@/generated/templates/success.html?raw";
+import serviceTpl from "@/generated/templates/service.html?raw";
+import { enhanceElementor } from "@/lib/elementor-enhance";
+
+export type SingleType = "post" | "shorts" | "movie" | "success" | "service";
+
+export interface SingleRecord {
+  type: SingleType;
+  id: number;
+  title: string;
+  breadcrumb_html?: string;
+  content_html?: string;
+  updated_date?: string;
+  meta_title?: string;
+  meta_description?: string;
+}
+
+const TEMPLATES: Record<SingleType, string> = {
+  post: postTpl,
+  shorts: shortsTpl,
+  movie: movieTpl,
+  success: successTpl,
+  service: serviceTpl,
+};
+
+function bodyClassFor(type: SingleType, id: number): string {
+  const base =
+    "wp-custom-logo wp-embed-responsive wp-theme-hello-elementor eio-default manage-default ally-default esm-default hello-elementor-default elementor-default elementor-kit-7";
+  switch (type) {
+    case "post":
+      return `rtl wp-singular post-template-default single single-post postid-${id} single-format-standard ${base} elementor-page-1150`;
+    case "shorts":
+      return `rtl wp-singular shorts-template-default single single-shorts postid-${id} ${base} elementor-page-4437`;
+    case "movie":
+      return `rtl wp-singular movie-template-default single single-movie postid-${id} ${base} elementor-page-3614`;
+    case "success":
+      return `rtl wp-singular success-template-default single single-success postid-${id} ${base} elementor-page-3342`;
+    case "service":
+      return `rtl wp-singular page-template-default page page-id-${id} ${base} elementor-page-4670`;
+  }
+}
+
+function fill(tpl: string, rec: SingleRecord): string {
+  return tpl
+    .split("__HOLE_TITLE__").join(rec.title ?? "")
+    .split("__HOLE_CONTENT__").join(rec.content_html ?? "")
+    .split("__HOLE_BREADCRUMB__").join(rec.breadcrumb_html ?? "")
+    .split("__HOLE_DATE__").join(rec.updated_date ?? "");
+}
+
+export function SingleTemplate({ record }: { record: SingleRecord }) {
+  const html = useMemo(() => fill(TEMPLATES[record.type], record), [record]);
+
+  useEffect(() => {
+    if (record.meta_title) document.title = record.meta_title;
+    document.body.className = bodyClassFor(record.type, record.id);
+    document.querySelectorAll(".e-con.e-parent").forEach((el) => {
+      el.classList.add("e-lazyloaded");
+    });
+    enhanceElementor(document);
+  }, [record]);
+
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+}
