@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArchivePage } from "@/components/ArchivePage";
 
-export const Route = createFileRoute("/category/$catslug/page/$page/")({
+export const Route = createFileRoute("/category/$catslug/page/$page")({
   component: CategoryArchivePage,
 });
 

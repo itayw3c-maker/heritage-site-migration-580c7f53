@@ -11,7 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SuccessIndexRouteImport } from './routes/success.index'
+import { Route as ShortsIndexRouteImport } from './routes/shorts.index'
 import { Route as CategoryCatslugIndexRouteImport } from './routes/category.$catslug.index'
+import { Route as SuccessPagePageRouteImport } from './routes/success.page.$page'
+import { Route as ShortsPagePageRouteImport } from './routes/shorts.page.$page'
+import { Route as CategoryCatslugPagePageRouteImport } from './routes/category.$catslug.page.$page'
 
 const SplatRoute = SplatRouteImport.update({
   id: '/$',
@@ -23,40 +28,110 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SuccessIndexRoute = SuccessIndexRouteImport.update({
+  id: '/success/',
+  path: '/success/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShortsIndexRoute = ShortsIndexRouteImport.update({
+  id: '/shorts/',
+  path: '/shorts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategoryCatslugIndexRoute = CategoryCatslugIndexRouteImport.update({
   id: '/category/$catslug/',
   path: '/category/$catslug/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuccessPagePageRoute = SuccessPagePageRouteImport.update({
+  id: '/success/page/$page',
+  path: '/success/page/$page',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShortsPagePageRoute = ShortsPagePageRouteImport.update({
+  id: '/shorts/page/$page',
+  path: '/shorts/page/$page',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoryCatslugPagePageRoute = CategoryCatslugPagePageRouteImport.update({
+  id: '/category/$catslug/page/$page',
+  path: '/category/$catslug/page/$page',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/shorts/': typeof ShortsIndexRoute
+  '/success/': typeof SuccessIndexRoute
+  '/shorts/page/$page': typeof ShortsPagePageRoute
+  '/success/page/$page': typeof SuccessPagePageRoute
   '/category/$catslug/': typeof CategoryCatslugIndexRoute
+  '/category/$catslug/page/$page': typeof CategoryCatslugPagePageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/shorts': typeof ShortsIndexRoute
+  '/success': typeof SuccessIndexRoute
+  '/shorts/page/$page': typeof ShortsPagePageRoute
+  '/success/page/$page': typeof SuccessPagePageRoute
   '/category/$catslug': typeof CategoryCatslugIndexRoute
+  '/category/$catslug/page/$page': typeof CategoryCatslugPagePageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/shorts/': typeof ShortsIndexRoute
+  '/success/': typeof SuccessIndexRoute
+  '/shorts/page/$page': typeof ShortsPagePageRoute
+  '/success/page/$page': typeof SuccessPagePageRoute
   '/category/$catslug/': typeof CategoryCatslugIndexRoute
+  '/category/$catslug/page/$page': typeof CategoryCatslugPagePageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$' | '/category/$catslug/'
+  fullPaths:
+    | '/'
+    | '/$'
+    | '/shorts/'
+    | '/success/'
+    | '/shorts/page/$page'
+    | '/success/page/$page'
+    | '/category/$catslug/'
+    | '/category/$catslug/page/$page'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$' | '/category/$catslug'
-  id: '__root__' | '/' | '/$' | '/category/$catslug/'
+  to:
+    | '/'
+    | '/$'
+    | '/shorts'
+    | '/success'
+    | '/shorts/page/$page'
+    | '/success/page/$page'
+    | '/category/$catslug'
+    | '/category/$catslug/page/$page'
+  id:
+    | '__root__'
+    | '/'
+    | '/$'
+    | '/shorts/'
+    | '/success/'
+    | '/shorts/page/$page'
+    | '/success/page/$page'
+    | '/category/$catslug/'
+    | '/category/$catslug/page/$page'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
+  ShortsIndexRoute: typeof ShortsIndexRoute
+  SuccessIndexRoute: typeof SuccessIndexRoute
+  ShortsPagePageRoute: typeof ShortsPagePageRoute
+  SuccessPagePageRoute: typeof SuccessPagePageRoute
   CategoryCatslugIndexRoute: typeof CategoryCatslugIndexRoute
+  CategoryCatslugPagePageRoute: typeof CategoryCatslugPagePageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,11 +150,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/success/': {
+      id: '/success/'
+      path: '/success'
+      fullPath: '/success/'
+      preLoaderRoute: typeof SuccessIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shorts/': {
+      id: '/shorts/'
+      path: '/shorts'
+      fullPath: '/shorts/'
+      preLoaderRoute: typeof ShortsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/category/$catslug/': {
       id: '/category/$catslug/'
       path: '/category/$catslug'
       fullPath: '/category/$catslug/'
       preLoaderRoute: typeof CategoryCatslugIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/success/page/$page': {
+      id: '/success/page/$page'
+      path: '/success/page/$page'
+      fullPath: '/success/page/$page'
+      preLoaderRoute: typeof SuccessPagePageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shorts/page/$page': {
+      id: '/shorts/page/$page'
+      path: '/shorts/page/$page'
+      fullPath: '/shorts/page/$page'
+      preLoaderRoute: typeof ShortsPagePageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/category/$catslug/page/$page': {
+      id: '/category/$catslug/page/$page'
+      path: '/category/$catslug/page/$page'
+      fullPath: '/category/$catslug/page/$page'
+      preLoaderRoute: typeof CategoryCatslugPagePageRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -88,7 +198,12 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
+  ShortsIndexRoute: ShortsIndexRoute,
+  SuccessIndexRoute: SuccessIndexRoute,
+  ShortsPagePageRoute: ShortsPagePageRoute,
+  SuccessPagePageRoute: SuccessPagePageRoute,
   CategoryCatslugIndexRoute: CategoryCatslugIndexRoute,
+  CategoryCatslugPagePageRoute: CategoryCatslugPagePageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
