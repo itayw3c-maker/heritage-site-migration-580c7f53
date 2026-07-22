@@ -142,11 +142,6 @@ function injectVideos(root: ParentNode) {
     const id = url ? extractYoutubeId(url) : null;
     if (!id) return;
     const controls = s.controls === "yes" ? "1" : "0";
-    const videoEl =
-      widget.querySelector<HTMLElement>(".elementor-video") ??
-      widget.querySelector<HTMLElement>(".elementor-wrapper") ??
-      widget.querySelector<HTMLElement>(".elementor-widget-container") ??
-      widget;
     const iframe = document.createElement("iframe");
     iframe.className = "elementor-video-iframe";
     iframe.src = `https://www.youtube.com/embed/${id}?controls=${controls}&rel=0`;
@@ -161,7 +156,16 @@ function injectVideos(root: ParentNode) {
       "style",
       "width:100%;height:100%;border:0;display:block",
     );
-    videoEl.appendChild(iframe);
+    const videoEl = widget.querySelector<HTMLElement>(".elementor-video");
+    if (videoEl) {
+      videoEl.replaceWith(iframe);
+    } else {
+      const fallback =
+        widget.querySelector<HTMLElement>(".elementor-wrapper") ??
+        widget.querySelector<HTMLElement>(".elementor-widget-container") ??
+        widget;
+      fallback.appendChild(iframe);
+    }
   });
 }
 
