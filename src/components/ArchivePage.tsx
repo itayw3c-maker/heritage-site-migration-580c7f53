@@ -47,9 +47,28 @@ const BODY_CLASSES: Record<ArchiveKind, (extra?: string) => string> = {
 
 const TITLES: Record<ArchiveKind, string> = {
   category: "מידע מקצועי - רפאל שמאות רכוש | RR",
-  shorts: "סרטוני שורטס - רפאל שמאות רכוש | RR",
+  shorts: "סרטונים קצרים - רפאל שמאות רכוש | RR",
   success: "ארכיון הצלחות המשרד - רפאל שמאות רכוש | RR",
 };
+
+const DESCRIPTIONS: Record<ArchiveKind, string> = {
+  category:
+    "מאמרים ומידע מקצועי בנושא שמאות רכוש, ניהול תביעות ביטוח והערכת נזקים ממשרד רפאל שמאות רכוש.",
+  shorts:
+    "סרטונים קצרים והסברים מקצועיים בנושא שמאות רכוש, תביעות ביטוח והערכת נזקים.",
+  success:
+    "סיפורי הצלחה של לקוחות רפאל שמאות רכוש בטיפול בתביעות ביטוח והערכות נזקים.",
+};
+
+function setMetaDescription(content: string) {
+  let el = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+  if (!el) {
+    el = document.createElement("meta");
+    el.name = "description";
+    document.head.appendChild(el);
+  }
+  el.content = content;
+}
 
 function escAttr(s: string): string {
   return s
@@ -236,11 +255,13 @@ export function ArchivePage({
   }, [index, kind, page, categorySlug]);
 
   useEffect(() => {
-    document.title = TITLES[kind];
+    const base = TITLES[kind];
+    document.title = page > 1 ? `${base} - עמוד ${page}` : base;
+    setMetaDescription(DESCRIPTIONS[kind]);
     document.body.className = BODY_CLASSES[kind]();
     document.querySelectorAll(".e-con.e-parent").forEach((el) => el.classList.add("e-lazyloaded"));
     enhanceElementor(document);
-  }, [kind, html]);
+  }, [kind, html, page]);
 
   if (err) {
     return <div style={{ padding: "4rem 1rem", textAlign: "center" }}>שגיאה בטעינת הארכיון</div>;
