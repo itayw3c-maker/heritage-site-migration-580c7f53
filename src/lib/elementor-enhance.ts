@@ -301,47 +301,26 @@ function mountTrustindex() {
   ) as HTMLTemplateElement | null;
   if (!tpl) return;
 
-  const cssHref =
-    "https://cdn.trustindex.io/assets/widget-presetted-css/v2/34-light-background.css";
-  if (
-    !document.querySelector(
-      `link[rel="stylesheet"][href="${cssHref}"]`,
-    )
-  ) {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = cssHref;
-    document.head.appendChild(link);
+  // Remove any leftover WP Rocket delayed loader div sitting next to the template.
+  const parent = tpl.parentElement;
+  if (parent) {
+    parent.querySelectorAll("div[data-src*='loader.js'], script[data-src*='loader.js']").forEach((n) => n.remove());
   }
 
-  // Remove any prior static clone that we may have injected in an earlier pass.
-  let sib = tpl.nextElementSibling;
-  while (sib && sib.classList.contains("ti-widget") && !sib.hasAttribute("data-ti-rendered")) {
-    const next = sib.nextElementSibling;
-    sib.remove();
-    sib = next;
-  }
+  // Only inject once.
+  if (tpl.parentElement?.querySelector("script[data-ti-loader]")) return;
+  if (document.querySelector("script[data-ti-loader]")) return;
 
-  if (document.querySelector("div.ti-widget")) return;
-
-  const render = (window as unknown as { renderTrustindexWidgets?: () => void })
-    .renderTrustindexWidgets;
-  if (typeof render === "function") {
-    try {
-      render();
-    } catch (e) {
-      console.warn("trustindex render failed", e);
-    }
-    return;
-  }
-
-  const scriptId = "trustindex-loader-script";
-  if (document.getElementById(scriptId)) return;
   const s = document.createElement("script");
-  s.id = scriptId;
-  s.src = "/trustindex-loader.js";
+  s.setAttribute("data-ti-loader", "1");
+  s.src = "/trustindex-loader.js?wp-widget";
+  s.setAttribute("data-template-id", "trustindex-google-widget-html");
+  s.setAttribute(
+    "data-css-url",
+    "https://www.rrshamaut.co.il/wp-content/uploads/trustindex-google-widget.css?1783314896",
+  );
   s.async = true;
-  document.body.appendChild(s);
+  tpl.insertAdjacentElement("afterend", s);
 }
 
 function mountRpiBadge() {
