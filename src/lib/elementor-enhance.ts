@@ -313,7 +313,7 @@ function mountTrustindex() {
 
   const s = document.createElement("script");
   s.setAttribute("data-ti-loader", "1");
-  s.src = "/trustindex-loader.js?wp-widget";
+  s.src = "/cdn.trustindex.loader.js?wp-widget";
   s.setAttribute("data-template-id", "trustindex-google-widget-html");
   s.setAttribute(
     "data-css-url",
@@ -322,6 +322,7 @@ function mountTrustindex() {
   s.async = true;
   tpl.insertAdjacentElement("afterend", s);
 }
+
 
 function mountRpiBadge() {
   if (document.getElementById("rpi-6226-static")) return;
