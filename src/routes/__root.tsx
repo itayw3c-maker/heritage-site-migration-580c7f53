@@ -146,7 +146,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <SiteHeader />
-      <Outlet />
+      <div id="main-content" tabIndex={-1}>
+        <Outlet />
+      </div>
       <SiteFooter />
       <AccessibilityWidget />
     </QueryClientProvider>
