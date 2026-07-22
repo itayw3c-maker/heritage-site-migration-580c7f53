@@ -296,15 +296,31 @@ function applyStickies(root: ParentNode) {
 }
 
 function mountTrustindex() {
-  if (!document.getElementById("trustindex-google-widget-html")) return;
-  const flag = "__trustindexLoaded";
+  const tpl = document.getElementById(
+    "trustindex-google-widget-html",
+  ) as HTMLTemplateElement | null;
+  if (!tpl) return;
+  const flag = "__trustindexMounted";
   const w = window as unknown as Record<string, unknown>;
   if (w[flag]) return;
   w[flag] = true;
-  const script = document.createElement("script");
-  script.src = "https://cdn.trustindex.io/loader.js?wp-widget";
-  script.async = true;
-  document.body.appendChild(script);
+
+  const cssHref =
+    "https://cdn.trustindex.io/assets/widget-presetted-css/v2/34-light-background.css";
+  if (
+    !document.querySelector(
+      `link[rel="stylesheet"][href="${cssHref}"]`,
+    )
+  ) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = cssHref;
+    document.head.appendChild(link);
+  }
+
+  if (tpl.nextElementSibling?.classList?.contains("ti-widget")) return;
+  const clone = tpl.content.cloneNode(true);
+  tpl.parentNode?.insertBefore(clone, tpl.nextSibling);
 }
 
 function mountRpiBadge() {
