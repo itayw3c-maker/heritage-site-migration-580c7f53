@@ -276,6 +276,7 @@ export function enhanceElementor(root: ParentNode = document) {
   mountTrustindex();
   mountRpiBadge();
   decodeCfEmails(root);
+  setupLeadForms(document);
 }
 
 function cfDecode(hex: string): string {
