@@ -17,6 +17,7 @@ export interface SingleRecord {
   updated_date?: string;
   meta_title?: string;
   meta_description?: string;
+  video_settings?: string;
 }
 
 const TEMPLATES: Record<SingleType, string> = {
@@ -45,11 +46,13 @@ function bodyClassFor(type: SingleType, id: number): string {
 }
 
 function fill(tpl: string, rec: SingleRecord): string {
+  const videoSettings = (rec.video_settings ?? "{}").replace(/"/g, "&quot;");
   return tpl
     .split("__HOLE_TITLE__").join(rec.title ?? "")
     .split("__HOLE_CONTENT__").join(rec.content_html ?? "")
     .split("__HOLE_BREADCRUMB__").join(rec.breadcrumb_html ?? "")
-    .split("__HOLE_DATE__").join(rec.updated_date ?? "");
+    .split("__HOLE_DATE__").join(rec.updated_date ?? "")
+    .split("__HOLE_VIDEO_SETTINGS__").join(videoSettings);
 }
 
 export function SingleTemplate({ record }: { record: SingleRecord }) {

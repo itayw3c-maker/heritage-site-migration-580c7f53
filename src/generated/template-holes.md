@@ -24,6 +24,7 @@ Source sample: `tpl-movie-3614-sample.html`
 Widgets replaced with markers:
 - `data-widget_type="theme-post-title.default"` × 1 → `__HOLE_TITLE__` (inner text of H1 replaced)
 - `data-widget_type="breadcrumbs.default"` × 1 → `__HOLE_BREADCRUMB__` (innerHTML of .elementor-widget-container replaced)
+- `data-widget_type="video.default"` (data-id `e6455e3`) × 1 → `__HOLE_VIDEO_SETTINGS__` (value of `data-settings` attribute replaced; expects JSON string, HTML-escaped to `&quot;` on fill; falls back to `{}` if `video_settings` is missing on the record)
 
 ## success — `data-elementor-type="single-page" data-elementor-id="3342"`
 Source sample: `tpl-success-3342-sample.html`
