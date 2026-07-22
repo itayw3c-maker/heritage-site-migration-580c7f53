@@ -300,10 +300,6 @@ function mountTrustindex() {
     "trustindex-google-widget-html",
   ) as HTMLTemplateElement | null;
   if (!tpl) return;
-  const flag = "__trustindexMounted";
-  const w = window as unknown as Record<string, unknown>;
-  if (w[flag]) return;
-  w[flag] = true;
 
   const cssHref =
     "https://cdn.trustindex.io/assets/widget-presetted-css/v2/34-light-background.css";
@@ -318,9 +314,34 @@ function mountTrustindex() {
     document.head.appendChild(link);
   }
 
-  if (tpl.nextElementSibling?.classList?.contains("ti-widget")) return;
-  const clone = tpl.content.cloneNode(true);
-  tpl.parentNode?.insertBefore(clone, tpl.nextSibling);
+  // Remove any prior static clone that we may have injected in an earlier pass.
+  let sib = tpl.nextElementSibling;
+  while (sib && sib.classList.contains("ti-widget") && !sib.hasAttribute("data-ti-rendered")) {
+    const next = sib.nextElementSibling;
+    sib.remove();
+    sib = next;
+  }
+
+  if (document.querySelector("div.ti-widget")) return;
+
+  const render = (window as unknown as { renderTrustindexWidgets?: () => void })
+    .renderTrustindexWidgets;
+  if (typeof render === "function") {
+    try {
+      render();
+    } catch (e) {
+      console.warn("trustindex render failed", e);
+    }
+    return;
+  }
+
+  const scriptId = "trustindex-loader-script";
+  if (document.getElementById(scriptId)) return;
+  const s = document.createElement("script");
+  s.id = scriptId;
+  s.src = "/trustindex-loader.js";
+  s.async = true;
+  document.body.appendChild(s);
 }
 
 function mountRpiBadge() {
