@@ -276,6 +276,7 @@ export function enhanceElementor(root: ParentNode = document) {
   mountTrustindex();
   mountRpiBadge();
   decodeCfEmails(root);
+  setupLeadForms(document);
 }
 
 function cfDecode(hex: string): string {
@@ -408,4 +409,159 @@ function mountRpiBadge() {
   div.innerHTML =
     '<div class="rpi-badge-cnt rpi-badge-right"><div class="rpi-badge" data-id="ChIJRSmMi4xWVSURJZWuczwr72w" data-provider="google" style="display:inline-block"><div class="rpi-badge-line"></div><a class="rpi-badge-body rpi-flex rpi-badge-clickable" href="https://search.google.com/local/reviews?placeid=ChIJRSmMi4xWVSURJZWuczwr72w" target="_blank" rel="nofollow noopener" style="text-decoration:none;color:inherit"><div class="rpi-logo rpi-logo-google"></div><div class="rpi-info"><div class="rpi-name">Google ג גוגל</div><span class="rpi-stars" style="--rating:5.0">5.0</span><div class="rpi-based">מבוסס על 520 ביקורות</div></div></a></div></div>';
   document.body.appendChild(div);
+}
+// ---------------- Lead form submission ----------------
+
+type FormPayload = {
+  name: string;
+  phone: string;
+  email: string | null;
+  damage_type: string | null;
+  message: string | null;
+  page_url: string;
+  form_name: string;
+};
+
+function classifyField(
+  el: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
+): keyof FormPayload | null {
+  const name = (el.getAttribute("name") ?? "").toLowerCase();
+  const type = ((el as HTMLInputElement).type ?? el.tagName.toLowerCase()).toLowerCase();
+  const placeholder = ((el as HTMLInputElement).placeholder ?? "").toLowerCase();
+  if (type === "hidden" || type === "submit" || type === "button") return null;
+  if (type === "checkbox" || type === "radio") return null;
+  if (type === "tel" || /phone|טלפון/.test(name + " " + placeholder)) return "phone";
+  if (type === "email" || /email|אימייל|מייל/.test(name + " " + placeholder)) return "email";
+  if (el.tagName.toLowerCase() === "select") return "damage_type";
+  if (
+    el.tagName.toLowerCase() === "textarea" ||
+    /message|הודעה/.test(name + " " + placeholder)
+  )
+    return "message";
+  return "name";
+}
+
+function showFormMessage(
+  form: HTMLFormElement,
+  kind: "danger" | "success",
+  text: string,
+) {
+  form.querySelectorAll(".elementor-message.rr-injected").forEach((m) => m.remove());
+  const div = document.createElement("div");
+  div.className = `elementor-message elementor-message-${kind} rr-injected`;
+  div.setAttribute("role", kind === "danger" ? "alert" : "status");
+  div.textContent = text;
+  form.insertBefore(div, form.firstChild);
+}
+
+function markInvalid(el: Element, invalid: boolean) {
+  if (invalid) el.classList.add("rr-field-error");
+  else el.classList.remove("rr-field-error");
+}
+
+async function submitLead(form: HTMLFormElement) {
+  const fields = form.querySelectorAll<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >("input, textarea, select");
+
+  const payload: FormPayload = {
+    name: "",
+    phone: "",
+    email: null,
+    damage_type: null,
+    message: null,
+    page_url: typeof window !== "undefined" ? window.location.href : "",
+    form_name:
+      form.getAttribute("name") ||
+      form.getAttribute("data-form-name") ||
+      "elementor-form",
+  };
+
+  let acceptanceRequired = false;
+  let acceptanceChecked = true;
+  let acceptanceEl: HTMLInputElement | null = null;
+
+  fields.forEach((el) => {
+    if (
+      el instanceof HTMLInputElement &&
+      el.classList.contains("elementor-acceptance-field")
+    ) {
+      if (el.required) {
+        acceptanceRequired = true;
+        acceptanceChecked = el.checked;
+        acceptanceEl = el;
+      }
+      return;
+    }
+    const key = classifyField(el);
+    if (!key) return;
+    const val = (el.value ?? "").trim();
+    if (!val) return;
+    if (key === "email" || key === "damage_type" || key === "message") {
+      (payload as Record<string, string | null>)[key] = val;
+    } else if (!payload[key]) {
+      (payload as Record<string, string>)[key] = val;
+    }
+  });
+
+  const errors: string[] = [];
+  const nameField = Array.from(fields).find((el) => classifyField(el) === "name");
+  const phoneField = Array.from(fields).find((el) => classifyField(el) === "phone");
+  if (!payload.name) {
+    errors.push("יש להזין שם מלא");
+    if (nameField) markInvalid(nameField, true);
+  } else if (nameField) markInvalid(nameField, false);
+  if (!payload.phone) {
+    errors.push("יש להזין מספר טלפון");
+    if (phoneField) markInvalid(phoneField, true);
+  } else if (phoneField) markInvalid(phoneField, false);
+  if (acceptanceRequired && !acceptanceChecked) {
+    errors.push("יש לאשר את תנאי השימוש");
+    if (acceptanceEl) markInvalid(acceptanceEl, true);
+  } else if (acceptanceEl) markInvalid(acceptanceEl, false);
+
+  if (errors.length) {
+    showFormMessage(form, "danger", errors.join(" • "));
+    return;
+  }
+
+  const submitBtn = form.querySelector<HTMLButtonElement>(
+    'button[type="submit"], input[type="submit"]',
+  );
+  const prevDisabled = submitBtn?.disabled;
+  if (submitBtn) submitBtn.disabled = true;
+
+  try {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { error } = await supabase.from("leads").insert(payload);
+    if (error) throw error;
+    window.location.href = "/thank-you/";
+  } catch (err) {
+    console.error("lead submit failed", err);
+    showFormMessage(
+      form,
+      "danger",
+      "אירעה שגיאה בשליחת הטופס. אנא נסו שוב או צרו קשר טלפונית.",
+    );
+    if (submitBtn) submitBtn.disabled = prevDisabled ?? false;
+  }
+}
+
+function setupLeadForms(doc: Document) {
+  const key = "__leadFormsBound";
+  const d = doc as Document & { [k: string]: unknown };
+  if (d[key]) return;
+  d[key] = true;
+  doc.addEventListener(
+    "submit",
+    (ev) => {
+      const target = ev.target as HTMLElement | null;
+      if (!target || !(target instanceof HTMLFormElement)) return;
+      if (!target.classList.contains("elementor-form")) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      void submitLead(target);
+    },
+    true,
+  );
 }

@@ -356,3 +356,91 @@ html.a11y-focus *:focus, html.a11y-focus *:focus-visible {
     color: var(--color-foreground);
   }
 }
+
+/* Cookie banner (sgcc) - minimal fallback style since plugin CSS wasn't captured */
+.sgcc-main-wrapper.hidden { display: none !important; }
+.sgcc-main-wrapper {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999999;
+  background: #ffffff;
+  color: #333;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+  font-family: "Assistant", system-ui, sans-serif;
+  direction: rtl;
+}
+.sgcc-main-wrapper .sgcc-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sgcc-main-wrapper .sgcc-notice-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+.sgcc-main-wrapper .cookie-icon { flex-shrink: 0; color: #056FC4; display: inline-flex; }
+.sgcc-main-wrapper .cookie-icon svg { fill: currentColor; }
+.sgcc-main-wrapper .message-block { flex: 1; min-width: 220px; }
+.sgcc-main-wrapper .message-block p { margin: 0; font-size: 14px; line-height: 1.6; }
+.sgcc-main-wrapper .message-block a { color: #056FC4; text-decoration: underline; }
+.sgcc-main-wrapper .cookie-compliance-button-block { flex-shrink: 0; }
+.sgcc-main-wrapper .cookie-compliance-button {
+  background: #056FC4;
+  color: #fff;
+  border: 0;
+  padding: 9px 22px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.sgcc-main-wrapper .cookie-compliance-button:hover { background: #045a9e; }
+.sgcc-main-wrapper button.close {
+  background: transparent;
+  border: 0;
+  color: #666;
+  cursor: pointer;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sgcc-main-wrapper button.close:hover { color: #000; }
+@media (max-width: 640px) {
+  .sgcc-main-wrapper .sgcc-container { padding: 12px 14px; }
+  .sgcc-main-wrapper .message-block p { font-size: 13px; }
+}
+
+/* Elementor form error/success messages */
+.elementor-form .elementor-message {
+  padding: 10px 14px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-family: inherit;
+}
+.elementor-form .elementor-message-danger {
+  background: #fdecea;
+  color: #b71c1c;
+  border: 1px solid #f5c6c6;
+}
+.elementor-form .elementor-message-success {
+  background: #edf7ed;
+  color: #1e4620;
+  border: 1px solid #c8e6c9;
+}
+.elementor-form .elementor-field.rr-field-error {
+  border-color: #d32f2f !important;
+  box-shadow: 0 0 0 1px #d32f2f;
+}
