@@ -14,6 +14,7 @@ export interface IndexPost {
   excerpt: string;
   thumbnail: string;
   categories: number[];
+  video_settings?: string;
 }
 
 interface IndexBundle {
@@ -83,14 +84,18 @@ function categoryCard(p: IndexPost): string {
 }
 
 function shortsCard(p: IndexPost): string {
-  const href = `/shorts/${p.slug}/`;
+  const href = `/${p.slug}/`;
+  const vs = p.video_settings ? ` data-settings="${escAttr(p.video_settings)}"` : "";
+  const videoInner = p.video_settings
+    ? `<div class="elementor-video"></div>`
+    : `<a href="${escAttr(href)}"><div class="elementor-video"></div></a>`;
   return `<div data-elementor-type="loop-item" data-elementor-id="4419" class="elementor elementor-4419 e-loop-item post shorts type-shorts status-publish hentry">
     <div class="elementor-element e-flex e-con-boxed e-con e-parent" data-element_type="container">
       <div class="e-con-inner">
-        <div class="elementor-element elementor-widget elementor-widget-video" data-element_type="widget" data-widget_type="video.default">
+        <div class="elementor-element elementor-widget elementor-widget-video"${vs} data-element_type="widget" data-widget_type="video.default">
           <div class="elementor-widget-container">
             <div class="elementor-wrapper elementor-open-inline">
-              <a href="${escAttr(href)}"><div class="elementor-video"></div></a>
+              ${videoInner}
             </div>
           </div>
         </div>
@@ -116,7 +121,7 @@ function shortsCard(p: IndexPost): string {
 }
 
 function successCard(p: IndexPost): string {
-  const href = `/success/${p.slug}/`;
+  const href = `/${p.slug}/`;
   const img = p.thumbnail
     ? `<img src="${escAttr(p.thumbnail)}" alt="${escAttr(p.title)}" loading="lazy" />`
     : "";
