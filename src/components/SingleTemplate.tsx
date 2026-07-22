@@ -6,7 +6,7 @@ import successTpl from "@/generated/templates/success.html?raw";
 import serviceTpl from "@/generated/templates/service.html?raw";
 import { enhanceElementor } from "@/lib/elementor-enhance";
 
-export type SingleType = "post" | "shorts" | "movie" | "success" | "service";
+export type SingleType = "post" | "shorts" | "movie" | "success" | "service" | "static";
 
 export interface SingleRecord {
   type: SingleType;
@@ -18,9 +18,12 @@ export interface SingleRecord {
   meta_title?: string;
   meta_description?: string;
   video_settings?: string;
+  main_html?: string;
+  body_class?: string;
+  styles_css?: string;
 }
 
-const TEMPLATES: Record<SingleType, string> = {
+const TEMPLATES: Partial<Record<SingleType, string>> = {
   post: postTpl,
   shorts: shortsTpl,
   movie: movieTpl,
@@ -42,6 +45,8 @@ function bodyClassFor(type: SingleType, id: number): string {
       return `rtl wp-singular success-template-default single single-success postid-${id} ${base} elementor-page-3342`;
     case "service":
       return `rtl wp-singular page-template-default page page-id-${id} ${base} elementor-page-4670`;
+    case "static":
+      return base;
   }
 }
 
@@ -56,15 +61,39 @@ function fill(tpl: string, rec: SingleRecord): string {
 }
 
 export function SingleTemplate({ record }: { record: SingleRecord }) {
-  const html = useMemo(() => fill(TEMPLATES[record.type], record), [record]);
+  const html = useMemo(() => {
+    if (record.type === "static") return record.main_html ?? "";
+    const tpl = TEMPLATES[record.type];
+    return tpl ? fill(tpl, record) : "";
+  }, [record]);
 
   useEffect(() => {
-    if (record.meta_title) document.title = record.meta_title;
-    document.body.className = bodyClassFor(record.type, record.id);
+    if (record.type === "static") {
+      document.title = record.title ?? "";
+      if (record.body_class) document.body.className = record.body_class;
+      else document.body.className = bodyClassFor(record.type, record.id);
+    } else {
+      if (record.meta_title) document.title = record.meta_title;
+      document.body.className = bodyClassFor(record.type, record.id);
+    }
+
+    let styleEl: HTMLStyleElement | null = null;
+    if (record.type === "static" && record.styles_css) {
+      const styleId = `page-css-${record.id}`;
+      styleEl = document.createElement("style");
+      styleEl.id = styleId;
+      styleEl.textContent = record.styles_css;
+      document.head.appendChild(styleEl);
+    }
+
     document.querySelectorAll(".e-con.e-parent").forEach((el) => {
       el.classList.add("e-lazyloaded");
     });
     enhanceElementor(document);
+
+    return () => {
+      if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+    };
   }, [record]);
 
   return <div dangerouslySetInnerHTML={{ __html: html }} />;
