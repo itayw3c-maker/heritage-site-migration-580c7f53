@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "@tanstack/react-router";
 import categoryWrap from "@/generated/archives/category.html?raw";
 import shortsWrap from "@/generated/archives/shorts.html?raw";
 import successWrap from "@/generated/archives/success.html?raw";
