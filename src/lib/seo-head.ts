@@ -16,7 +16,8 @@ export interface SeoRecord {
     twitter_image?: string;
     twitter_misc?: Record<string, string>;
   };
-  schema?: Record<string, unknown> | null;
+  // schema is stored as a pre-serialized JSON string for wire-safety.
+  schema?: string | null;
 }
 
 export interface HeadFragment {
@@ -85,7 +86,7 @@ export function buildSeoHead(rec: SeoRecord | null | undefined): HeadFragment {
   if (rec.schema) {
     scripts.push({
       type: "application/ld+json",
-      children: JSON.stringify(rec.schema),
+      children: rec.schema,
     });
   }
 
