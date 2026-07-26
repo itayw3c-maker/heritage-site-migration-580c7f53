@@ -495,7 +495,11 @@ async function submitLead(form: HTMLFormElement) {
     }
     const key = classifyField(el);
     if (!key) return;
-    const val = (el.value ?? "").trim();
+    let val = (el.value ?? "").trim();
+    if (el instanceof HTMLSelectElement) {
+      const placeholderVal = el.options[0]?.value ?? "";
+      if (val === placeholderVal) val = "";
+    }
     if (!val) return;
     if (key === "email" || key === "damage_type" || key === "message") {
       (payload as Record<string, string | null>)[key] = val;
