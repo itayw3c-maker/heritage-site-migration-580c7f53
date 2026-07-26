@@ -14,6 +14,21 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_emails: {
+        Row: {
+          created_at: string
+          email: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+        }
+        Relationships: []
+      }
       admins: {
         Row: {
           created_at: string
@@ -84,6 +99,7 @@ export type Database = {
           title: string
           updated_at: string
           wp_id: number | null
+          wp_status: string | null
         }
         Insert: {
           content_html?: string | null
@@ -100,6 +116,7 @@ export type Database = {
           title?: string
           updated_at?: string
           wp_id?: number | null
+          wp_status?: string | null
         }
         Update: {
           content_html?: string | null
@@ -116,6 +133,7 @@ export type Database = {
           title?: string
           updated_at?: string
           wp_id?: number | null
+          wp_status?: string | null
         }
         Relationships: []
       }
