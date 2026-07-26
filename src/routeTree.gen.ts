@@ -14,6 +14,7 @@ import { Route as AdminRouteRouteImport } from './routes/admin.route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SuccessIndexRouteImport } from './routes/success.index'
 import { Route as ShortsIndexRouteImport } from './routes/shorts.index'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as CategoryCatslugIndexRouteImport } from './routes/category.$catslug.index'
 import { Route as SuccessPagePageRouteImport } from './routes/success.page.$page'
 import { Route as ShortsPagePageRouteImport } from './routes/shorts.page.$page'
@@ -44,6 +45,11 @@ const ShortsIndexRoute = ShortsIndexRouteImport.update({
   path: '/shorts/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const CategoryCatslugIndexRoute = CategoryCatslugIndexRouteImport.update({
   id: '/category/$catslug/',
   path: '/category/$catslug/',
@@ -67,8 +73,9 @@ const CategoryCatslugPagePageRoute = CategoryCatslugPagePageRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
+  '/admin/login': typeof AdminLoginRoute
   '/shorts/': typeof ShortsIndexRoute
   '/success/': typeof SuccessIndexRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
@@ -78,8 +85,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
+  '/admin/login': typeof AdminLoginRoute
   '/shorts': typeof ShortsIndexRoute
   '/success': typeof SuccessIndexRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
@@ -90,8 +98,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
+  '/admin/login': typeof AdminLoginRoute
   '/shorts/': typeof ShortsIndexRoute
   '/success/': typeof SuccessIndexRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/$'
+    | '/admin/login'
     | '/shorts/'
     | '/success/'
     | '/shorts/page/$page'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/$'
+    | '/admin/login'
     | '/shorts'
     | '/success'
     | '/shorts/page/$page'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/$'
+    | '/admin/login'
     | '/shorts/'
     | '/success/'
     | '/shorts/page/$page'
@@ -137,7 +149,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRouteRoute: typeof AdminRouteRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
   ShortsIndexRoute: typeof ShortsIndexRoute
   SuccessIndexRoute: typeof SuccessIndexRoute
@@ -184,6 +196,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShortsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/category/$catslug/': {
       id: '/category/$catslug/'
       path: '/category/$catslug'
@@ -215,9 +234,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteRouteChildren {
+  AdminLoginRoute: typeof AdminLoginRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminLoginRoute: AdminLoginRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRouteRoute: AdminRouteRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   SplatRoute: SplatRoute,
   ShortsIndexRoute: ShortsIndexRoute,
   SuccessIndexRoute: SuccessIndexRoute,
