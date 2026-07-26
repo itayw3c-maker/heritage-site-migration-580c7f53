@@ -444,3 +444,36 @@ html.a11y-focus *:focus, html.a11y-focus *:focus-visible {
   border-color: #d32f2f !important;
   box-shadow: 0 0 0 1px #d32f2f;
 }
+
+/* Heading-level normalization: keep visual appearance of original tag while changing semantic level */
+/* Match native h4 (1.5rem, line-height 1.2, weight 500, inherited color) — same rem so responsive behavior is preserved */
+.rr-keep-h4 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  font-weight: 500;
+  color: inherit;
+  font-family: inherit;
+  margin-block-start: 0.5rem;
+  margin-block-end: 1rem;
+}
+/* Match native h3 (1.75rem, line-height 1.2, weight 500, inherited color) */
+.rr-keep-h3 {
+  font-size: 1.75rem;
+  line-height: 1.2;
+  font-weight: 500;
+  color: inherit;
+  font-family: inherit;
+  margin-block-start: 0.5rem;
+  margin-block-end: 1rem;
+}
+/* Thank-you page: preserve exact visual of original <p> inside text-editor widget after converting to <h1> */
+.rr-thankyou-title {
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  font-family: inherit;
+  margin-top: 0;
+  margin-bottom: 14.4px;
+}
