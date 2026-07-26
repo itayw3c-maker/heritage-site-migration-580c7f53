@@ -44,8 +44,6 @@ function upsertMeta(attr: "name" | "property", key: string, content: string) {
 
 function apply(rec: SeoRecord) {
   clearInjected();
-  // eslint-disable-next-line no-console
-  console.log("[seo] apply robots=", rec.robots);
 
   // canonical
   if (rec.canonical) {
