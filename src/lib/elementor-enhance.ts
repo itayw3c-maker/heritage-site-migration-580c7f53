@@ -277,6 +277,7 @@ export function enhanceElementor(root: ParentNode = document) {
   mountRpiBadge();
   decodeCfEmails(root);
   setupLeadForms(document);
+  animateCounters(root);
 }
 
 function cfDecode(hex: string): string {
