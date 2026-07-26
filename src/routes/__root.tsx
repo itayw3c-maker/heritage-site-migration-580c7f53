@@ -17,6 +17,21 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { AccessibilityWidget } from "@/components/AccessibilityWidget";
 import { CookieBanner } from "@/components/CookieBanner";
 import { enhanceElementor } from "@/lib/elementor-enhance";
+import { rememberPasswordRecovery } from "@/lib/password-recovery-flag";
+import { supabase } from "@/integrations/supabase/client";
+
+declare global {
+  interface Window {
+    __rrPasswordRecoveryListenerAttached?: boolean;
+  }
+}
+
+if (typeof window !== "undefined" && !window.__rrPasswordRecoveryListenerAttached) {
+  window.__rrPasswordRecoveryListenerAttached = true;
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === "PASSWORD_RECOVERY") rememberPasswordRecovery();
+  });
+}
 
 function NotFoundComponent() {
   return (
