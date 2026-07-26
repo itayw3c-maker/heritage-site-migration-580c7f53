@@ -380,7 +380,7 @@ function mountTrustindex() {
   if (!tpl) return;
 
   const cssHref =
-    "https://www.rrshamaut.co.il/wp-content/uploads/trustindex-google-widget.css?1783314896";
+    "/wp-content/uploads/trustindex-google-widget.css?1783314896";
   if (!document.querySelector(`link[href="${cssHref}"]`)) {
     const link = document.createElement("link");
     link.rel = "stylesheet";
