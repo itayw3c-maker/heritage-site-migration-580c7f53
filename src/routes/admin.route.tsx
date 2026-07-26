@@ -11,9 +11,11 @@ export const Route = createFileRoute("/admin")({
     ],
   }),
   beforeLoad: async ({ location }) => {
+    const path = location.pathname.replace(/\/+$/, "");
+    const isLoginPath = path === "/admin/login";
     const { data: sess } = await supabase.auth.getSession();
     if (!sess.session) {
-      if (location.pathname !== "/admin/login") {
+      if (!isLoginPath) {
         throw redirect({ to: "/admin/login" });
       }
       return;
@@ -21,7 +23,7 @@ export const Route = createFileRoute("/admin")({
     const { data: isAdminData } = await (supabase as any).rpc("is_admin");
     if (!isAdminData) {
       await supabase.auth.signOut();
-      if (location.pathname !== "/admin/login") {
+      if (!isLoginPath) {
         throw redirect({ to: "/admin/login" });
       }
     }
@@ -32,9 +34,9 @@ export const Route = createFileRoute("/admin")({
 function AdminLayout() {
   const router = useRouter();
   const [email, setEmail] = useState<string | null>(null);
-  const path = router.state.location.pathname;
-  const isLogin = path === "/admin/login" || path === "/admin/login/";
-  const isPreview = /^\/admin\/posts\/[^/]+\/preview\/?$/.test(path);
+  const path = router.state.location.pathname.replace(/\/+$/, "");
+  const isLogin = path === "/admin/login";
+  const isPreview = /^\/admin\/posts\/[^/]+\/preview\/?$/.test(router.state.location.pathname);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
