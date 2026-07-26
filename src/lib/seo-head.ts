@@ -1,5 +1,5 @@
-// Build TanStack Start head() output ({meta, links, scripts}) from a stored
-// SEO record (public/seo/*.json). Emits canonical, robots, og:*, twitter:*,
+// Build TanStack Start head() output ({meta, links, scripts}) from a bundled
+// SEO record (src/generated/seo/*.json). Emits canonical, robots, og:*, twitter:*,
 // og:image + width/height, and JSON-LD schema.
 //
 // Never emits title or meta[description] — those are owned by the route's
