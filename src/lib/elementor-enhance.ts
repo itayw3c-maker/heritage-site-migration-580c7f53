@@ -277,6 +277,7 @@ export function enhanceElementor(root: ParentNode = document) {
   mountRpiBadge();
   decodeCfEmails(root);
   setupLeadForms(document);
+  animateCounters(root);
 }
 
 function cfDecode(hex: string): string {
@@ -366,9 +367,28 @@ function applyStickies(root: ParentNode) {
     if (!s) return;
     if (s.sticky !== "top") return;
     if ((el as HTMLElement & { _stickyApplied?: boolean })._stickyApplied) return;
+    const stickyOn = Array.isArray((s as { sticky_on?: unknown }).sticky_on)
+      ? ((s as { sticky_on: string[] }).sticky_on)
+      : null;
+    if (stickyOn && stickyOn.length === 0) return;
     el.style.position = "sticky";
     el.style.top = "0px";
     el.style.zIndex = "99";
+    // Unblock ancestors: position:sticky is killed by any ancestor with
+    // overflow other than visible. Walk up to <body> and neutralize inline
+    // overflow only on ancestors that currently clip.
+    let p: HTMLElement | null = el.parentElement;
+    while (p && p !== document.body && p !== document.documentElement) {
+      const cs = window.getComputedStyle(p);
+      if (
+        cs.overflow !== "visible" ||
+        cs.overflowX !== "visible" ||
+        cs.overflowY !== "visible"
+      ) {
+        p.style.overflow = "visible";
+      }
+      p = p.parentElement;
+    }
     (el as HTMLElement & { _stickyApplied?: boolean })._stickyApplied = true;
   });
 }
@@ -568,4 +588,72 @@ function setupLeadForms(doc: Document) {
     },
     true,
   );
+}
+
+// ---------------- Counter animation ----------------
+
+function formatWithDelimiter(n: number, delimiter: string): string {
+  const s = Math.round(n).toString();
+  if (!delimiter) return s;
+  return s.replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
+}
+
+function runCounter(el: HTMLElement) {
+  if ((el as HTMLElement & { _counted?: boolean })._counted) return;
+  (el as HTMLElement & { _counted?: boolean })._counted = true;
+
+  const from = Number(el.getAttribute("data-from-value") ?? "0") || 0;
+  const to = Number(el.getAttribute("data-to-value") ?? "0") || 0;
+  const duration =
+    Number(el.getAttribute("data-duration") ?? "2000") || 2000;
+  const delimiter = el.getAttribute("data-delimiter") ?? ",";
+
+  const start = performance.now();
+  const step = (now: number) => {
+    const t = Math.min(1, (now - start) / duration);
+    // easeOutQuad
+    const eased = 1 - (1 - t) * (1 - t);
+    const val = from + (to - from) * eased;
+    el.textContent = formatWithDelimiter(val, delimiter);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = formatWithDelimiter(to, delimiter);
+  };
+  requestAnimationFrame(step);
+}
+
+function animateCounters(root: ParentNode) {
+  const nodes = root.querySelectorAll<HTMLElement>(
+    ".elementor-counter-number[data-to-value]",
+  );
+  if (nodes.length === 0) return;
+
+  const observe = (el: HTMLElement) => {
+    const rect = el.getBoundingClientRect();
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    if (rect.top < vh && rect.bottom > 0) {
+      runCounter(el);
+      return;
+    }
+    if (typeof IntersectionObserver === "undefined") {
+      runCounter(el);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            runCounter(entry.target as HTMLElement);
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 },
+    );
+    io.observe(el);
+  };
+
+  nodes.forEach((el) => {
+    if ((el as HTMLElement & { _counted?: boolean })._counted) return;
+    observe(el);
+  });
 }
