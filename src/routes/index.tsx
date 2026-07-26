@@ -1,8 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import mainHtml from "@/generated/main.html?raw";
+import { getSeoRecord } from "@/lib/seo.functions";
+import { buildSeoHead } from "@/lib/seo-head";
 
 export const Route = createFileRoute("/")({
+  loader: async () => ({ seo: await getSeoRecord({ data: { path: "" } }) }),
+  head: ({ loaderData }) => buildSeoHead(loaderData?.seo),
   component: Index,
 });
 
