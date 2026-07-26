@@ -337,7 +337,7 @@ span.elementor-message.elementor-message-danger.elementor-help-inline.elementor-
     font-size: 0.9em;
 }
 .elementor-message.elementor-message-danger {
-\t    background-color: #fff;
+background-color: #fff;
     font-family: 'Assistant';
     font-size: 0.9em;
 }
