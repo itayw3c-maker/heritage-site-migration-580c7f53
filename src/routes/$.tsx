@@ -1,8 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SingleTemplate, type SingleRecord } from "@/components/SingleTemplate";
+import { getSeoRecord } from "@/lib/seo.functions";
+import { buildSeoHead } from "@/lib/seo-head";
 
 export const Route = createFileRoute("/$")({
+  loader: async ({ params }) => {
+    const raw = (params as { _splat?: string })._splat ?? "";
+    let decoded = raw;
+    try {
+      decoded = decodeURIComponent(raw);
+    } catch {
+      /* keep raw */
+    }
+    const path = decoded.replace(/^\/+|\/+$/g, "");
+    if (!path || path.startsWith("admin")) return { seo: null };
+    return { seo: await getSeoRecord({ data: { path } }) };
+  },
+  head: ({ loaderData }) => buildSeoHead(loaderData?.seo),
   component: PlaceholderPage,
 });
 
