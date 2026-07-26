@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      admins: {
+        Row: {
+          created_at: string
+          email: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           created_at: string
@@ -50,12 +68,63 @@ export type Database = {
         }
         Relationships: []
       }
+      posts: {
+        Row: {
+          content_html: string | null
+          created_at: string
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          meta_description: string | null
+          meta_title: string | null
+          post_type: string
+          publish_at: string | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+          wp_id: number | null
+        }
+        Insert: {
+          content_html?: string | null
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          post_type?: string
+          publish_at?: string | null
+          slug: string
+          status?: string
+          title?: string
+          updated_at?: string
+          wp_id?: number | null
+        }
+        Update: {
+          content_html?: string | null
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          post_type?: string
+          publish_at?: string | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          wp_id?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
