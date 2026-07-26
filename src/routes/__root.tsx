@@ -104,13 +104,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "רפאל שמאות רכוש - שמאי רכוש פרטי לניהול תביעות ביטוח, הערכת נזקים, ייעוץ וליווי מול חברות הביטוח.",
       },
-      { property: "og:title", content: "רפאל שמאות רכוש | RR" },
+      { property: "og:title", content: "רפאל שמאות רכוש | RR - ניהול תביעות ביטוח, הערכת נזקים" },
       {
         property: "og:description",
-        content: "שמאי רכוש פרטי לניהול תביעות ביטוח והערכת נזקים.",
+        content: "רפאל שמאות רכוש - שמאי רכוש פרטי לניהול תביעות ביטוח, הערכת נזקים, ייעוץ וליווי מול חברות הביטוח.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "רפאל שמאות רכוש | RR - ניהול תביעות ביטוח, הערכת נזקים" },
+      { name: "twitter:description", content: "רפאל שמאות רכוש - שמאי רכוש פרטי לניהול תביעות ביטוח, הערכת נזקים, ייעוץ וליווי מול חברות הביטוח." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5ba5d480-540a-4f8e-bfed-b9e8d2e477e5/id-preview-20c9329e--84e35538-730b-4b9b-bb23-6c04421a2835.lovable.app-1785073621529.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5ba5d480-540a-4f8e-bfed-b9e8d2e477e5/id-preview-20c9329e--84e35538-730b-4b9b-bb23-6c04421a2835.lovable.app-1785073621529.png" },
     ],
     links: [
       {
