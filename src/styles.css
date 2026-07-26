@@ -477,3 +477,13 @@ html.a11y-focus *:focus, html.a11y-focus *:focus-visible {
   margin-top: 0;
   margin-bottom: 14.4px;
 }
+
+/* Sitemap page: the injected H1 must match the site heading style */
+h1.rr-sitemap-title {
+  font-family: "Assistant", sans-serif;
+  color: rgb(6, 55, 96);
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
