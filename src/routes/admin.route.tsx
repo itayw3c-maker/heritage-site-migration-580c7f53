@@ -18,7 +18,7 @@ export const Route = createFileRoute("/admin")({
       }
       return;
     }
-    const { data: isAdminData } = await supabase.rpc("is_admin");
+    const { data: isAdminData } = await (supabase as any).rpc("is_admin");
     if (!isAdminData) {
       await supabase.auth.signOut();
       if (location.pathname !== "/admin/login") {
