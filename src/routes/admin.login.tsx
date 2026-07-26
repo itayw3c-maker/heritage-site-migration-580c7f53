@@ -1,6 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { clearPasswordRecoveryFlag, consumePasswordRecoveryFlag } from "@/lib/password-recovery-flag";
 
 export const Route = createFileRoute("/admin/login")({
   head: () => ({
@@ -21,21 +22,27 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"login" | "reset" | "signup" | "update">("login");
 
+  function enterPasswordUpdateMode() {
+    setPassword("");
+    setPasswordConfirm("");
+    setMsg(null);
+    setMode("update");
+  }
+
   useEffect(() => {
+    if (consumePasswordRecoveryFlag()) {
+      enterPasswordUpdateMode();
+    }
     if (typeof window !== "undefined") {
       const hash = window.location.hash || "";
       if (hash.includes("type=recovery")) {
-        setPassword("");
-        setPasswordConfirm("");
-        setMode("update");
+        enterPasswordUpdateMode();
       }
     }
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
-        setPassword("");
-        setPasswordConfirm("");
-        setMsg(null);
-        setMode("update");
+        clearPasswordRecoveryFlag();
+        enterPasswordUpdateMode();
       }
     });
     return () => {
