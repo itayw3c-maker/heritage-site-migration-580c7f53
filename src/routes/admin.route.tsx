@@ -34,9 +34,9 @@ export const Route = createFileRoute("/admin")({
 function AdminLayout() {
   const router = useRouter();
   const [email, setEmail] = useState<string | null>(null);
-  const path = router.state.location.pathname;
-  const isLogin = path === "/admin/login" || path === "/admin/login/";
-  const isPreview = /^\/admin\/posts\/[^/]+\/preview\/?$/.test(path);
+  const path = router.state.location.pathname.replace(/\/+$/, "");
+  const isLogin = path === "/admin/login";
+  const isPreview = /^\/admin\/posts\/[^/]+\/preview\/?$/.test(router.state.location.pathname);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
