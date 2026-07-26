@@ -72,7 +72,7 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: #056FC4;
+  background: #CBA436;
   color: #fff;
   border: 2px solid #fff;
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
@@ -83,7 +83,7 @@
   padding: 0;
 }
 .a11y-fab:hover, .a11y-fab:focus-visible {
-  background: #0561AB;
+  background: #B8912D;
   outline: 3px solid #CBA436;
   outline-offset: 2px;
 }
