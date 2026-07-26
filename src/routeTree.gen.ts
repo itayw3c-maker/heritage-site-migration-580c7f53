@@ -10,17 +10,27 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SplatRouteImport } from './routes/$'
+import { Route as AdminRouteRouteImport } from './routes/admin.route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SuccessIndexRouteImport } from './routes/success.index'
 import { Route as ShortsIndexRouteImport } from './routes/shorts.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as CategoryCatslugIndexRouteImport } from './routes/category.$catslug.index'
+import { Route as AdminPostsIndexRouteImport } from './routes/admin.posts.index'
 import { Route as SuccessPagePageRouteImport } from './routes/success.page.$page'
 import { Route as ShortsPagePageRouteImport } from './routes/shorts.page.$page'
+import { Route as AdminPostsIdRouteImport } from './routes/admin.posts.$id'
 import { Route as CategoryCatslugPagePageRouteImport } from './routes/category.$catslug.page.$page'
 
 const SplatRoute = SplatRouteImport.update({
   id: '/$',
   path: '/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -38,10 +48,25 @@ const ShortsIndexRoute = ShortsIndexRouteImport.update({
   path: '/shorts/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const CategoryCatslugIndexRoute = CategoryCatslugIndexRouteImport.update({
   id: '/category/$catslug/',
   path: '/category/$catslug/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPostsIndexRoute = AdminPostsIndexRouteImport.update({
+  id: '/posts/',
+  path: '/posts/',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const SuccessPagePageRoute = SuccessPagePageRouteImport.update({
   id: '/success/page/$page',
@@ -53,6 +78,11 @@ const ShortsPagePageRoute = ShortsPagePageRouteImport.update({
   path: '/shorts/page/$page',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPostsIdRoute = AdminPostsIdRouteImport.update({
+  id: '/posts/$id',
+  path: '/posts/$id',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const CategoryCatslugPagePageRoute = CategoryCatslugPagePageRouteImport.update({
   id: '/category/$catslug/page/$page',
   path: '/category/$catslug/page/$page',
@@ -61,32 +91,46 @@ const CategoryCatslugPagePageRoute = CategoryCatslugPagePageRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/': typeof AdminIndexRoute
   '/shorts/': typeof ShortsIndexRoute
   '/success/': typeof SuccessIndexRoute
+  '/admin/posts/$id': typeof AdminPostsIdRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
+  '/admin/posts/': typeof AdminPostsIndexRoute
   '/category/$catslug/': typeof CategoryCatslugIndexRoute
   '/category/$catslug/page/$page': typeof CategoryCatslugPagePageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin': typeof AdminIndexRoute
   '/shorts': typeof ShortsIndexRoute
   '/success': typeof SuccessIndexRoute
+  '/admin/posts/$id': typeof AdminPostsIdRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
+  '/admin/posts': typeof AdminPostsIndexRoute
   '/category/$catslug': typeof CategoryCatslugIndexRoute
   '/category/$catslug/page/$page': typeof CategoryCatslugPagePageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/': typeof AdminIndexRoute
   '/shorts/': typeof ShortsIndexRoute
   '/success/': typeof SuccessIndexRoute
+  '/admin/posts/$id': typeof AdminPostsIdRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
+  '/admin/posts/': typeof AdminPostsIndexRoute
   '/category/$catslug/': typeof CategoryCatslugIndexRoute
   '/category/$catslug/page/$page': typeof CategoryCatslugPagePageRoute
 }
@@ -94,37 +138,52 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/$'
+    | '/admin/login'
+    | '/admin/'
     | '/shorts/'
     | '/success/'
+    | '/admin/posts/$id'
     | '/shorts/page/$page'
     | '/success/page/$page'
+    | '/admin/posts/'
     | '/category/$catslug/'
     | '/category/$catslug/page/$page'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/$'
+    | '/admin/login'
+    | '/admin'
     | '/shorts'
     | '/success'
+    | '/admin/posts/$id'
     | '/shorts/page/$page'
     | '/success/page/$page'
+    | '/admin/posts'
     | '/category/$catslug'
     | '/category/$catslug/page/$page'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/$'
+    | '/admin/login'
+    | '/admin/'
     | '/shorts/'
     | '/success/'
+    | '/admin/posts/$id'
     | '/shorts/page/$page'
     | '/success/page/$page'
+    | '/admin/posts/'
     | '/category/$catslug/'
     | '/category/$catslug/page/$page'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
   ShortsIndexRoute: typeof ShortsIndexRoute
   SuccessIndexRoute: typeof SuccessIndexRoute
@@ -141,6 +200,13 @@ declare module '@tanstack/react-router' {
       path: '/$'
       fullPath: '/$'
       preLoaderRoute: typeof SplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -164,12 +230,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShortsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/category/$catslug/': {
       id: '/category/$catslug/'
       path: '/category/$catslug'
       fullPath: '/category/$catslug/'
       preLoaderRoute: typeof CategoryCatslugIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/posts/': {
+      id: '/admin/posts/'
+      path: '/posts'
+      fullPath: '/admin/posts/'
+      preLoaderRoute: typeof AdminPostsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
     '/success/page/$page': {
       id: '/success/page/$page'
@@ -185,6 +272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShortsPagePageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/posts/$id': {
+      id: '/admin/posts/$id'
+      path: '/posts/$id'
+      fullPath: '/admin/posts/$id'
+      preLoaderRoute: typeof AdminPostsIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/category/$catslug/page/$page': {
       id: '/category/$catslug/page/$page'
       path: '/category/$catslug/page/$page'
@@ -195,8 +289,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteRouteChildren {
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminPostsIdRoute: typeof AdminPostsIdRoute
+  AdminPostsIndexRoute: typeof AdminPostsIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminLoginRoute: AdminLoginRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminPostsIdRoute: AdminPostsIdRoute,
+  AdminPostsIndexRoute: AdminPostsIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   SplatRoute: SplatRoute,
   ShortsIndexRoute: ShortsIndexRoute,
   SuccessIndexRoute: SuccessIndexRoute,

@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -136,8 +137,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
 
   useEffect(() => {
+    if (isAdmin) return;
     const run = () => enhanceElementor(document);
     run();
     const t = window.setTimeout(run, 50);
@@ -146,13 +150,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SiteHeader />
+      {!isAdmin && <SiteHeader />}
       <div id="main-content" tabIndex={-1}>
         <Outlet />
       </div>
-      <SiteFooter />
-      <AccessibilityWidget />
-      <CookieBanner />
+      {!isAdmin && <SiteFooter />}
+      {!isAdmin && <AccessibilityWidget />}
+      {!isAdmin && <CookieBanner />}
     </QueryClientProvider>
   );
 }
