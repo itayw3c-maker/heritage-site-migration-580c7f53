@@ -85,8 +85,12 @@ function escText(s: string): string {
 function categoryCard(p: IndexPost): string {
   const href = `/${p.slug}/`;
   const catCls = (p.categories || []).map((c) => `category-${c}`).join(" ");
+  const thumb = p.thumbnail
+    ? `<a class="elementor-post__thumbnail__link" href="${escAttr(href)}" tabindex="-1"><div class="elementor-post__thumbnail"><img src="${escAttr(p.thumbnail)}" alt="${escAttr(p.title)}" loading="lazy" /></div></a>`
+    : "";
   return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry ${catCls}" role="listitem">
     <div class="elementor-post__card">
+      ${thumb}
       <div class="elementor-post__text">
         <h3 class="elementor-post__title">
           <a href="${escAttr(href)}">${p.title}</a>
