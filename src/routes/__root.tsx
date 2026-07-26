@@ -16,7 +16,6 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AccessibilityWidget } from "@/components/AccessibilityWidget";
 import { CookieBanner } from "@/components/CookieBanner";
-import { SeoInjector } from "@/components/SeoInjector";
 import { enhanceElementor } from "@/lib/elementor-enhance";
 
 function NotFoundComponent() {
@@ -151,7 +150,6 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {!isAdmin && <SeoInjector />}
       {!isAdmin && <SiteHeader />}
       <div id="main-content" tabIndex={-1}>
         <Outlet />
