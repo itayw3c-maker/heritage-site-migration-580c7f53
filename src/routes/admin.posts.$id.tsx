@@ -92,6 +92,15 @@ function EditPost() {
       <div className="admin-page__head">
         <button type="button" className="admin-btn admin-btn--ghost" onClick={() => router.navigate({ to: "/admin/posts" })}>→ חזרה לרשימה</button>
         <h1 className="admin-page__title">עריכת רשומה</h1>
+        <a
+          href={`/admin/posts/${id}/preview`}
+          target="_blank"
+          rel="noreferrer"
+          className="admin-btn admin-btn--ghost"
+          style={{ marginInlineStart: "auto" }}
+        >
+          תצוגה מקדימה ↗
+        </a>
       </div>
       <form onSubmit={save} className="admin-form">
         <div className="admin-form__grid">
