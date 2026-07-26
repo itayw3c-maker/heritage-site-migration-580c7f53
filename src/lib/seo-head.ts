@@ -16,7 +16,7 @@ export interface SeoRecord {
     twitter_image?: string;
     twitter_misc?: Record<string, string>;
   };
-  schema?: unknown;
+  schema?: Record<string, unknown> | null;
 }
 
 export interface HeadFragment {
