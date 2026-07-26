@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+const db = supabase as unknown as {
+  from: (t: string) => any;
+  rpc: (fn: string) => any;
+};
 
 type Row = {
   id: string;
@@ -42,7 +46,7 @@ function PostsList() {
 
   useEffect(() => {
     (async () => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from("posts")
         .select("id,title,slug,post_type,status,publish_at,updated_at")
         .order("updated_at", { ascending: false });
