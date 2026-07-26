@@ -367,9 +367,28 @@ function applyStickies(root: ParentNode) {
     if (!s) return;
     if (s.sticky !== "top") return;
     if ((el as HTMLElement & { _stickyApplied?: boolean })._stickyApplied) return;
+    const stickyOn = Array.isArray((s as { sticky_on?: unknown }).sticky_on)
+      ? ((s as { sticky_on: string[] }).sticky_on)
+      : null;
+    if (stickyOn && stickyOn.length === 0) return;
     el.style.position = "sticky";
     el.style.top = "0px";
     el.style.zIndex = "99";
+    // Unblock ancestors: position:sticky is killed by any ancestor with
+    // overflow other than visible. Walk up to <body> and neutralize inline
+    // overflow only on ancestors that currently clip.
+    let p: HTMLElement | null = el.parentElement;
+    while (p && p !== document.body && p !== document.documentElement) {
+      const cs = window.getComputedStyle(p);
+      if (
+        cs.overflow !== "visible" ||
+        cs.overflowX !== "visible" ||
+        cs.overflowY !== "visible"
+      ) {
+        p.style.overflow = "visible";
+      }
+      p = p.parentElement;
+    }
     (el as HTMLElement & { _stickyApplied?: boolean })._stickyApplied = true;
   });
 }
