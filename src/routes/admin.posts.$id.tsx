@@ -1,6 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+const db = supabase as unknown as { from: (t: string) => any };
 import { RichEditor } from "@/components/admin/RichEditor";
 
 type Post = {
@@ -50,7 +51,7 @@ function EditPost() {
 
   useEffect(() => {
     (async () => {
-      const { data, error } = await supabase.from("posts").select("*").eq("id", id).maybeSingle();
+      const { data, error } = await db.from("posts").select("*").eq("id", id).maybeSingle();
       if (error) setErr(error.message);
       else if (!data) setErr("הרשומה לא נמצאה");
       else setPost(data as Post);
@@ -77,7 +78,7 @@ function EditPost() {
       status: post.status,
       publish_at: post.status === "scheduled" ? post.publish_at : null,
     };
-    const { error } = await supabase.from("posts").update(payload).eq("id", post.id);
+    const { error } = await db.from("posts").update(payload).eq("id", post.id);
     setSaving(false);
     if (error) setMsg({ kind: "err", text: `שמירה נכשלה: ${error.message}` });
     else setMsg({ kind: "ok", text: "נשמר בהצלחה" });
