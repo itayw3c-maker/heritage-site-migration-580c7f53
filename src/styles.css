@@ -488,3 +488,75 @@ h1.rr-sitemap-title {
   line-height: 1.2;
   margin-bottom: 16px;
 }
+
+/* ============ 5 pixel-parity fixes ============ */
+
+/* 1. Accessibility widget → bottom-left, above the Google reviews badge */
+.a11y-fab { right: auto !important; left: 18px !important; bottom: 150px !important; }
+.a11y-panel { right: auto !important; left: 18px !important; bottom: 210px !important; }
+@media (max-width: 640px) {
+  .a11y-fab { right: auto !important; left: 12px !important; bottom: 140px !important; }
+  .a11y-panel { right: auto !important; left: 12px !important; bottom: 198px !important; }
+}
+
+/* 2. Google reviews badge (rpi) → wide horizontal card */
+#rpi-6226-static .rpi-badge,
+#rpi-6226-static .rpi-badge-body,
+#rpi-6226-static .rpi-flex {
+  min-width: 230px;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 10px;
+}
+#rpi-6226-static .rpi-info {
+  display: flex !important;
+  flex-direction: column !important;
+  flex-wrap: wrap;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+#rpi-6226-static .rpi-name { white-space: nowrap; }
+
+/* 3. Sitemap page → 3 columns */
+.elementor-sitemap-wrap {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 24px;
+}
+.elementor-sitemap-section {
+  flex: 0 0 calc(33.333% - 16px);
+  max-width: calc(33.333% - 16px);
+  box-sizing: border-box;
+}
+@media (max-width: 767px) {
+  .elementor-sitemap-section {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* 4. Swiper pagination → below the slides, not overlapping */
+.elementor-widget-image-carousel .swiper,
+.elementor-widget-loop-carousel .swiper,
+.elementor-widget-testimonial-carousel .swiper,
+.elementor-widget-reviews .swiper {
+  padding-bottom: 30px;
+}
+.elementor-widget-image-carousel .swiper-pagination,
+.elementor-widget-loop-carousel .swiper-pagination,
+.elementor-widget-testimonial-carousel .swiper-pagination,
+.elementor-widget-reviews .swiper-pagination {
+  position: static !important;
+  margin-top: 12px;
+  bottom: auto !important;
+  text-align: center;
+}
+
+/* 5. Archive legal disclaimer → right-aligned RTL */
+.elementor-element-63eb5de,
+.elementor-element-63eb5de .elementor-widget-container,
+.elementor-element-63eb5de p {
+  text-align: right !important;
+  direction: rtl !important;
+}
