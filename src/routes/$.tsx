@@ -31,8 +31,13 @@ function PlaceholderPage() {
     let cancelled = false;
     setStatus("loading");
     setRecord(null);
-    fetch(`/content/${slug}.json`, { headers: { accept: "application/json" } })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    fetch(`/content/${slug}.json`)
+      .then(async (r) => {
+        if (!r.ok) throw new Error(String(r.status));
+        const ct = r.headers.get("content-type") ?? "";
+        if (!ct.includes("json")) throw new Error("not-json");
+        return r.json();
+      })
       .then((data: SingleRecord) => {
         if (cancelled) return;
         setRecord(data);
