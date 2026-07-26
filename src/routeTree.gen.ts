@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SuccessIndexRouteImport } from './routes/success.index'
 import { Route as ShortsIndexRouteImport } from './routes/shorts.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as CategoryCatslugIndexRouteImport } from './routes/category.$catslug.index'
 import { Route as AdminPostsIndexRouteImport } from './routes/admin.posts.index'
@@ -22,6 +23,7 @@ import { Route as SuccessPagePageRouteImport } from './routes/success.page.$page
 import { Route as ShortsPagePageRouteImport } from './routes/shorts.page.$page'
 import { Route as AdminPostsIdRouteImport } from './routes/admin.posts.$id'
 import { Route as CategoryCatslugPagePageRouteImport } from './routes/category.$catslug.page.$page'
+import { Route as AdminPostsIdPreviewRouteImport } from './routes/admin.posts.$id.preview'
 
 const SplatRoute = SplatRouteImport.update({
   id: '/$',
@@ -51,6 +53,11 @@ const ShortsIndexRoute = ShortsIndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -88,34 +95,43 @@ const CategoryCatslugPagePageRoute = CategoryCatslugPagePageRouteImport.update({
   path: '/category/$catslug/page/$page',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPostsIdPreviewRoute = AdminPostsIdPreviewRouteImport.update({
+  id: '/preview',
+  path: '/preview',
+  getParentRoute: () => AdminPostsIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
   '/shorts/': typeof ShortsIndexRoute
   '/success/': typeof SuccessIndexRoute
-  '/admin/posts/$id': typeof AdminPostsIdRoute
+  '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
   '/admin/posts/': typeof AdminPostsIndexRoute
   '/category/$catslug/': typeof CategoryCatslugIndexRoute
+  '/admin/posts/$id/preview': typeof AdminPostsIdPreviewRoute
   '/category/$catslug/page/$page': typeof CategoryCatslugPagePageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/users': typeof AdminUsersRoute
   '/admin': typeof AdminIndexRoute
   '/shorts': typeof ShortsIndexRoute
   '/success': typeof SuccessIndexRoute
-  '/admin/posts/$id': typeof AdminPostsIdRoute
+  '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
   '/admin/posts': typeof AdminPostsIndexRoute
   '/category/$catslug': typeof CategoryCatslugIndexRoute
+  '/admin/posts/$id/preview': typeof AdminPostsIdPreviewRoute
   '/category/$catslug/page/$page': typeof CategoryCatslugPagePageRoute
 }
 export interface FileRoutesById {
@@ -124,14 +140,16 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
   '/shorts/': typeof ShortsIndexRoute
   '/success/': typeof SuccessIndexRoute
-  '/admin/posts/$id': typeof AdminPostsIdRoute
+  '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
   '/admin/posts/': typeof AdminPostsIndexRoute
   '/category/$catslug/': typeof CategoryCatslugIndexRoute
+  '/admin/posts/$id/preview': typeof AdminPostsIdPreviewRoute
   '/category/$catslug/page/$page': typeof CategoryCatslugPagePageRoute
 }
 export interface FileRouteTypes {
@@ -141,6 +159,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/$'
     | '/admin/login'
+    | '/admin/users'
     | '/admin/'
     | '/shorts/'
     | '/success/'
@@ -149,12 +168,14 @@ export interface FileRouteTypes {
     | '/success/page/$page'
     | '/admin/posts/'
     | '/category/$catslug/'
+    | '/admin/posts/$id/preview'
     | '/category/$catslug/page/$page'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/$'
     | '/admin/login'
+    | '/admin/users'
     | '/admin'
     | '/shorts'
     | '/success'
@@ -163,6 +184,7 @@ export interface FileRouteTypes {
     | '/success/page/$page'
     | '/admin/posts'
     | '/category/$catslug'
+    | '/admin/posts/$id/preview'
     | '/category/$catslug/page/$page'
   id:
     | '__root__'
@@ -170,6 +192,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/$'
     | '/admin/login'
+    | '/admin/users'
     | '/admin/'
     | '/shorts/'
     | '/success/'
@@ -178,6 +201,7 @@ export interface FileRouteTypes {
     | '/success/page/$page'
     | '/admin/posts/'
     | '/category/$catslug/'
+    | '/admin/posts/$id/preview'
     | '/category/$catslug/page/$page'
   fileRoutesById: FileRoutesById
 }
@@ -237,6 +261,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
@@ -286,20 +317,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoryCatslugPagePageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/posts/$id/preview': {
+      id: '/admin/posts/$id/preview'
+      path: '/preview'
+      fullPath: '/admin/posts/$id/preview'
+      preLoaderRoute: typeof AdminPostsIdPreviewRouteImport
+      parentRoute: typeof AdminPostsIdRoute
+    }
   }
 }
 
+interface AdminPostsIdRouteChildren {
+  AdminPostsIdPreviewRoute: typeof AdminPostsIdPreviewRoute
+}
+
+const AdminPostsIdRouteChildren: AdminPostsIdRouteChildren = {
+  AdminPostsIdPreviewRoute: AdminPostsIdPreviewRoute,
+}
+
+const AdminPostsIdRouteWithChildren = AdminPostsIdRoute._addFileChildren(
+  AdminPostsIdRouteChildren,
+)
+
 interface AdminRouteRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
-  AdminPostsIdRoute: typeof AdminPostsIdRoute
+  AdminPostsIdRoute: typeof AdminPostsIdRouteWithChildren
   AdminPostsIndexRoute: typeof AdminPostsIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
+  AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
-  AdminPostsIdRoute: AdminPostsIdRoute,
+  AdminPostsIdRoute: AdminPostsIdRouteWithChildren,
   AdminPostsIndexRoute: AdminPostsIndexRoute,
 }
 

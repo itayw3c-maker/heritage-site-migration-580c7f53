@@ -32,7 +32,9 @@ export const Route = createFileRoute("/admin")({
 function AdminLayout() {
   const router = useRouter();
   const [email, setEmail] = useState<string | null>(null);
-  const isLogin = router.state.location.pathname === "/admin/login" || router.state.location.pathname === "/admin/login/";
+  const path = router.state.location.pathname;
+  const isLogin = path === "/admin/login" || path === "/admin/login/";
+  const isPreview = /^\/admin\/posts\/[^/]+\/preview\/?$/.test(path);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
@@ -51,6 +53,10 @@ function AdminLayout() {
     );
   }
 
+  if (isPreview) {
+    return <Outlet />;
+  }
+
   return (
     <div dir="rtl" className="admin-shell">
       <header className="admin-topbar">
@@ -58,6 +64,7 @@ function AdminLayout() {
           <Link to="/admin/posts" className="admin-topbar__brand">ניהול תוכן</Link>
           <nav className="admin-topbar__nav">
             <Link to="/admin/posts" className="admin-topbar__link" activeProps={{ className: "admin-topbar__link admin-topbar__link--active" }}>רשומות</Link>
+            <Link to="/admin/users" className="admin-topbar__link" activeProps={{ className: "admin-topbar__link admin-topbar__link--active" }}>משתמשים</Link>
           </nav>
           <div className="admin-topbar__user">
             {email ? <span className="admin-topbar__email">{email}</span> : null}
