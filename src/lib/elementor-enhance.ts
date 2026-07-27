@@ -278,6 +278,45 @@ export function enhanceElementor(root: ParentNode = document) {
   decodeCfEmails(root);
   setupLeadForms(document);
   animateCounters(root);
+  setupAccordions(root);
+}
+
+function setupAccordions(root: ParentNode) {
+  const accordions = root.querySelectorAll<HTMLElement>(".elementor-accordion");
+  accordions.forEach((acc) => {
+    if ((acc as HTMLElement & { _accInited?: boolean })._accInited) return;
+    (acc as HTMLElement & { _accInited?: boolean })._accInited = true;
+    const items = acc.querySelectorAll<HTMLElement>(".elementor-accordion-item");
+    items.forEach((item) => {
+      const title = item.querySelector<HTMLElement>(".elementor-tab-title");
+      const content = item.querySelector<HTMLElement>(".elementor-tab-content");
+      if (!title || !content) return;
+      const isActive = title.classList.contains("elementor-active");
+      title.setAttribute("aria-expanded", isActive ? "true" : "false");
+      content.style.display = isActive ? "block" : "none";
+      title.style.cursor = "pointer";
+      title.addEventListener("click", (e) => {
+        e.preventDefault();
+        const open = title.classList.contains("elementor-active");
+        // Close all siblings
+        items.forEach((other) => {
+          const oTitle = other.querySelector<HTMLElement>(".elementor-tab-title");
+          const oContent = other.querySelector<HTMLElement>(".elementor-tab-content");
+          if (!oTitle || !oContent) return;
+          oTitle.classList.remove("elementor-active");
+          oContent.classList.remove("elementor-active");
+          oTitle.setAttribute("aria-expanded", "false");
+          oContent.style.display = "none";
+        });
+        if (!open) {
+          title.classList.add("elementor-active");
+          content.classList.add("elementor-active");
+          title.setAttribute("aria-expanded", "true");
+          content.style.display = "block";
+        }
+      });
+    });
+  });
 }
 
 function cfDecode(hex: string): string {
