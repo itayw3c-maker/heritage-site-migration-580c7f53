@@ -21,6 +21,7 @@ import { Route as CategoryCatslugIndexRouteImport } from './routes/category.$cat
 import { Route as AdminPostsIndexRouteImport } from './routes/admin.posts.index'
 import { Route as SuccessPagePageRouteImport } from './routes/success.page.$page'
 import { Route as ShortsPagePageRouteImport } from './routes/shorts.page.$page'
+import { Route as ApiPublicGoogleReviewsRouteImport } from './routes/api/public/google-reviews'
 import { Route as AdminPostsIdRouteImport } from './routes/admin.posts.$id'
 import { Route as CategoryCatslugPagePageRouteImport } from './routes/category.$catslug.page.$page'
 import { Route as AdminPostsIdPreviewRouteImport } from './routes/admin.posts.$id.preview'
@@ -85,6 +86,11 @@ const ShortsPagePageRoute = ShortsPagePageRouteImport.update({
   path: '/shorts/page/$page',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicGoogleReviewsRoute = ApiPublicGoogleReviewsRouteImport.update({
+  id: '/api/public/google-reviews',
+  path: '/api/public/google-reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPostsIdRoute = AdminPostsIdRouteImport.update({
   id: '/posts/$id',
   path: '/posts/$id',
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/shorts/': typeof ShortsIndexRoute
   '/success/': typeof SuccessIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
+  '/api/public/google-reviews': typeof ApiPublicGoogleReviewsRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
   '/admin/posts/': typeof AdminPostsIndexRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByTo {
   '/shorts': typeof ShortsIndexRoute
   '/success': typeof SuccessIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
+  '/api/public/google-reviews': typeof ApiPublicGoogleReviewsRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
   '/admin/posts': typeof AdminPostsIndexRoute
@@ -145,6 +153,7 @@ export interface FileRoutesById {
   '/shorts/': typeof ShortsIndexRoute
   '/success/': typeof SuccessIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
+  '/api/public/google-reviews': typeof ApiPublicGoogleReviewsRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
   '/admin/posts/': typeof AdminPostsIndexRoute
@@ -164,6 +173,7 @@ export interface FileRouteTypes {
     | '/shorts/'
     | '/success/'
     | '/admin/posts/$id'
+    | '/api/public/google-reviews'
     | '/shorts/page/$page'
     | '/success/page/$page'
     | '/admin/posts/'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/shorts'
     | '/success'
     | '/admin/posts/$id'
+    | '/api/public/google-reviews'
     | '/shorts/page/$page'
     | '/success/page/$page'
     | '/admin/posts'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/shorts/'
     | '/success/'
     | '/admin/posts/$id'
+    | '/api/public/google-reviews'
     | '/shorts/page/$page'
     | '/success/page/$page'
     | '/admin/posts/'
@@ -211,6 +223,7 @@ export interface RootRouteChildren {
   SplatRoute: typeof SplatRoute
   ShortsIndexRoute: typeof ShortsIndexRoute
   SuccessIndexRoute: typeof SuccessIndexRoute
+  ApiPublicGoogleReviewsRoute: typeof ApiPublicGoogleReviewsRoute
   ShortsPagePageRoute: typeof ShortsPagePageRoute
   SuccessPagePageRoute: typeof SuccessPagePageRoute
   CategoryCatslugIndexRoute: typeof CategoryCatslugIndexRoute
@@ -303,6 +316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShortsPagePageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/google-reviews': {
+      id: '/api/public/google-reviews'
+      path: '/api/public/google-reviews'
+      fullPath: '/api/public/google-reviews'
+      preLoaderRoute: typeof ApiPublicGoogleReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/posts/$id': {
       id: '/admin/posts/$id'
       path: '/posts/$id'
@@ -365,6 +385,7 @@ const rootRouteChildren: RootRouteChildren = {
   SplatRoute: SplatRoute,
   ShortsIndexRoute: ShortsIndexRoute,
   SuccessIndexRoute: SuccessIndexRoute,
+  ApiPublicGoogleReviewsRoute: ApiPublicGoogleReviewsRoute,
   ShortsPagePageRoute: ShortsPagePageRoute,
   SuccessPagePageRoute: SuccessPagePageRoute,
   CategoryCatslugIndexRoute: CategoryCatslugIndexRoute,

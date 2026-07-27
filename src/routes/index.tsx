@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import mainHtml from "@/generated/main.html?raw";
 import { getSeoRecord } from "@/lib/seo.functions";
 import { buildSeoHead } from "@/lib/seo-head";
+import { mountLiveGoogleReviews } from "@/lib/live-google-reviews";
 
 export const Route = createFileRoute("/")({
   loader: async () => ({ seo: await getSeoRecord({ data: { path: "" } }) }),
@@ -26,6 +27,13 @@ function Index() {
     document.querySelectorAll(".e-con.e-parent").forEach((el) => {
       el.classList.add("e-lazyloaded");
     });
+    // Live Google reviews (with graceful fallback to static widget)
+    const t1 = window.setTimeout(() => mountLiveGoogleReviews(document), 300);
+    const t2 = window.setTimeout(() => mountLiveGoogleReviews(document), 1500);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
   }, []);
 
   return <div dangerouslySetInnerHTML={{ __html: mainHtml }} />;
