@@ -758,3 +758,64 @@ html, body {
 .elementor-nav-menu--main .elementor-nav-menu .sub-menu a {
   white-space: nowrap !important;
 }
+
+/* ============ Live Google Reviews widget ============ */
+.lgr-widget {
+  direction: rtl;
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  max-width: 100%;
+}
+.lgr-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #eef0f2;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+.lgr-logo { height: 22px; width: auto; }
+.lgr-summary { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lgr-rating-num { font-size: 22px; font-weight: 700; color: #1a1a1a; }
+.lgr-total { color: #5f6368; font-size: 14px; }
+.lgr-stars { display: inline-flex; gap: 2px; direction: ltr; }
+.lgr-star { color: #dadce0; font-size: 18px; line-height: 1; }
+.lgr-star-on { color: #f9ab00; }
+.lgr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+.lgr-card {
+  background: #fafafa;
+  border: 1px solid #eef0f2;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.lgr-head { display: flex; align-items: center; gap: 10px; }
+.lgr-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  object-fit: cover; background: #e8eaed;
+  display: flex; align-items: center; justify-content: center;
+  color: #5f6368; font-weight: 600; font-size: 14px;
+  flex-shrink: 0;
+}
+.lgr-avatar-fallback { background: #056FC4; color: #fff; }
+.lgr-who { flex: 1; min-width: 0; }
+.lgr-name { font-weight: 600; color: #1a1a1a; font-size: 14px; }
+.lgr-date { color: #5f6368; font-size: 12px; }
+.lgr-source { flex-shrink: 0; opacity: 0.8; }
+.lgr-text {
+  color: #3c4043;
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
