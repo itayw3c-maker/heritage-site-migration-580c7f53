@@ -641,3 +641,32 @@ body.page-id-624 .elementor-element-6173dd1 > .elementor-container {
   text-align: right !important;
   direction: rtl !important;
 }
+
+/* Elementor classic accordion — default look + collapsed-by-default */
+.elementor-accordion .elementor-accordion-item {
+  border: 1px solid #d5d8dc;
+}
+.elementor-accordion .elementor-accordion-item + .elementor-accordion-item {
+  border-top: 0;
+}
+.elementor-accordion .elementor-tab-title {
+  padding: 15px 20px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.elementor-accordion .elementor-tab-content {
+  padding: 15px 20px;
+  border-top: 1px solid #d5d8dc;
+  display: none;
+}
+.elementor-accordion .elementor-tab-title.elementor-active + .elementor-tab-content,
+.elementor-accordion .elementor-tab-content.elementor-active {
+  display: block;
+}
+.elementor-accordion .elementor-tab-title .elementor-accordion-icon-closed { display: inline-flex; }
+.elementor-accordion .elementor-tab-title .elementor-accordion-icon-opened { display: none; }
+.elementor-accordion .elementor-tab-title.elementor-active .elementor-accordion-icon-closed { display: none; }
+.elementor-accordion .elementor-tab-title.elementor-active .elementor-accordion-icon-opened { display: inline-flex; }
