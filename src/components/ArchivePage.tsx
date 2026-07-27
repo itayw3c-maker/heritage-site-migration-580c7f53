@@ -106,6 +106,20 @@ function categoryCard(p: IndexPost): string {
   </article>`;
 }
 
+function categoryRelated(p: IndexPost): string {
+  const href = `/${p.slug}/`;
+  const thumb = p.thumbnail
+    ? `<a class="elementor-post__thumbnail__link" href="${escAttr(href)}" tabindex="-1"><div class="elementor-post__thumbnail"><img src="${escAttr(p.thumbnail)}" alt="${escAttr(p.title)}" loading="lazy" /></div></a>`
+    : "";
+  return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry" role="listitem">
+${thumb}
+<div class="elementor-post__text">
+<div class="elementor-post__title"><a href="${escAttr(href)}">${p.title}</a></div>
+<div class="elementor-post__read-more-wrapper"><a class="elementor-post__read-more" href="${escAttr(href)}" aria-label="קרא עוד אודות ${escAttr(p.title)}" tabindex="-1">קראו עוד »</a></div>
+</div>
+</article>`;
+}
+
 function shortsCard(p: IndexPost): string {
   const href = `/${p.slug}/`;
   const vs = p.video_settings ? ` data-settings="${escAttr(p.video_settings)}"` : "";
@@ -256,9 +270,15 @@ export function ArchivePage({
     const build = CARD_BUILDERS[kind];
     const itemsHtml = slice.map(build).join("\n");
     const pagHtml = paginationHtml(kind, categorySlug, p, totalPages);
+    let relatedHtml = "";
+    if (kind === "category") {
+      const relatedPool = posts.filter((x) => !slice.some((s) => s.slug === x.slug));
+      relatedHtml = relatedPool.slice(0, 4).map(categoryRelated).join("\n");
+    }
     return WRAPPERS[kind]
       .split("__HOLE_ITEMS__").join(itemsHtml)
-      .split("__HOLE_PAGINATION__").join(pagHtml);
+      .split("__HOLE_PAGINATION__").join(pagHtml)
+      .split("__HOLE_RELATED_1__").join(relatedHtml);
   }, [index, kind, page, categorySlug]);
 
   useEffect(() => {

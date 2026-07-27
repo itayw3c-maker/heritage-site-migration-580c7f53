@@ -670,3 +670,74 @@ body.page-id-624 .elementor-element-6173dd1 > .elementor-container {
 .elementor-accordion .elementor-tab-title .elementor-accordion-icon-opened { display: none; }
 .elementor-accordion .elementor-tab-title.elementor-active .elementor-accordion-icon-closed { display: none; }
 .elementor-accordion .elementor-tab-title.elementor-active .elementor-accordion-icon-opened { display: inline-flex; }
+
+/* Sidebar: sticky + matching frames for form and related-articles boxes */
+#side {
+  position: sticky;
+  top: 120px;
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+#side .sidebar-related-box,
+.elementor-location-archive .sidebar-related-box {
+  background-color: var(--e-global-color-b9244b9, #ffffff);
+  border-radius: 30px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+  padding: 20px 15px;
+}
+#side .sidebar-related-box .elementor-heading-title,
+.elementor-location-archive .sidebar-related-box .elementor-heading-title {
+  font-family: "Assistant", Sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+#side .sidebar-related-box .elementor-post,
+.elementor-location-archive .sidebar-related-box .elementor-post {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+  align-items: flex-start;
+}
+#side .sidebar-related-box .elementor-post__thumbnail__link,
+.elementor-location-archive .sidebar-related-box .elementor-post__thumbnail__link {
+  width: 30%;
+  flex-shrink: 0;
+}
+#side .sidebar-related-box .elementor-post__thumbnail img,
+.elementor-location-archive .sidebar-related-box .elementor-post__thumbnail img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+}
+#side .sidebar-related-box .elementor-post__title a,
+.elementor-location-archive .sidebar-related-box .elementor-post__title a {
+  color: var(--e-global-color-beaabc7, #056fc4);
+  font-family: "Assistant", Sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.35;
+  text-decoration: none;
+}
+#side .sidebar-related-box .elementor-post__read-more,
+.elementor-location-archive .sidebar-related-box .elementor-post__read-more {
+  color: var(--e-global-color-33ec037, #cba436);
+  font-family: "Assistant", Sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+/* Archive sidebar sticky: force wrap around existing sticky container */
+.elementor-location-archive .elementor-element-093d2f5 {
+  position: sticky;
+  top: 120px;
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
