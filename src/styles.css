@@ -741,3 +741,10 @@ body.page-id-624 .elementor-element-6173dd1 > .elementor-container {
   flex-direction: column;
   gap: 20px;
 }
+
+/* Fix: overflow-x:hidden on html/body breaks position:sticky.
+   Use overflow-clip-margin/overflow:clip which prevents horizontal scroll without creating a scroll container. */
+html, body {
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+}
