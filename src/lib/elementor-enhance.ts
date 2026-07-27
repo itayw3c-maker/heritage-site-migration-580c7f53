@@ -650,8 +650,8 @@ function runCounter(el: HTMLElement) {
   const start = performance.now();
   const step = (now: number) => {
     const t = Math.min(1, (now - start) / duration);
-    // easeOutQuad
-    const eased = 1 - (1 - t) * (1 - t);
+    // jQuery swing easing (Elementor default)
+    const eased = 0.5 - Math.cos(t * Math.PI) / 2;
     const val = from + (to - from) * eased;
     el.textContent = formatWithDelimiter(val, delimiter);
     if (t < 1) requestAnimationFrame(step);
