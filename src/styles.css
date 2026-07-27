@@ -579,6 +579,28 @@ h1.rr-sitemap-title {
   white-space: nowrap;
 }
 
+/* 3. Mobile: move Google reviews badge to bottom-left (avoid WhatsApp/CTA/a11y) */
+@media (max-width: 767px) {
+  #rpi-6226-static {
+    left: 12px !important;
+    right: auto !important;
+    bottom: 80px !important;
+    width: 230px !important;
+    height: auto !important;
+  }
+  #rpi-6226-static .rpi-badge-cnt {
+    position: static !important;
+    width: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+  }
+  #rpi-6226-static .rpi-badge {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+  }
+}
+
 /* Privacy page hero (page-id-624) — restore background image and overlay */
 body.page-id-624 .elementor-element-6173dd1 {
   background-image: url("/wp-content/uploads/2024/04/Rectangle-45-2.png") !important;
