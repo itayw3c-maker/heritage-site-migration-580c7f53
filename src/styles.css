@@ -819,3 +819,12 @@ html, body {
   white-space: pre-wrap;
   overflow-wrap: break-word;
 }
+
+/* Mobile: hide the floating Google reviews badge only (not the in-page reviews section) */
+@media (max-width: 640px) {
+  #rpi-6226-static,
+  #rpi-6226-static .rpi-badge-cnt,
+  .rpi-badge-cnt.rpi-badge-right {
+    display: none !important;
+  }
+}
