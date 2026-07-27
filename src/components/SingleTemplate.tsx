@@ -21,6 +21,7 @@ export interface SingleRecord {
   main_html?: string;
   body_class?: string;
   styles_css?: string;
+  featured_image_url?: string;
 }
 
 interface IndexPostLite {
@@ -127,7 +128,8 @@ function bodyClassFor(type: SingleType, id: number): string {
 
 function fill(tpl: string, rec: SingleRecord, relatedHtml1: string): string {
   const videoSettings = (rec.video_settings ?? "{}").replace(/"/g, "&quot;");
-  const featuredImage = rec.type === "success" ? extractFeaturedImage(rec.content_html ?? "", rec.title ?? "") : "";
+  const featuredImage =
+    rec.type === "success" ? buildFeaturedImage(rec.featured_image_url, rec.title ?? "") : "";
   return tpl
     .split("__HOLE_TITLE__").join(rec.title ?? "")
     .split("__HOLE_CONTENT__").join(rec.content_html ?? "")
@@ -138,19 +140,9 @@ function fill(tpl: string, rec: SingleRecord, relatedHtml1: string): string {
     .split("__HOLE_FEATURED_IMAGE__").join(featuredImage);
 }
 
-function extractFeaturedImage(html: string, fallbackAlt: string): string {
-  const imgMatch = html.match(/<img\b[^>]*>/i);
-  if (!imgMatch) return "";
-  const tag = imgMatch[0];
-  const srcAttr =
-    tag.match(/\bdata-lazy-src="([^"]+)"/i) ||
-    tag.match(/\bdata-src="([^"]+)"/i) ||
-    tag.match(/\bsrc="([^"]+)"/i);
-  const src = srcAttr?.[1];
-  if (!src || /^(about:blank|data:)/i.test(src)) return "";
-  const altMatch = tag.match(/\balt="([^"]*)"/i);
-  const alt = altMatch?.[1] ?? fallbackAlt;
-  return `<img alt="${escAttr(alt)}" class="attachment-large size-large" src="${escAttr(src)}" loading="lazy" />`;
+function buildFeaturedImage(url: string | undefined, alt: string): string {
+  if (!url) return "";
+  return `<img alt="${escAttr(alt)}" class="attachment-large size-large" src="${escAttr(url)}" loading="lazy" />`;
 }
 
 export function SingleTemplate({ record, slug }: { record: SingleRecord; slug?: string }) {
