@@ -748,3 +748,13 @@ html, body {
   overflow-x: clip !important;
   overflow-y: visible !important;
 }
+
+/* Header desktop sub-menus: fit long service items without truncating */
+.elementor-nav-menu--main .elementor-nav-menu .sub-menu {
+  width: max-content !important;
+  min-width: 260px !important;
+  box-sizing: border-box !important;
+}
+.elementor-nav-menu--main .elementor-nav-menu .sub-menu a {
+  white-space: nowrap !important;
+}
