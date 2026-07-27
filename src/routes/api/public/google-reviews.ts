@@ -1,0 +1,103 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+const PLACE_ID = "ChIJRSmMi4xWVSURJZWuczwr72w";
+const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6h
+
+type Review = {
+  author_name: string;
+  rating: number;
+  text: string;
+  relative_time: string;
+  time: number;
+  profile_photo_url: string;
+};
+type Payload = {
+  rating: number;
+  total: number;
+  reviews: Review[];
+};
+
+let cache: { at: number; data: Payload } | null = null;
+
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Cache-Control": "public, max-age=1800",
+};
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json", ...CORS },
+  });
+}
+
+async function fetchLive(apiKey: string): Promise<Payload> {
+  // Google Places API v1
+  const url = `https://places.googleapis.com/v1/places/${PLACE_ID}?languageCode=he`;
+  const res = await fetch(url, {
+    headers: {
+      "X-Goog-Api-Key": apiKey,
+      "X-Goog-FieldMask": "rating,userRatingCount,reviews",
+    },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Places API ${res.status}: ${text.slice(0, 200)}`);
+  }
+  const data = (await res.json()) as {
+    rating?: number;
+    userRatingCount?: number;
+    reviews?: Array<{
+      rating?: number;
+      text?: { text?: string };
+      originalText?: { text?: string };
+      relativePublishTimeDescription?: string;
+      publishTime?: string;
+      authorAttribution?: { displayName?: string; photoUri?: string };
+    }>;
+  };
+  const reviews: Review[] = (data.reviews || []).slice(0, 5).map((r) => ({
+    author_name: r.authorAttribution?.displayName || "",
+    rating: r.rating || 5,
+    text: r.text?.text || r.originalText?.text || "",
+    relative_time: r.relativePublishTimeDescription || "",
+    time: r.publishTime ? Math.floor(new Date(r.publishTime).getTime() / 1000) : 0,
+    profile_photo_url: r.authorAttribution?.photoUri || "",
+  }));
+  return {
+    rating: data.rating ?? 5,
+    total: data.userRatingCount ?? 0,
+    reviews,
+  };
+}
+
+export const Route = createFileRoute("/api/public/google-reviews")({
+  server: {
+    handlers: {
+      OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
+      GET: async () => {
+        const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+        if (!apiKey) {
+          return json({ error: "GOOGLE_PLACES_API_KEY not configured" }, 503);
+        }
+        const now = Date.now();
+        if (cache && now - cache.at < CACHE_TTL_MS) {
+          return json({ ...cache.data, cached: true });
+        }
+        try {
+          const data = await fetchLive(apiKey);
+          cache = { at: now, data };
+          return json({ ...data, cached: false });
+        } catch (err) {
+          if (cache) return json({ ...cache.data, cached: true, stale: true });
+          return json(
+            { error: (err as Error).message || "Failed to fetch reviews" },
+            502,
+          );
+        }
+      },
+    },
+  },
+});
