@@ -397,6 +397,66 @@ function addSubmenuArrows(root: ParentNode) {
       '<svg aria-hidden="true" class="e-font-icon-svg e-fas-caret-down" viewBox="0 0 320 512" xmlns="http://www.w3.org/2000/svg"><path d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"></path></svg>';
     a.appendChild(span);
   });
+  setupSubmenuToggles(root);
+}
+
+function setupSubmenuToggles(root: ParentNode) {
+  const parents = root.querySelectorAll<HTMLElement>("li.menu-item-has-children");
+  parents.forEach((li) => {
+    if ((li as HTMLElement & { _submenuBound?: boolean })._submenuBound) return;
+    (li as HTMLElement & { _submenuBound?: boolean })._submenuBound = true;
+    const sub = li.querySelector<HTMLElement>(":scope > ul.sub-menu");
+    const link = li.querySelector<HTMLElement>(":scope > a");
+    if (!sub || !link) return;
+    link.setAttribute("aria-haspopup", "true");
+    link.setAttribute("aria-expanded", "false");
+
+    const open = () => {
+      sub.style.display = "block";
+      li.classList.add("submenu-open");
+      link.setAttribute("aria-expanded", "true");
+    };
+    const close = () => {
+      sub.style.display = "";
+      li.classList.remove("submenu-open");
+      link.setAttribute("aria-expanded", "false");
+    };
+    const toggle = () => {
+      if (li.classList.contains("submenu-open")) close();
+      else open();
+    };
+
+    li.addEventListener("mouseenter", open);
+    li.addEventListener("mouseleave", close);
+
+    link.addEventListener("click", (e) => {
+      const href = (link as HTMLAnchorElement).getAttribute("href") || "";
+      // Toggle instead of navigating to placeholder hrefs
+      if (!href || href === "#" || href.startsWith("#")) {
+        e.preventDefault();
+        toggle();
+        return;
+      }
+      // On touch/small screens, first tap opens submenu instead of navigating
+      if (window.matchMedia("(max-width: 1024px)").matches && !li.classList.contains("submenu-open")) {
+        e.preventDefault();
+        open();
+      }
+    });
+
+    const arrow = link.querySelector<HTMLElement>(".sub-arrow");
+    if (arrow) {
+      arrow.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggle();
+      });
+    }
+
+    document.addEventListener("click", (e) => {
+      if (!li.contains(e.target as Node)) close();
+    });
+  });
 }
 
 function applyStickies(root: ParentNode) {
@@ -650,8 +710,8 @@ function runCounter(el: HTMLElement) {
   const start = performance.now();
   const step = (now: number) => {
     const t = Math.min(1, (now - start) / duration);
-    // easeOutQuad
-    const eased = 1 - (1 - t) * (1 - t);
+    // jQuery swing easing (Elementor default)
+    const eased = 0.5 - Math.cos(t * Math.PI) / 2;
     const val = from + (to - from) * eased;
     el.textContent = formatWithDelimiter(val, delimiter);
     if (t < 1) requestAnimationFrame(step);
