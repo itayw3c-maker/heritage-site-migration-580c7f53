@@ -200,9 +200,17 @@ function setupOffCanvas(root: Document | HTMLElement) {
         oc.classList.add("elementor-active");
         oc.setAttribute("data-state", "open");
         oc.style.display = "";
+        oc.querySelectorAll<HTMLElement>(".e-off-canvas").forEach((panel) => {
+          panel.setAttribute("aria-hidden", "false");
+          panel.removeAttribute("inert");
+        });
       } else {
         oc.classList.remove("elementor-active");
         oc.setAttribute("data-state", "closed");
+        oc.querySelectorAll<HTMLElement>(".e-off-canvas").forEach((panel) => {
+          panel.setAttribute("aria-hidden", "true");
+          panel.setAttribute("inert", "");
+        });
       }
     });
     document.documentElement.classList.toggle("elementor-off-canvas-open", action === "open");
