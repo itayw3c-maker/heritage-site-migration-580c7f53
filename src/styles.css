@@ -828,3 +828,37 @@ html, body {
     display: none !important;
   }
 }
+
+/* ============ Targeted fixes ============ */
+
+/* 1. Sticky header — pin on all breakpoints */
+html { scroll-padding-top: 100px; }
+header.elementor-location-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 9990 !important;
+  background: #ffffff;
+}
+
+/* 2. Desktop only — ensure floating Google reviews badge sits at bottom-left,
+   safely ABOVE the accessibility widget (which is at left:18px, bottom:150px, ~52px tall) */
+@media (min-width: 641px) {
+  #rpi-6226-static,
+  #rpi-6226-static.rpi-badge-cnt,
+  .rpi-badge-cnt.rpi-badge-right {
+    right: auto !important;
+    left: 18px !important;
+    bottom: 220px !important;
+  }
+}
+
+/* 3. Home successes: tighten vertical gap between carousel and "לכל ההצלחות" button */
+.elementor-element-dffdaab { margin-top: -18px; }
+@media (max-width: 767px) {
+  .elementor-element-dffdaab { margin-top: -32px; }
+}
+
+/* 4. Mobile only — footer bottom padding so bottom links row is visible above floating icons */
+@media (max-width: 767px) {
+  footer.elementor-location-footer { padding-bottom: 110px; }
+}
