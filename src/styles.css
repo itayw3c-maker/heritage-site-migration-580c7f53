@@ -849,6 +849,15 @@ header.elementor-location-header {
     right: auto !important;
     left: 18px !important;
     bottom: 220px !important;
+    width: max-content !important;
+    max-width: 280px !important;
+    text-align: left !important;
+  }
+  #rpi-6226-static .rpi-badge,
+  .rpi-badge-cnt.rpi-badge-right .rpi-badge {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+    float: none !important;
   }
 }
 
@@ -860,5 +869,5 @@ header.elementor-location-header {
 
 /* 4. Mobile only — footer bottom padding so bottom links row is visible above floating icons */
 @media (max-width: 767px) {
-  footer.elementor-location-footer { padding-bottom: 110px; }
+  footer.elementor-location-footer { padding-bottom: 230px !important; }
 }
