@@ -157,13 +157,12 @@ function RootShell({ children }: { children: ReactNode }) {
         {/* Google Fonts — non-blocking. Preload as style, then swap rel to
             stylesheet on load. display=swap in the URL guarantees no FOIT.
             <noscript> keeps it working with JS disabled. */}
-        <link
-          rel="preload"
-          as="style"
-          href={googleFontsHref}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onLoad={(e: any) => {
-            e.currentTarget.rel = "stylesheet";
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){var l=document.createElement('link');l.rel='preload';l.as='style';l.href=" +
+              JSON.stringify(googleFontsHref) +
+              ";l.onload=function(){this.onload=null;this.rel='stylesheet';};document.head.appendChild(l);})();",
           }}
         />
         <noscript>
