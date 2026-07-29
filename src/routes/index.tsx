@@ -13,7 +13,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   useEffect(() => {
-    document.title = "רפאל שמאות רכוש | RR - ניהול תביעות ביטוח, הערכת נזקים";
+    document.title = "שמאי רכוש רפאל ריבוח - הערכת נזקים מקצועית מול חברות הביטוח";
     let metaEl = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
     if (!metaEl) {
       metaEl = document.createElement("meta");
