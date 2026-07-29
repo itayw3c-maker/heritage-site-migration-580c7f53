@@ -952,19 +952,20 @@ header.elementor-location-header {
     padding-right: 10px !important;
   }
   .elementor-57 .elementor-element-aef99dc > .e-con-inner {
-    gap: 10px !important;
+    gap: 6px !important;
     justify-content: center !important;
   }
   .elementor-57 .elementor-element.elementor-element-aef99dc > .e-con-inner > .e-con.e-child {
-    --width: 24%;
+    --width: 24.5%;
   }
 }
 
-/* Eliav's portrait is 1706×2560 (tall). The circular avatar mask uses
-   object-fit:cover. The default center/center crops his chest; anchor
-   slightly above centre so his face sits in the middle of the circle like
-   the other team members. Scoped to the Eliav card only. */
+/* Eliav's portrait is 1706×2560 (tall). Force it to a 1:1 square like the
+   other team avatars, crop with cover, and anchor slightly above centre so
+   his face sits in the middle of the circle. Scoped to Eliav only. */
 .elementor-57 .team-card-eliav .elementor-widget-image img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
   object-position: 50% 20%;
 }
 
@@ -974,6 +975,7 @@ header.elementor-location-header {
 .elementor-57 .elementor-element-aef99dc > .e-con-inner > .team-card-eliav {
   align-self: stretch;
 }
+
 
 
 /* ============================================================
