@@ -11,7 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import criticalCss from "../generated/critical.css?raw";
+
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -119,7 +119,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5ba5d480-540a-4f8e-bfed-b9e8d2e477e5/id-preview-20c9329e--84e35538-730b-4b9b-bb23-6c04421a2835.lovable.app-1785073621529.png" },
     ],
     links: [
-      { rel: "icon", type: "image/png", sizes: "32x32", href: "/wp-content/uploads/2024/04/Vector-2-150x150.png" },
+      {
+        rel: "stylesheet",
+        href: appCss,
+      },
       { rel: "icon", type: "image/png", sizes: "192x192", href: "/wp-content/uploads/2024/04/Vector-2.png" },
       { rel: "apple-touch-icon", href: "/wp-content/uploads/2024/04/Vector-2.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -247,26 +250,6 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="he-IL" dir="rtl">
       <head>
         <HeadContent />
-        {/* Inline critical CSS — above-the-fold, unblocks first paint.
-            Full stylesheet is loaded async below via preload+swap. */}
-        <style
-          id="critical-css"
-          dangerouslySetInnerHTML={{ __html: criticalCss }}
-        />
-        {/* Full site CSS — non-blocking preload+swap, mirrors the
-            Google Fonts pattern. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "(function(){var l=document.createElement('link');l.rel='preload';l.as='style';l.href=" +
-              JSON.stringify(appCss) +
-              ";l.onload=function(){this.onload=null;this.rel='stylesheet';};document.head.appendChild(l);})();",
-          }}
-        />
-        <noscript>
-          <link rel="stylesheet" href={appCss} />
-        </noscript>
-        {/* Google Fonts — non-blocking. Preload as style, then swap rel to
             stylesheet on load. display=swap in the URL guarantees no FOIT.
             <noscript> keeps it working with JS disabled. */}
         <script
