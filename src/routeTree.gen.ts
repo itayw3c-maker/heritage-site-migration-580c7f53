@@ -23,6 +23,7 @@ import { Route as SuccessPagePageRouteImport } from './routes/success.page.$page
 import { Route as ShortsPagePageRouteImport } from './routes/shorts.page.$page'
 import { Route as ApiPublicGoogleReviewsRouteImport } from './routes/api/public/google-reviews'
 import { Route as AdminPostsIdRouteImport } from './routes/admin.posts.$id'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as CategoryCatslugPagePageRouteImport } from './routes/category.$catslug.page.$page'
 import { Route as AdminPostsIdPreviewRouteImport } from './routes/admin.posts.$id.preview'
 
@@ -96,6 +97,12 @@ const AdminPostsIdRoute = AdminPostsIdRouteImport.update({
   path: '/posts/$id',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CategoryCatslugPagePageRoute = CategoryCatslugPagePageRouteImport.update({
   id: '/category/$catslug/page/$page',
   path: '/category/$catslug/page/$page',
@@ -124,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/category/$catslug/': typeof CategoryCatslugIndexRoute
   '/admin/posts/$id/preview': typeof AdminPostsIdPreviewRoute
   '/category/$catslug/page/$page': typeof CategoryCatslugPagePageRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -141,6 +149,7 @@ export interface FileRoutesByTo {
   '/category/$catslug': typeof CategoryCatslugIndexRoute
   '/admin/posts/$id/preview': typeof AdminPostsIdPreviewRoute
   '/category/$catslug/page/$page': typeof CategoryCatslugPagePageRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -160,6 +169,7 @@ export interface FileRoutesById {
   '/category/$catslug/': typeof CategoryCatslugIndexRoute
   '/admin/posts/$id/preview': typeof AdminPostsIdPreviewRoute
   '/category/$catslug/page/$page': typeof CategoryCatslugPagePageRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/category/$catslug/'
     | '/admin/posts/$id/preview'
     | '/category/$catslug/page/$page'
+    | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/category/$catslug'
     | '/admin/posts/$id/preview'
     | '/category/$catslug/page/$page'
+    | '/lovable/email/transactional/preview'
   id:
     | '__root__'
     | '/'
@@ -215,6 +227,7 @@ export interface FileRouteTypes {
     | '/category/$catslug/'
     | '/admin/posts/$id/preview'
     | '/category/$catslug/page/$page'
+    | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -228,6 +241,7 @@ export interface RootRouteChildren {
   SuccessPagePageRoute: typeof SuccessPagePageRoute
   CategoryCatslugIndexRoute: typeof CategoryCatslugIndexRoute
   CategoryCatslugPagePageRoute: typeof CategoryCatslugPagePageRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -330,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPostsIdRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/category/$catslug/page/$page': {
       id: '/category/$catslug/page/$page'
       path: '/category/$catslug/page/$page'
@@ -390,6 +411,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuccessPagePageRoute: SuccessPagePageRoute,
   CategoryCatslugIndexRoute: CategoryCatslugIndexRoute,
   CategoryCatslugPagePageRoute: CategoryCatslugPagePageRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
