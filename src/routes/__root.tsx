@@ -145,6 +145,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const googleFontsHref =
+    "https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Roboto:wght@100..900&family=Roboto+Slab:wght@100..900&display=swap";
   const fixdigitalHead =
     "var fixdigital_params = { defaultphone:'', phoneSelector:'.fix_smartphone, .fix_smartphone1 , .fix_smartphone2', phoneSelectorHref:'.fix_smartphone_href, .fix_smartphone_href1 , .fix_smartphone_href2', api_type: 8, api_clientkey: '25634', api_projectid: '14114', api_projecttypeid: '4', sync:true, forms:[], cookie_expired:43200 };\n" +
     "!function(e){if(e.fixdigital=e.fixdigital||{},!e.fixdigital.cookie){e.fixdigital.cookie=e.fixdigital.cookie||{};var i,r=e.fixdigital.cookie;r.cookie_query=\"fixdigital.queryparams\",r.cookie_hash=\"fixdigital.hashparams\",r.cookie_referer=\"fixdigital.referer\",r.cookie_original_referer=\"fixdigital.origin_referer\",r.cookie_expired=10,r.cookie_original_expired=e.fixdigital_params.cookie_expired,r.crossdomain=(i=function(e){var i=e.split(\".\");\"www\"!==i[0]&&\"m\"!==i[0]&&\"mobile\"!==i[0]||i.shift();return i.join(\".\")}(location.hostname),\".\"+location.hostname.substring(location.hostname.indexOf(i))),r.getCookie=function(e){var i=document.cookie.match(new RegExp(\"(?:^|; )\"+e.replace(/([\\.$?*|{}\\(\\)\\[\\]\\\\\\/\\+^])/g,\"\\\\$1\")+\"=([^;]*)\"));return i?decodeURIComponent(i[1]):void 0},r.deleteCookie=function(e){for(var i=r.crossdomain.split(\".\");i&&0<i.length;){var o=i.join(\".\");r.setCookie(e,\"\",{expires:-1,domain:o,path:\"/\"}),i.shift()}},r.setCookie=function(e,i,o){var r=(o=o||{}).expires;if(\"number\"==typeof r&&r){var a=new Date;a.setTime(a.getTime()+1e3*r),r=o.expires=a}r&&r.toUTCString&&(o.expires=r.toUTCString());var t=e+\"=\"+(i=encodeURIComponent(i));for(var n in o){t+=\"; \"+n;var c=o[n];!0!==c&&(t+=\"=\"+c)}document.cookie=t},void 0===r.getCookie(r.cookie_referer)&&(r.setCookie(r.cookie_query,location.search,{expires:r.cookie_expired,domain:r.crossdomain}),r.setCookie(r.cookie_hash,location.hash,{expires:r.cookie_expired,domain:r.crossdomain}),r.setCookie(r.cookie_referer,document.referrer,{expires:r.cookie_expired,domain:r.crossdomain}))}}(window);";
@@ -152,12 +154,30 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="he-IL" dir="rtl">
       <head>
         <HeadContent />
+        {/* Google Fonts — non-blocking. Preload as style, then swap rel to
+            stylesheet on load. display=swap in the URL guarantees no FOIT.
+            <noscript> keeps it working with JS disabled. */}
+        <link
+          rel="preload"
+          as="style"
+          href={googleFontsHref}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onLoad={(e: any) => {
+            e.currentTarget.rel = "stylesheet";
+          }}
+        />
+        <noscript>
+          <link rel="stylesheet" href={googleFontsHref} />
+        </noscript>
         <script dangerouslySetInnerHTML={{ __html: fixdigitalHead }} />
         {/* FixDigital integrate.js — MUST load in standard order
             (params → cookie IIFE → integrate.js), synchronously, so that
             api_projectid / api_projecttypeid are bound before add-view
             fires on DOMContentLoaded. Not async, not injected via effect. */}
-        <script src="https://lpc.fixdigital.co.il/external_files/scripts/clp/fixdigital_integrate.js" />
+        <script
+          defer
+          src="https://lpc.fixdigital.co.il/external_files/scripts/clp/fixdigital_integrate.js"
+        />
       </head>
       <body className="rtl home wp-singular page-template page-template-elementor_header_footer page page-id-57 wp-custom-logo wp-embed-responsive wp-theme-hello-elementor eio-default manage-default ally-default esm-default hello-elementor-default elementor-default elementor-template-full-width elementor-kit-7 elementor-page elementor-page-57">
         {children}
