@@ -668,7 +668,12 @@ async function submitLead(form: HTMLFormElement) {
     if (error) throw error;
     try {
       const { notifyLead } = await import("@/lib/leads.functions");
-      void notifyLead({ data: payload });
+      // Await so the request completes before we navigate (fetch would abort).
+      // Cap so a slow send never blocks the UX.
+      await Promise.race([
+        notifyLead({ data: payload }),
+        new Promise((resolve) => setTimeout(resolve, 8000)),
+      ]);
     } catch (e) {
       console.warn("lead email notify failed", e);
     }
