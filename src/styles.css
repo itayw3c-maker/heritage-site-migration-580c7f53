@@ -944,20 +944,29 @@ header.elementor-location-header {
   footer.elementor-location-footer { padding-bottom: 230px !important; }
 }
 
-/* Team section on home — 4-in-a-row on desktop for the added Eliav card.
+/* Team section on home — wider 4-in-a-row cards on desktop.
    Preserves Elementor's tablet/mobile breakpoints (48%). */
 @media (min-width: 1025px) {
+  .elementor-57 .elementor-element-aef99dc {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+  .elementor-57 .elementor-element-aef99dc > .e-con-inner {
+    gap: 4px !important;
+    justify-content: center !important;
+  }
   .elementor-57 .elementor-element.elementor-element-aef99dc > .e-con-inner > .e-con.e-child {
-    --width: 23%;
+    --width: 24.75%;
   }
 }
 
-/* Eliav's portrait is 1706×2560 (tall). The circular avatar mask uses
-   object-fit:cover, which was cropping mid-body. Anchor to the top so his
-   face lands inside the circle like the other team members. Scoped to the
-   Eliav card only — the other portraits are unchanged. */
+/* Eliav's portrait is 1706×2560 (tall). Force it to a 1:1 square like the
+   other team avatars, crop with cover, and anchor slightly above centre so
+   his face sits in the middle of the circle. Scoped to Eliav only. */
 .elementor-57 .team-card-eliav .elementor-widget-image img {
-  object-position: center top;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: 50% 15%;
 }
 
 /* Ensure Eliav's card matches the other team cards in height and inner
@@ -966,6 +975,9 @@ header.elementor-location-header {
 .elementor-57 .elementor-element-aef99dc > .e-con-inner > .team-card-eliav {
   align-self: stretch;
 }
+
+
+
 
 /* ============================================================
    גלריית נזקי מים/אש/מלחמה — page-id-3268
