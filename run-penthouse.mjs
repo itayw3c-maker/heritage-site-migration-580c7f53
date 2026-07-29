@@ -9,20 +9,10 @@ async function run(width, height) {
     url, cssString: css,
     width, height,
     timeout: 90000,
-    puppeteer: { getBrowser: undefined },
-    renderWaitTime: 1500,
+    renderWaitTime: 2000,
     blockJSRequests: false,
     keepLargerMediaQueries: false,
-    forceInclude: [
-      /^body\.rtl/, /^body\.home/, /^body\.page-id-57/,
-      /^\.elementor-kit-7/,
-      /elementor-location-header/, /elementor-section/, /elementor-container/,
-      /elementor-widget/, /elementor-element/, /e-con/, /e-parent/, /e-child/,
-      /elementor-heading-title/, /elementor-button/, /elementor-icon/,
-      /elementor-image/, /elementor-widget-image/,
-      /elementor-invisible/, /animated/,
-      /elementor-column/, /elementor-row/,
-    ],
+    propertiesToRemove: [],
   });
 }
 
@@ -31,20 +21,21 @@ console.error('mobile bytes:', mobile.length);
 const desktop = await run(1366, 900);
 console.error('desktop bytes:', desktop.length);
 
-// merge by dedup rule text
 function extractRules(cssText) {
-  const rules = new Set();
-  // naive split at top-level `}` - handles most cases including @media (kept as single block)
-  let depth = 0, buf = '', cur = '';
+  const rules = [];
+  let depth = 0, cur = '';
   for (const ch of cssText) {
     cur += ch;
     if (ch === '{') depth++;
-    else if (ch === '}') { depth--; if (depth === 0) { rules.add(cur.trim()); cur = ''; } }
+    else if (ch === '}') { depth--; if (depth === 0) { rules.push(cur.trim()); cur = ''; } }
   }
   return rules;
 }
-const a = extractRules(mobile), b = extractRules(desktop);
-for (const r of b) a.add(r);
-const merged = [...a].join('\n');
+const seen = new Set();
+const out = [];
+for (const r of [...extractRules(mobile), ...extractRules(desktop)]) {
+  if (!seen.has(r)) { seen.add(r); out.push(r); }
+}
+const merged = out.join('\n');
 fs.writeFileSync('src/generated/critical.css', merged);
 console.error('merged bytes:', merged.length);
