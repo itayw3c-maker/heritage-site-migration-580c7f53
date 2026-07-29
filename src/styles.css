@@ -718,18 +718,32 @@ body.page-id-624 .elementor-element-6173dd1 > .elementor-container {
   display: block;
 }
 
-/* Archive grid cards — neutralize Elementor's forced 66% aspect-ratio padding
-   that leaves an empty gray strip under the thumbnail image. Let the image
-   size the container naturally. */
+/* Archive grid cards — Elementor's default forces a 66% padding-bottom
+   aspect-ratio placeholder that leaves a gray strip when the img isn't
+   absolutely positioned into it. Give the thumbnail a fixed, uniform
+   height and let the image fill it with object-fit:cover so every card
+   shows a consistent tile. Cards without a thumbnail don't render the
+   wrapper at all (ArchivePage.tsx), so no empty box appears. */
+.elementor-posts-container .elementor-post__thumbnail__link {
+  display: block;
+  width: 100%;
+}
 .elementor-posts-container .elementor-post__thumbnail {
   padding-bottom: 0 !important;
-  height: auto !important;
+  height: 200px !important;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background: transparent;
 }
 .elementor-posts-container .elementor-post__thumbnail img {
-  position: static !important;
+  position: absolute !important;
+  inset: 0 !important;
   transform: none !important;
   width: 100% !important;
-  height: auto !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
   display: block;
 }
 
