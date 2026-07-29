@@ -929,3 +929,11 @@ header.elementor-location-header {
 @media (max-width: 767px) {
   footer.elementor-location-footer { padding-bottom: 230px !important; }
 }
+
+/* Team section on home — 4-in-a-row on desktop for the added Eliav card.
+   Preserves Elementor's tablet/mobile breakpoints (48%). */
+@media (min-width: 1025px) {
+  .elementor-57 .elementor-element.elementor-element-aef99dc > .e-con-inner > .e-con.e-child {
+    --width: 23%;
+  }
+}
