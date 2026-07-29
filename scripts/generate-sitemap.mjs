@@ -6,6 +6,7 @@ import { join, relative, sep } from "node:path";
 const SITE = "https://www.rrshamaut.co.il";
 const CONTENT_DIR = "public/content";
 const OUT = "public/sitemap.xml";
+const SLUGS_OUT = "src/generated/content-slugs.json";
 const EXCLUDE_SLUGS = new Set(["thank-you"]);
 
 function walk(dir) {
@@ -44,12 +45,16 @@ const now = today();
 const urls = [];
 urls.push({ loc: `${SITE}/`, lastmod: now });
 
+const allSlugs = [];
 for (const file of walk(CONTENT_DIR)) {
   const slug = slugFromPath(file);
+  allSlugs.push(slug);
   if (EXCLUDE_SLUGS.has(slug)) continue;
   const lastmod = modMap.get(slug) || now;
   urls.push({ loc: `${SITE}/${encodeSlug(slug)}/`, lastmod });
 }
+writeFileSync(SLUGS_OUT, JSON.stringify(allSlugs.sort()));
+console.log(`Wrote ${SLUGS_OUT} with ${allSlugs.length} slugs`);
 
 // Archives (page 1 only)
 const catSlug = "מידע-מקצועי";
