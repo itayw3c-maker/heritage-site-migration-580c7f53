@@ -9,10 +9,22 @@ async function run(width, height) {
     url, cssString: css,
     width, height,
     timeout: 90000,
-    renderWaitTime: 2000,
+    renderWaitTime: 3000,
     blockJSRequests: false,
     keepLargerMediaQueries: false,
-    propertiesToRemove: [],
+    forceInclude: [
+      /elementor-location-header/,
+      /elementor-nav-menu/,
+      /elementor-menu-toggle/,
+      /sub-arrow/,
+      /elementor-hidden/,
+      /elementor-hidden-mobile/,
+      /elementor-hidden-tablet/,
+      /elementor-hidden-desktop/,
+      /elementor-invisible/,
+      /elementor-image-box/,
+      /elementor-counter/,
+    ],
   });
 }
 
@@ -34,7 +46,12 @@ function extractRules(cssText) {
 const seen = new Set();
 const out = [];
 for (const r of [...extractRules(mobile), ...extractRules(desktop)]) {
-  if (!seen.has(r)) { seen.add(r); out.push(r); }
+  if (seen.has(r)) continue;
+  if (r.startsWith('@font-face')) continue;
+  if (r.includes('.rpi') || r.includes('--rpi-logo-g')) continue;
+  if (r.toLowerCase().includes('trustindex')) continue;
+  if (r.includes('sgcc') || r.includes('--sgcc')) continue;
+  seen.add(r); out.push(r);
 }
 const merged = out.join('\n');
 fs.writeFileSync('src/generated/critical.css', merged);
