@@ -250,6 +250,7 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="he-IL" dir="rtl">
       <head>
         <HeadContent />
+        {/* Google Fonts — non-blocking. Preload as style, then swap rel to
             stylesheet on load. display=swap in the URL guarantees no FOIT.
             <noscript> keeps it working with JS disabled. */}
         <script
