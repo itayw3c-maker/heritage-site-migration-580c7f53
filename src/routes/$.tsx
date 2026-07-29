@@ -1,10 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SingleTemplate, type SingleRecord } from "@/components/SingleTemplate";
 import { getSeoRecord } from "@/lib/seo.functions";
 import { buildSeoHead } from "@/lib/seo-head";
 import { checkContentPath } from "@/lib/content-existence.functions";
-import { setResponseStatus } from "@tanstack/react-start/server";
 
 export const Route = createFileRoute("/$")({
   loader: async ({ params }) => {
@@ -22,19 +21,14 @@ export const Route = createFileRoute("/$")({
       checkContentPath({ data: { path } }),
     ]);
     if (!exists) {
-      // Real 404 during SSR so search engines see it. On the client, TanStack
-      // just re-runs the loader and PlaceholderPage renders <NotFound404 />.
-      try {
-        setResponseStatus(404);
-      } catch {
-        /* client — no request context */
-      }
-      return { seo: null, notFound: true as const };
+      // Throwing notFound() lets TanStack set the HTTP 404 status during SSR
+      // and render the route's notFoundComponent below.
+      throw notFound();
     }
     return { seo };
   },
   head: ({ loaderData }) => {
-    if (loaderData?.notFound) {
+    if (!loaderData) {
       return {
         meta: [
           { title: "404 - העמוד לא נמצא | רפאל שמאות רכוש" },
@@ -42,10 +36,15 @@ export const Route = createFileRoute("/$")({
         ],
       };
     }
-    return buildSeoHead(loaderData?.seo);
+    return buildSeoHead(loaderData.seo);
   },
   component: PlaceholderPage,
+  notFoundComponent: NotFoundRoute,
 });
+
+function NotFoundRoute() {
+  return <NotFound404 />;
+}
 
 function PlaceholderPage() {
   const { _splat } = Route.useParams();
