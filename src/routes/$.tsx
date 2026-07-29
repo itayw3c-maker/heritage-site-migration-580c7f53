@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SingleTemplate, type SingleRecord } from "@/components/SingleTemplate";
 import { getSeoRecord } from "@/lib/seo.functions";
 import { buildSeoHead } from "@/lib/seo-head";
+import { checkContentPath } from "@/lib/content-existence.functions";
 
 export const Route = createFileRoute("/$")({
   loader: async ({ params }) => {
@@ -15,11 +16,35 @@ export const Route = createFileRoute("/$")({
     }
     const path = decoded.replace(/^\/+|\/+$/g, "");
     if (!path || path.startsWith("admin")) return { seo: null };
-    return { seo: await getSeoRecord({ data: { path } }) };
+    const [seo, exists] = await Promise.all([
+      getSeoRecord({ data: { path } }),
+      checkContentPath({ data: { path } }),
+    ]);
+    if (!exists) {
+      // Throwing notFound() lets TanStack set the HTTP 404 status during SSR
+      // and render the route's notFoundComponent below.
+      throw notFound();
+    }
+    return { seo };
   },
-  head: ({ loaderData }) => buildSeoHead(loaderData?.seo),
+  head: ({ loaderData }) => {
+    if (!loaderData) {
+      return {
+        meta: [
+          { title: "404 - העמוד לא נמצא | רפאל שמאות רכוש" },
+          { name: "robots", content: "noindex, nofollow" },
+        ],
+      };
+    }
+    return buildSeoHead(loaderData.seo);
+  },
   component: PlaceholderPage,
+  notFoundComponent: NotFoundRoute,
 });
+
+function NotFoundRoute() {
+  return <NotFound404 />;
+}
 
 function PlaceholderPage() {
   const { _splat } = Route.useParams();

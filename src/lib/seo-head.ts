@@ -1,10 +1,8 @@
 // Build TanStack Start head() output ({meta, links, scripts}) from a bundled
-// SEO record (src/generated/seo/*.json). Emits canonical, robots, og:*, twitter:*,
-// og:image + width/height, and JSON-LD schema.
-//
-// Never emits title or meta[description] — those are owned by the route's
-// existing head()/SingleTemplate/root defaults. If the record contains
-// title/description we ignore them.
+// SEO record (src/generated/seo/*.json). Emits <title>, meta[description],
+// canonical, robots, og:*, twitter:*, og:image + width/height, and JSON-LD
+// schema. Title/description are derived from og_title / og_description so
+// every route ships its own per-page copy at SSR time.
 
 export interface SeoRecord {
   canonical?: string;
@@ -31,6 +29,13 @@ export function buildSeoHead(rec: SeoRecord | null | undefined): HeadFragment {
   const links: HeadFragment["links"] = [];
   const scripts: HeadFragment["scripts"] = [];
   if (!rec) return { meta, links, scripts };
+
+  // title + description (SSR per-route; overrides root defaults by
+  // TanStack's meta merge on name/property).
+  const title = rec.og?.og_title;
+  const description = rec.og?.og_description;
+  if (title) meta.push({ title });
+  if (description) meta.push({ name: "description", content: description });
 
   // robots
   if (rec.robots) {

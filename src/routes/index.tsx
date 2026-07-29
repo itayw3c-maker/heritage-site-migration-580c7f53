@@ -28,15 +28,6 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   useEffect(() => {
-    document.title = "שמאי רכוש רפאל ריבוח - הערכת נזקים מקצועית מול חברות הביטוח";
-    let metaEl = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
-    if (!metaEl) {
-      metaEl = document.createElement("meta");
-      metaEl.name = "description";
-      document.head.appendChild(metaEl);
-    }
-    metaEl.content =
-      'שמאי רכוש רפאל ריבוח המבין את עולם הביטוח מבפנים ובעל ניסיון בייצוג מבוטחים מול חברות הביטוח, הערכת נזק וחוות דעת לביה"מ לקבלת פיצוי הוגן.';
     // Elementor's lazy-load background rules hide backgrounds until JS adds
     // the `e-lazyloaded` class. We're not shipping that JS — flip them all on.
     document.querySelectorAll(".e-con.e-parent").forEach((el) => {
