@@ -666,6 +666,28 @@ async function submitLead(form: HTMLFormElement) {
     const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase.from("leads").insert(payload);
     if (error) throw error;
+    // Send to FixDigital (api_type=8 → auto-capture is off, must call sendLead
+    // manually). Do this before navigating so the sync XHR completes.
+    try {
+      const w = window as unknown as {
+        fixdigital?: { sendLead?: (fd: FormData) => void };
+      };
+      if (typeof w.fixdigital?.sendLead === "function") {
+        const fd = new FormData();
+        fd.append("name", payload.name);
+        fd.append("phone", payload.phone);
+        if (payload.email) fd.append("email", payload.email);
+        if (payload.damage_type) fd.append("damage_type", payload.damage_type);
+        if (payload.message) fd.append("message", payload.message);
+        fd.append("source", payload.form_name);
+        fd.append("page_url", payload.page_url);
+        w.fixdigital.sendLead(fd);
+      } else {
+        console.warn("fixdigital.sendLead unavailable");
+      }
+    } catch (e) {
+      console.warn("fixdigital sendLead failed", e);
+    }
     try {
       const { notifyLead } = await import("@/lib/leads.functions");
       // Await so the request completes before we navigate (fetch would abort).
