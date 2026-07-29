@@ -131,6 +131,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.gstatic.com",
         crossOrigin: "anonymous",
       },
+      { rel: "preconnect", href: "https://lpc.fixdigital.co.il", crossOrigin: "anonymous" },
+      { rel: "preconnect", href: "https://cdn.trustindex.io", crossOrigin: "anonymous" },
+      { rel: "dns-prefetch", href: "https://lpc.fixdigital.co.il" },
+      { rel: "dns-prefetch", href: "https://cdn.trustindex.io" },
+      { rel: "dns-prefetch", href: "https://api.fixdigital.co.il" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Roboto:wght@100..900&family=Roboto+Slab:wght@100..900&display=swap",
