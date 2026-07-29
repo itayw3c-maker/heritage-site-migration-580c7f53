@@ -670,9 +670,18 @@ async function submitLead(form: HTMLFormElement) {
     // manually). Do this before navigating so the sync XHR completes.
     try {
       const w = window as unknown as {
-        fixdigital?: { sendLead?: (fd: FormData) => void };
+        fixdigital?: {
+          sendLead?: (fd: FormData) => void;
+          leadUrl?: string;
+        };
       };
       if (typeof w.fixdigital?.sendLead === "function") {
+        // With api_type=8 the integrate.js script never assigns self.leadUrl
+        // (it only does so for api_type 3 or 4), so sendLead would POST to
+        // "undefined?…". Ensure the endpoint is set before calling.
+        if (!w.fixdigital.leadUrl) {
+          w.fixdigital.leadUrl = "https://api.fixdigital.co.il/add-lead-form";
+        }
         const fd = new FormData();
         fd.append("name", payload.name);
         fd.append("phone", payload.phone);
