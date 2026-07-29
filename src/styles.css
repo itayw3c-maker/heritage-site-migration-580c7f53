@@ -1009,6 +1009,11 @@ body.page-id-3268 .e-n-tabs > .e-n-tabs-heading > .e-n-tab-title[aria-selected="
 }
 body.page-id-3268 .e-n-tabs > .e-n-tabs-heading > .e-n-tab-title .e-n-tab-title-text {
   white-space: nowrap;
+  color: inherit !important;
+  font-size: inherit;
+  font-weight: inherit;
+  padding: 0;
+  background: transparent;
 }
 
 /* גריד תמונות אחיד */
