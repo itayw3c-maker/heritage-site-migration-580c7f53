@@ -144,22 +144,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@context": "https://schema.org",
           "@type": "ProfessionalService",
           name: "רפאל שמאות רכוש",
-          url: "https://www.rrshamaut.co.il/",
-          sameAs: [
-            "https://www.facebook.com/rrshamaut/",
-            "https://www.instagram.com/rrshamaut",
-            "https://www.youtube.com/@rephael.shamaut-rr",
-            "https://www.tiktok.com/@rephaelshamaut",
-            "https://www.threads.com/@rrshamaut",
-          ],
-        }),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "ProfessionalService",
-          name: "רפאל שמאות רכוש",
           legalName: "רפאל שמאות רכוש - שמאי רכוש",
           url: "https://www.rrshamaut.co.il/",
           logo: "https://www.rrshamaut.co.il/wp-content/uploads/2024/04/%D7%9C%D7%95%D7%92%D7%95.png",
@@ -169,6 +153,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           telephone: "+972-77-805-1266",
           email: "office@rrshamaut.co.il",
           priceRange: "$$$",
+          sameAs: [
+            "https://www.facebook.com/rrshamaut/",
+            "https://www.instagram.com/rrshamaut",
+            "https://www.youtube.com/@rephael.shamaut-rr",
+            "https://www.tiktok.com/@rephaelshamaut",
+            "https://www.threads.com/@rrshamaut",
+          ],
           address: {
             "@type": "PostalAddress",
             streetAddress: "הבנאים 5",
