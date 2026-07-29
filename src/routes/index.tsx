@@ -7,7 +7,22 @@ import { mountLiveGoogleReviews } from "@/lib/live-google-reviews";
 
 export const Route = createFileRoute("/")({
   loader: async () => ({ seo: await getSeoRecord({ data: { path: "" } }) }),
-  head: ({ loaderData }) => buildSeoHead(loaderData?.seo),
+  head: ({ loaderData }) => {
+    const base = buildSeoHead(loaderData?.seo);
+    return {
+      ...base,
+      links: [
+        ...(base.links ?? []),
+        // Preload the LCP hero so it starts fetching before the HTML body parses the <img>.
+        {
+          rel: "preload",
+          as: "image",
+          href: "/wp-content/uploads/2025/12/רפאל-שמאות-רכוש.webp",
+          fetchpriority: "high",
+        },
+      ],
+    };
+  },
   component: Index,
 });
 
