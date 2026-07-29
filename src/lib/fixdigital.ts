@@ -39,28 +39,17 @@ function tagPhoneElements(root: ParentNode = document): void {
   });
 }
 
-function ensureInjector(): void {
-  if (typeof document === "undefined") return;
-  if (document.getElementById("fixdigital_script")) {
-    // Already injected; ask the script to re-scan if it exposes an API.
-    const w = window as any;
-    try {
-      w.fixdigital?.askPhone?.();
-    } catch {
-      /* noop */
-    }
-    return;
-  }
-  const s = document.createElement("script");
-  s.id = "fixdigital_script";
-  s.src =
-    "https://lpc.fixdigital.co.il/external_files/scripts/clp/fixdigital_integrate.js";
-  // Deliberately NOT async — see project note about silent failures.
-  document.head.appendChild(s);
-}
-
+// The integrate.js script is loaded synchronously in the initial <head>
+// (see src/routes/__root.tsx RootShell) so that fixdigital_params is fully
+// bound before add-view fires. Here we only (re)tag phone elements and ask
+// the loaded script to re-scan after SPA route changes.
 export function hydrateFixDigital(): void {
   if (typeof window === "undefined") return;
   tagPhoneElements(document);
-  ensureInjector();
+  const w = window as any;
+  try {
+    w.fixdigital?.askPhone?.();
+  } catch {
+    /* noop */
+  }
 }

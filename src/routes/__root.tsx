@@ -152,6 +152,11 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: fixdigitalHead }} />
+        {/* FixDigital integrate.js — MUST load in standard order
+            (params → cookie IIFE → integrate.js), synchronously, so that
+            api_projectid / api_projecttypeid are bound before add-view
+            fires on DOMContentLoaded. Not async, not injected via effect. */}
+        <script src="https://lpc.fixdigital.co.il/external_files/scripts/clp/fixdigital_integrate.js" />
       </head>
       <body className="rtl home wp-singular page-template page-template-elementor_header_footer page page-id-57 wp-custom-logo wp-embed-responsive wp-theme-hello-elementor eio-default manage-default ally-default esm-default hello-elementor-default elementor-default elementor-template-full-width elementor-kit-7 elementor-page elementor-page-57">
         {children}
