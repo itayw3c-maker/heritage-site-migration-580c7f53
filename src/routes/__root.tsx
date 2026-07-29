@@ -17,6 +17,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { AccessibilityWidget } from "@/components/AccessibilityWidget";
 import { CookieBanner } from "@/components/CookieBanner";
 import { enhanceElementor } from "@/lib/elementor-enhance";
+import { hydrateFixDigital } from "@/lib/fixdigital";
 import { rememberPasswordRecovery } from "@/lib/password-recovery-flag";
 import { supabase } from "@/integrations/supabase/client";
 
