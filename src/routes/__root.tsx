@@ -11,7 +11,6 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import criticalCss from "@/generated/critical.css?inline";
 
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -125,6 +124,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
       { rel: "icon", type: "image/png", sizes: "192x192", href: "/wp-content/uploads/2024/04/Vector-2.png" },
       { rel: "apple-touch-icon", href: "/wp-content/uploads/2024/04/Vector-2.png" },
+      { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       {
         rel: "preconnect",
@@ -250,21 +250,6 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="he-IL" dir="rtl">
       <head>
         <HeadContent />
-        {/* Critical CSS inlined — covers above-the-fold so full stylesheet
-            can load non-blocking without FOUC. */}
-        <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
-        {/* Full stylesheet — preload + swap so it doesn't block render. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "(function(){var l=document.createElement('link');l.rel='preload';l.as='style';l.href=" +
-              JSON.stringify(appCss) +
-              ";l.onload=function(){this.onload=null;this.rel='stylesheet';};document.head.appendChild(l);})();",
-          }}
-        />
-        <noscript>
-          <link rel="stylesheet" href={appCss} />
-        </noscript>
         {/* Google Fonts — non-blocking. Preload as style, then swap rel to
             stylesheet on load. display=swap in the URL guarantees no FOIT.
             <noscript> keeps it working with JS disabled. */}
