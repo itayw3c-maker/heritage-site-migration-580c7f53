@@ -717,6 +717,21 @@ body.page-id-624 .elementor-element-6173dd1 > .elementor-container {
   border-radius: 8px;
   display: block;
 }
+
+/* Archive grid cards — neutralize Elementor's forced 66% aspect-ratio padding
+   that leaves an empty gray strip under the thumbnail image. Let the image
+   size the container naturally. */
+.elementor-posts-container .elementor-post__thumbnail {
+  padding-bottom: 0 !important;
+  height: auto !important;
+}
+.elementor-posts-container .elementor-post__thumbnail img {
+  position: static !important;
+  transform: none !important;
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+}
 #side .sidebar-related-box .elementor-post__title a,
 .elementor-location-archive .sidebar-related-box .elementor-post__title a {
   color: var(--e-global-color-beaabc7, #056fc4);
