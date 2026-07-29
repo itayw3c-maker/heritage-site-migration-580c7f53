@@ -288,6 +288,54 @@ export function enhanceElementor(root: ParentNode = document) {
   animateCounters(root);
   setupAccordions(root);
   enhancePhoneInputs(root);
+  hydrateGalleries(root);
+}
+
+function hydrateGalleries(root: ParentNode) {
+  const items = root.querySelectorAll<HTMLAnchorElement>(".elementor-gallery-item, .e-gallery-item");
+  items.forEach((a) => {
+    const marked = a as HTMLAnchorElement & { _galleryHydrated?: boolean };
+    if (marked._galleryHydrated) return;
+    const img = a.querySelector<HTMLElement>(".e-gallery-image, .elementor-gallery-item__image");
+    if (!img) return;
+    // Skip if a background-image is already set (inline or via CSS).
+    const existingInline = img.style.backgroundImage;
+    const existingCss = getComputedStyle(img).backgroundImage;
+    if (!existingInline && existingCss && existingCss !== "none") {
+      marked._galleryHydrated = true;
+      return;
+    }
+    let url = img.getAttribute("data-thumbnail") || a.getAttribute("href") || "";
+    if (!url) {
+      const hash = a.getAttribute("data-e-action-hash") || "";
+      const m = hash.match(/settings%3D([^%&]+)/i);
+      if (m) {
+        try {
+          const json = atob(decodeURIComponent(m[1]));
+          const data = JSON.parse(json);
+          if (data && typeof data.url === "string") url = data.url;
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+    if (!url) return;
+    // Normalize absolute rrshamaut URLs to local paths.
+    url = url.replace(/^https?:\/\/(?:www\.)?rrshamaut\.co\.il/i, "");
+    // Normalize relative "../wp-content/..." → "/wp-content/...".
+    url = url.replace(/^(?:\.\.\/)+wp-content\//, "/wp-content/");
+    img.style.backgroundImage = `url("${url}")`;
+    if (!img.style.backgroundSize) img.style.backgroundSize = "cover";
+    if (!img.style.backgroundPosition) img.style.backgroundPosition = "center";
+    // Provide an aspect ratio if the CSS didn't give the tile a height.
+    if (getComputedStyle(img).height === "0px") {
+      const w = parseFloat(img.getAttribute("data-width") || "");
+      const h = parseFloat(img.getAttribute("data-height") || "");
+      img.style.aspectRatio = w > 0 && h > 0 ? `${w} / ${h}` : "4 / 3";
+      img.style.width = "100%";
+    }
+    marked._galleryHydrated = true;
+  });
 }
 
 function enhancePhoneInputs(root: ParentNode) {
