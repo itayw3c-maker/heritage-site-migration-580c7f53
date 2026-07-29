@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { SingleTemplate, type SingleRecord } from "@/components/SingleTemplate";
 import { getSeoRecord } from "@/lib/seo.functions";
 import { buildSeoHead } from "@/lib/seo-head";
+import { checkContentPath } from "@/lib/content-existence.functions";
+import { setResponseStatus } from "@tanstack/react-start/server";
 
 export const Route = createFileRoute("/$")({
   loader: async ({ params }) => {
@@ -15,9 +17,33 @@ export const Route = createFileRoute("/$")({
     }
     const path = decoded.replace(/^\/+|\/+$/g, "");
     if (!path || path.startsWith("admin")) return { seo: null };
-    return { seo: await getSeoRecord({ data: { path } }) };
+    const [seo, exists] = await Promise.all([
+      getSeoRecord({ data: { path } }),
+      checkContentPath({ data: { path } }),
+    ]);
+    if (!exists) {
+      // Real 404 during SSR so search engines see it. On the client, TanStack
+      // just re-runs the loader and PlaceholderPage renders <NotFound404 />.
+      try {
+        setResponseStatus(404);
+      } catch {
+        /* client — no request context */
+      }
+      return { seo: null, notFound: true as const };
+    }
+    return { seo };
   },
-  head: ({ loaderData }) => buildSeoHead(loaderData?.seo),
+  head: ({ loaderData }) => {
+    if (loaderData?.notFound) {
+      return {
+        meta: [
+          { title: "404 - העמוד לא נמצא | רפאל שמאות רכוש" },
+          { name: "robots", content: "noindex, nofollow" },
+        ],
+      };
+    }
+    return buildSeoHead(loaderData?.seo);
+  },
   component: PlaceholderPage,
 });
 
