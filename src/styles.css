@@ -991,21 +991,25 @@ body.page-id-3268 .e-n-tabs > .e-n-tabs-heading > .e-n-tab-title {
   font-size: 16px;
   font-weight: 600;
   line-height: 1;
-  color: #056FC4;
-  background: #ffffff;
-  border: 1.5px solid #056FC4;
-  border-radius: 999px;
+  color: #056FC4 !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border: 1.5px solid #056FC4 !important;
+  border-radius: 999px !important;
   box-shadow: none;
   cursor: pointer;
   transition: background-color .2s ease, color .2s ease, border-color .2s ease;
 }
 body.page-id-3268 .e-n-tabs > .e-n-tabs-heading > .e-n-tab-title:hover {
-  background: #EAF3FB;
+  background: #EAF3FB !important;
+  background-color: #EAF3FB !important;
 }
 body.page-id-3268 .e-n-tabs > .e-n-tabs-heading > .e-n-tab-title[aria-selected="true"] {
-  background: #CBA436;
-  border-color: #CBA436;
-  color: #ffffff;
+  background: #CBA436 !important;
+  background-color: #CBA436 !important;
+  border-color: #CBA436 !important;
+  color: #ffffff !important;
 }
 body.page-id-3268 .e-n-tabs > .e-n-tabs-heading > .e-n-tab-title .e-n-tab-title-text {
   white-space: nowrap;
