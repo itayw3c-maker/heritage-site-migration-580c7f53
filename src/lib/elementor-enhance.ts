@@ -479,7 +479,14 @@ function applyStickies(root: ParentNode) {
       : null;
     if (stickyOn && stickyOn.length === 0) return;
     el.style.position = "sticky";
-    el.style.top = "0px";
+    const offsetRaw = (s as { sticky_offset?: unknown }).sticky_offset;
+    const offset =
+      typeof offsetRaw === "number"
+        ? offsetRaw
+        : typeof offsetRaw === "string" && offsetRaw.trim() !== ""
+          ? Number(offsetRaw) || 0
+          : 120;
+    el.style.top = `${offset}px`;
     el.style.zIndex = "99";
     // Unblock ancestors: position:sticky is killed by any ancestor with
     // overflow other than visible. Walk up to <body> and neutralize inline

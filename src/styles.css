@@ -72,9 +72,9 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: #CBA436;
-  color: #fff;
-  border: 2px solid #fff;
+  background: #CBA436 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
   display: flex;
   align-items: center;
@@ -82,8 +82,11 @@
   cursor: pointer;
   padding: 0;
 }
+.a11y-fab svg { color: #ffffff !important; }
+.a11y-fab svg [fill="currentColor"] { fill: #ffffff !important; }
+.a11y-fab svg [stroke="currentColor"] { stroke: #ffffff !important; }
 .a11y-fab:hover, .a11y-fab:focus-visible {
-  background: #B8912D;
+  background: #B8912D !important;
   outline: 3px solid #CBA436;
   outline-offset: 2px;
 }
@@ -757,6 +760,16 @@ html, body {
 }
 .elementor-nav-menu--main .elementor-nav-menu .sub-menu a {
   white-space: nowrap !important;
+}
+
+/* Nested sub-menu (e.g. "צוות המשרד" under "אודות"): open to the side of
+   the parent item, not below it inside the same dropdown. RTL → right:100%. */
+.elementor-nav-menu--main .elementor-nav-menu .sub-menu .sub-menu {
+  position: absolute !important;
+  top: 0 !important;
+  right: 100% !important;
+  left: auto !important;
+  margin-right: 0 !important;
 }
 
 /* ============ Live Google Reviews widget ============ */
