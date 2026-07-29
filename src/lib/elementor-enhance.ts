@@ -287,6 +287,36 @@ export function enhanceElementor(root: ParentNode = document) {
   setupLeadForms(document);
   animateCounters(root);
   setupAccordions(root);
+  enhancePhoneInputs(root);
+}
+
+function enhancePhoneInputs(root: ParentNode) {
+  const forms = root.querySelectorAll<HTMLFormElement>(".elementor-form");
+  forms.forEach((form) => {
+    const inputs = form.querySelectorAll<HTMLInputElement>("input");
+    inputs.forEach((el) => {
+      const name = (el.getAttribute("name") || "").toLowerCase();
+      const placeholder = (el.getAttribute("placeholder") || "").toLowerCase();
+      const isPhone =
+        el.type === "tel" ||
+        name.includes("phone") ||
+        placeholder.includes("phone") ||
+        name.includes("טלפון") ||
+        placeholder.includes("טלפון") ||
+        (el.getAttribute("placeholder") || "").includes("טלפון");
+      if (!isPhone) return;
+      const marked = el as HTMLInputElement & { _phoneEnhanced?: boolean };
+      if (marked._phoneEnhanced) return;
+      marked._phoneEnhanced = true;
+      el.setAttribute("inputmode", "numeric");
+      el.setAttribute("autocomplete", "tel");
+      el.maxLength = 10;
+      el.addEventListener("input", () => {
+        const cleaned = el.value.replace(/\D/g, "").slice(0, 10);
+        if (el.value !== cleaned) el.value = cleaned;
+      });
+    });
+  });
 }
 
 function setupAccordions(root: ParentNode) {
@@ -649,10 +679,17 @@ async function submitLead(form: HTMLFormElement) {
     errors.push("יש להזין שם מלא");
     if (nameField) markInvalid(nameField, true);
   } else if (nameField) markInvalid(nameField, false);
+  const phoneDigits = (payload.phone || "").replace(/\D/g, "");
   if (!payload.phone) {
     errors.push("יש להזין מספר טלפון");
     if (phoneField) markInvalid(phoneField, true);
-  } else if (phoneField) markInvalid(phoneField, false);
+  } else if (phoneDigits.length !== 10) {
+    errors.push("מספר הטלפון חייב להכיל בדיוק 10 ספרות");
+    if (phoneField) markInvalid(phoneField, true);
+  } else {
+    payload.phone = phoneDigits;
+    if (phoneField) markInvalid(phoneField, false);
+  }
   if (acceptanceRequired && !acceptanceChecked) {
     errors.push("יש לאשר את תנאי השימוש");
     if (acceptanceEl) markInvalid(acceptanceEl, true);
