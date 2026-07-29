@@ -322,6 +322,8 @@ function hydrateGalleries(root: ParentNode) {
     if (!url) return;
     // Normalize absolute rrshamaut URLs to local paths.
     url = url.replace(/^https?:\/\/(?:www\.)?rrshamaut\.co\.il/i, "");
+    // Normalize relative "../wp-content/..." → "/wp-content/...".
+    url = url.replace(/^(?:\.\.\/)+wp-content\//, "/wp-content/");
     img.style.backgroundImage = `url("${url}")`;
     if (!img.style.backgroundSize) img.style.backgroundSize = "cover";
     if (!img.style.backgroundPosition) img.style.backgroundPosition = "center";
