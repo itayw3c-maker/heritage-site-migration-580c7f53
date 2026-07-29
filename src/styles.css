@@ -1,8 +1,6 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-@import "./styles/original.css";
-@import "./styles/rocket-pairs.css";
 @import "./styles/admin.css";
 
 @custom-variant dark (&:is(.dark *));

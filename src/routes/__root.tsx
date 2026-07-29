@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import criticalCss from "../generated/critical.css?raw";
 
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -250,6 +251,19 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="he-IL" dir="rtl">
       <head>
         <HeadContent />
+        {/* Critical CSS inline — above-the-fold Elementor styles for FOUC-free first paint. */}
+        <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
+        {/* Heavy Elementor CSS — non-blocking preload+swap. Served as a static
+            asset from /public so TanStack does not auto-inject a blocking <link>. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){var l=document.createElement('link');l.rel='preload';l.as='style';l.href='/assets/elementor-heavy.css';l.onload=function(){this.onload=null;this.rel='stylesheet';};document.head.appendChild(l);})();",
+          }}
+        />
+        <noscript>
+          <link rel="stylesheet" href="/assets/elementor-heavy.css" />
+        </noscript>
         {/* Google Fonts — non-blocking. Preload as style, then swap rel to
             stylesheet on load. display=swap in the URL guarantees no FOIT.
             <noscript> keeps it working with JS disabled. */}
