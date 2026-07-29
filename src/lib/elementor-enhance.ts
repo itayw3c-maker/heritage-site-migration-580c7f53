@@ -666,6 +666,12 @@ async function submitLead(form: HTMLFormElement) {
     const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase.from("leads").insert(payload);
     if (error) throw error;
+    try {
+      const { notifyLead } = await import("@/lib/leads.functions");
+      void notifyLead({ data: payload });
+    } catch (e) {
+      console.warn("lead email notify failed", e);
+    }
     window.location.href = "/thank-you/";
   } catch (err) {
     console.error("lead submit failed", err);
