@@ -1,0 +1,18 @@
+/* Hand-picked critical rules that penthouse's headless matcher misses.
+   These use modern @media range syntax that jsdom mis-evaluates. */
+@media (max-width: 1024px){
+  .elementor-nav-menu--dropdown-tablet .elementor-nav-menu--main{display:none}
+}
+@media (min-width: 1025px){
+  .elementor-nav-menu--dropdown-tablet .elementor-menu-toggle,
+  .elementor-nav-menu--dropdown-tablet .elementor-nav-menu--dropdown{display:none}
+}
+@media (min-width: 992px){
+  .site-header.menu-dropdown-tablet:not(.menu-layout-dropdown) .site-navigation-toggle-holder{display:none!important}
+}
+@media (max-width: 992px){
+  .site-header.menu-dropdown-tablet:not(.menu-layout-dropdown) .site-navigation{display:none!important}
+}
+/* Hide the raw menu list when nav CSS isn't ready */
+.elementor-nav-menu{list-style:none;margin:0;padding:0}
+.elementor-nav-menu li{list-style:none}

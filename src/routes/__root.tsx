@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import criticalCss from "@/generated/critical.css?inline";
 
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -119,10 +120,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5ba5d480-540a-4f8e-bfed-b9e8d2e477e5/id-preview-20c9329e--84e35538-730b-4b9b-bb23-6c04421a2835.lovable.app-1785073621529.png" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
       { rel: "icon", href: "/favicon.ico", sizes: "any" },
       { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png" },
       { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
@@ -253,6 +250,21 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="he-IL" dir="rtl">
       <head>
         <HeadContent />
+        {/* Critical CSS inlined — covers above-the-fold so full stylesheet
+            can load non-blocking without FOUC. */}
+        <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
+        {/* Full stylesheet — preload + swap so it doesn't block render. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){var l=document.createElement('link');l.rel='preload';l.as='style';l.href=" +
+              JSON.stringify(appCss) +
+              ";l.onload=function(){this.onload=null;this.rel='stylesheet';};document.head.appendChild(l);})();",
+          }}
+        />
+        <noscript>
+          <link rel="stylesheet" href={appCss} />
+        </noscript>
         {/* Google Fonts — non-blocking. Preload as style, then swap rel to
             stylesheet on load. display=swap in the URL guarantees no FOIT.
             <noscript> keeps it working with JS disabled. */}
