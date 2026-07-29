@@ -289,6 +289,48 @@ export function enhanceElementor(root: ParentNode = document) {
   setupAccordions(root);
   enhancePhoneInputs(root);
   hydrateGalleries(root);
+  setupNestedTabs(root);
+}
+
+function setupNestedTabs(root: ParentNode) {
+  const containers = root.querySelectorAll<HTMLElement>(".e-n-tabs");
+  containers.forEach((tabs) => {
+    const marked = tabs as HTMLElement & { _nestedTabsWired?: boolean };
+    if (marked._nestedTabsWired) return;
+    marked._nestedTabsWired = true;
+
+    const titles = Array.from(tabs.querySelectorAll<HTMLElement>(".e-n-tab-title"));
+    const panels = Array.from(tabs.querySelectorAll<HTMLElement>(".e-n-tabs-content > [role='tabpanel'], .e-n-tabs-content > .e-con"));
+    if (!titles.length || !panels.length) return;
+
+    const activate = (idx: number) => {
+      titles.forEach((t, i) => {
+        const on = i === idx;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        t.setAttribute("tabindex", on ? "0" : "-1");
+        t.classList.toggle("e-active", on);
+      });
+      const activeId = titles[idx]?.getAttribute("aria-controls");
+      panels.forEach((p) => {
+        const on = p.id === activeId;
+        p.classList.toggle("e-active", on);
+        p.style.display = on ? "" : "none";
+      });
+      // Re-hydrate galleries inside the now-visible panel (backgrounds may need computed style).
+      hydrateGalleries(tabs);
+    };
+
+    let initial = titles.findIndex((t) => t.getAttribute("aria-selected") === "true");
+    if (initial < 0) initial = 0;
+    activate(initial);
+
+    titles.forEach((t, i) => {
+      t.addEventListener("click", (e) => {
+        e.preventDefault();
+        activate(i);
+      });
+    });
+  });
 }
 
 function hydrateGalleries(root: ParentNode) {
