@@ -732,6 +732,36 @@ body.page-id-624 .elementor-element-6173dd1 > .elementor-container {
   height: auto !important;
   display: block;
 }
+
+/* Elementor gallery — provide baseline layout so hydrated background-images
+   actually have a visible tile. The site-wide CSS strip removed the
+   Elementor Pro gallery rules. */
+.elementor-gallery__container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.elementor-gallery-item,
+.e-gallery-item {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+}
+.elementor-gallery-item .e-gallery-image,
+.elementor-gallery-item .elementor-gallery-item__image {
+  display: block;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.elementor-gallery-item__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: background-color 0.3s ease;
+}
 #side .sidebar-related-box .elementor-post__title a,
 .elementor-location-archive .sidebar-related-box .elementor-post__title a {
   color: var(--e-global-color-beaabc7, #056fc4);
