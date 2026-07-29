@@ -80,7 +80,9 @@ export const Route = createFileRoute("/api/public/google-reviews")({
       GET: async () => {
         const apiKey = process.env.GOOGLE_PLACES_API_KEY;
         if (!apiKey) {
-          return json({ error: "GOOGLE_PLACES_API_KEY not configured" }, 503);
+          // No key configured — return empty payload so the client falls back
+          // to static reviews without triggering a runtime error.
+          return json({ rating: 5, total: 0, reviews: [], disabled: true });
         }
         const now = Date.now();
         if (cache && now - cache.at < CACHE_TTL_MS) {
@@ -92,10 +94,7 @@ export const Route = createFileRoute("/api/public/google-reviews")({
           return json({ ...data, cached: false });
         } catch (err) {
           if (cache) return json({ ...cache.data, cached: true, stale: true });
-          return json(
-            { error: (err as Error).message || "Failed to fetch reviews" },
-            502,
-          );
+          return json({ rating: 5, total: 0, reviews: [], error: (err as Error).message });
         }
       },
     },
