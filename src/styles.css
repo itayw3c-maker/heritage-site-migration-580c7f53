@@ -951,3 +951,18 @@ header.elementor-location-header {
     --width: 23%;
   }
 }
+
+/* Eliav's portrait is 1706×2560 (tall). The circular avatar mask uses
+   object-fit:cover, which was cropping mid-body. Anchor to the top so his
+   face lands inside the circle like the other team members. Scoped to the
+   Eliav card only — the other portraits are unchanged. */
+.elementor-57 .team-card-eliav .elementor-widget-image img {
+  object-position: center top;
+}
+
+/* Ensure Eliav's card matches the other team cards in height and inner
+   alignment (stretch to row height, image block anchored top, text block
+   flexes to fill). Scoped so it can't leak into other rows. */
+.elementor-57 .elementor-element-aef99dc > .e-con-inner > .team-card-eliav {
+  align-self: stretch;
+}
