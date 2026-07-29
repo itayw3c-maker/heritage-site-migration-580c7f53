@@ -952,11 +952,11 @@ header.elementor-location-header {
     padding-right: 10px !important;
   }
   .elementor-57 .elementor-element-aef99dc > .e-con-inner {
-    gap: 6px !important;
+    gap: 4px !important;
     justify-content: center !important;
   }
   .elementor-57 .elementor-element.elementor-element-aef99dc > .e-con-inner > .e-con.e-child {
-    --width: 24.5%;
+    --width: 24.75%;
   }
 }
 
@@ -966,7 +966,7 @@ header.elementor-location-header {
 .elementor-57 .team-card-eliav .elementor-widget-image img {
   aspect-ratio: 1 / 1;
   object-fit: cover;
-  object-position: 50% 20%;
+  object-position: 50% 15%;
 }
 
 /* Ensure Eliav's card matches the other team cards in height and inner
@@ -975,6 +975,7 @@ header.elementor-location-header {
 .elementor-57 .elementor-element-aef99dc > .e-con-inner > .team-card-eliav {
   align-self: stretch;
 }
+
 
 
 
