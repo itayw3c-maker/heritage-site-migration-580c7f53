@@ -1094,7 +1094,7 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
    סקשן "צוות החברה" בדף הבית — קישור "עוד" כפתור מלא
    בסגנון "לפרטים ←" (זהב, מעוגל). ממוסגר לסקשן aef99dc בלבד.
    ============================================================ */
-.elementor-57 .elementor-element.elementor-element-aef99dc .elementor-widget-text-editor .elementor-widget-container > p:last-child > a {
+.elementor-57 .elementor-element.elementor-element-aef99dc .elementor-widget-text-editor .elementor-widget-container p > a {
   display: inline-block;
   background-color: #cba436;
   color: #fff !important;
@@ -1109,8 +1109,8 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
   margin-top: 8px;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
-.elementor-57 .elementor-element.elementor-element-aef99dc .elementor-widget-text-editor .elementor-widget-container > p:last-child > a:hover,
-.elementor-57 .elementor-element.elementor-element-aef99dc .elementor-widget-text-editor .elementor-widget-container > p:last-child > a:focus-visible {
+.elementor-57 .elementor-element.elementor-element-aef99dc .elementor-widget-text-editor .elementor-widget-container p > a:hover,
+.elementor-57 .elementor-element.elementor-element-aef99dc .elementor-widget-text-editor .elementor-widget-container p > a:focus-visible {
   background-color: transparent;
   color: #cba436 !important;
 }
