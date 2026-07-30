@@ -11,7 +11,6 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import criticalCss from "../generated/critical.css?raw";
 
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -125,6 +124,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
       { rel: "icon", type: "image/png", sizes: "192x192", href: "/wp-content/uploads/2024/04/Vector-2.png" },
       { rel: "apple-touch-icon", href: "/wp-content/uploads/2024/04/Vector-2.png" },
+      // Heavy Elementor CSS is loaded as a normal blocking stylesheet: the
+      // previous preload+swap approach reflowed the whole page after first
+      // paint and produced CLS ≈ 1.0 on mobile.
+      { rel: "stylesheet", href: "/assets/elementor-heavy.css" },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       {
@@ -251,33 +254,9 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="he-IL" dir="rtl">
       <head>
         <HeadContent />
-        {/* Critical CSS inline — above-the-fold Elementor styles for FOUC-free first paint. */}
-        <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
-        {/* Heavy Elementor CSS — non-blocking preload+swap. Served as a static
-            asset from /public so TanStack does not auto-inject a blocking <link>. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "(function(){var l=document.createElement('link');l.rel='preload';l.as='style';l.href='/assets/elementor-heavy.css';l.onload=function(){this.onload=null;this.rel='stylesheet';};document.head.appendChild(l);})();",
-          }}
-        />
-        <noscript>
-          <link rel="stylesheet" href="/assets/elementor-heavy.css" />
-        </noscript>
-        {/* Google Fonts — non-blocking. Preload as style, then swap rel to
-            stylesheet on load. display=swap in the URL guarantees no FOIT.
-            <noscript> keeps it working with JS disabled. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "(function(){var l=document.createElement('link');l.rel='preload';l.as='style';l.href=" +
-              JSON.stringify(googleFontsHref) +
-              ";l.onload=function(){this.onload=null;this.rel='stylesheet';};document.head.appendChild(l);})();",
-          }}
-        />
-        <noscript>
-          <link rel="stylesheet" href={googleFontsHref} />
-        </noscript>
+        {/* Google Fonts — blocking stylesheet (display=swap). Loading it
+            asynchronously caused a late font swap that reflowed the page. */}
+        <link rel="stylesheet" href={googleFontsHref} />
         <script dangerouslySetInnerHTML={{ __html: fixdigitalHead }} />
         {/* FixDigital integrate.js — MUST load in standard order
             (params → cookie IIFE → integrate.js), synchronously, so that
