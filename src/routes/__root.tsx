@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import fontFaceCss from "../generated/fonts-face.css?raw";
 
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -125,10 +126,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", type: "image/png", sizes: "192x192", href: "/wp-content/uploads/2024/04/Vector-2.png" },
       { rel: "apple-touch-icon", href: "/wp-content/uploads/2024/04/Vector-2.png" },
       { rel: "stylesheet", href: appCss },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
       {
-        rel: "preconnect",
-        href: "https://fonts.gstatic.com",
+        rel: "preload",
+        as: "font",
+        type: "font/woff2",
+        href: "/fonts/assistant-hebrew.woff2",
+        crossOrigin: "anonymous",
+      },
+      {
+        rel: "preload",
+        as: "font",
+        type: "font/woff2",
+        href: "/fonts/assistant-latin.woff2",
         crossOrigin: "anonymous",
       },
       { rel: "preconnect", href: "https://lpc.fixdigital.co.il", crossOrigin: "anonymous" },
@@ -255,8 +264,6 @@ function RootShell({ children }: { children: ReactNode }) {
     "l.setAttribute('data-heavy-css','1');document.head.appendChild(l);}" +
     "if(document.readyState==='complete'){('requestIdleCallback'in window)?requestIdleCallback(add,{timeout:2000}):setTimeout(add,200);}" +
     "else{window.addEventListener('load',function(){('requestIdleCallback'in window)?requestIdleCallback(add,{timeout:2000}):setTimeout(add,200);});}})();";
-  const googleFontsHref =
-    "https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Roboto:wght@100..900&family=Roboto+Slab:wght@100..900&display=swap";
   const fixdigitalHead =
     "var fixdigital_params = { defaultphone:'', phoneSelector:'.fix_smartphone, .fix_smartphone1 , .fix_smartphone2', phoneSelectorHref:'.fix_smartphone_href, .fix_smartphone_href1 , .fix_smartphone_href2', api_type: 8, api_clientkey: '25634', api_projectid: '14114', api_projecttypeid: '4', sync:true, forms:[], cookie_expired:43200 };\n" +
     "!function(e){if(e.fixdigital=e.fixdigital||{},!e.fixdigital.cookie){e.fixdigital.cookie=e.fixdigital.cookie||{};var i,r=e.fixdigital.cookie;r.cookie_query=\"fixdigital.queryparams\",r.cookie_hash=\"fixdigital.hashparams\",r.cookie_referer=\"fixdigital.referer\",r.cookie_original_referer=\"fixdigital.origin_referer\",r.cookie_expired=10,r.cookie_original_expired=e.fixdigital_params.cookie_expired,r.crossdomain=(i=function(e){var i=e.split(\".\");\"www\"!==i[0]&&\"m\"!==i[0]&&\"mobile\"!==i[0]||i.shift();return i.join(\".\")}(location.hostname),\".\"+location.hostname.substring(location.hostname.indexOf(i))),r.getCookie=function(e){var i=document.cookie.match(new RegExp(\"(?:^|; )\"+e.replace(/([\\.$?*|{}\\(\\)\\[\\]\\\\\\/\\+^])/g,\"\\\\$1\")+\"=([^;]*)\"));return i?decodeURIComponent(i[1]):void 0},r.deleteCookie=function(e){for(var i=r.crossdomain.split(\".\");i&&0<i.length;){var o=i.join(\".\");r.setCookie(e,\"\",{expires:-1,domain:o,path:\"/\"}),i.shift()}},r.setCookie=function(e,i,o){var r=(o=o||{}).expires;if(\"number\"==typeof r&&r){var a=new Date;a.setTime(a.getTime()+1e3*r),r=o.expires=a}r&&r.toUTCString&&(o.expires=r.toUTCString());var t=e+\"=\"+(i=encodeURIComponent(i));for(var n in o){t+=\"; \"+n;var c=o[n];!0!==c&&(t+=\"=\"+c)}document.cookie=t},void 0===r.getCookie(r.cookie_referer)&&(r.setCookie(r.cookie_query,location.search,{expires:r.cookie_expired,domain:r.crossdomain}),r.setCookie(r.cookie_hash,location.hash,{expires:r.cookie_expired,domain:r.crossdomain}),r.setCookie(r.cookie_referer,document.referrer,{expires:r.cookie_expired,domain:r.crossdomain}))}}(window);";
@@ -272,9 +279,10 @@ function RootShell({ children }: { children: ReactNode }) {
         ) : (
           <link rel="stylesheet" href="/assets/elementor-heavy.css" data-heavy-css="1" />
         )}
-        {/* Google Fonts — blocking stylesheet (display=swap). Loading it
-            asynchronously caused a late font swap that reflowed the page. */}
-        <link rel="stylesheet" href={googleFontsHref} />
+        {/* Self-hosted fonts: inline @font-face (same-origin woff2 under
+            /fonts/) replaces the blocking fonts.googleapis.com stylesheet,
+            removing a third-party RTT from the critical path. */}
+        <style dangerouslySetInnerHTML={{ __html: fontFaceCss }} />
         <script dangerouslySetInnerHTML={{ __html: fixdigitalHead }} />
         {/* FixDigital integrate.js — MUST load in standard order
             (params → cookie IIFE → integrate.js), synchronously, so that
