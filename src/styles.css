@@ -1076,8 +1076,8 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
   display: flex;
   flex-direction: column;
 }
-.elementor-4114 .elementor-element.elementor-element-ce11e28 .elementor-element-d2e8618 {
-  margin-top: auto;
+.elementor-4114 .elementor-element.elementor-element-ce11e28 > .e-con-inner > .elementor-element-d2e8618 {
+  margin-top: auto !important;
 }
 
 .elementor-57 .elementor-element.elementor-element-4299169 .swiper-pagination,
