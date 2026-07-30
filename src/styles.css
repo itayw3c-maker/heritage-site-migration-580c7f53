@@ -1071,7 +1071,12 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
 .elementor-4114 .elementor-element.elementor-element-ce11e28 {
   height: 100%;
 }
-.elementor-4114 .elementor-element.elementor-element-ce11e28 > .elementor-element-d2e8618 {
+.elementor-4114 .elementor-element.elementor-element-ce11e28 > .e-con-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.elementor-4114 .elementor-element.elementor-element-ce11e28 .elementor-element-d2e8618 {
   margin-top: auto;
 }
 
