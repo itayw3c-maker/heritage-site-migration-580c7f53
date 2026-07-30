@@ -142,9 +142,13 @@ function hydrateLazyMedia(root: ParentNode) {
 function cleanupBrokenImages(root: ParentNode) {
   root
     .querySelectorAll(
-      "#super-picture-image-viewer, #super-picture-image-loading, #super-picture-image-min-box, .super-picture-image-wrapper, img.super-picture-img-loading, img.super-picture-img-error",
+      "#super-picture-image-viewer, #super-picture-image-loading, #super-picture-image-min-box, img.super-picture-img-loading, img.super-picture-img-error",
     )
     .forEach((el) => el.remove());
+  // Wrappers are removed only when they hold no real image.
+  root.querySelectorAll(".super-picture-image-wrapper").forEach((el) => {
+    if (!el.querySelector("img[src]:not([src=''])")) el.remove();
+  });
   root.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
     const src = img.getAttribute("src") ?? "";
     if ((src === "" || src === "about:blank") && !img.getAttribute("data-lazy-src")) {
