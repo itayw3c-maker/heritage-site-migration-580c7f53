@@ -1176,3 +1176,13 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
 .elementor-widget-image-carousel .swiper .e-injected-swiper-button.elementor-swiper-button-prev { left: 6px; }
 .elementor-widget-image-carousel .swiper .e-injected-swiper-button.elementor-swiper-button-next { right: 6px; }
 .elementor-widget-image-carousel .swiper .e-injected-swiper-button.swiper-button-disabled { opacity: 0.35; }
+
+/* CLS: counter widgets animate through numbers of different glyph widths;
+   tabular figures keep the box width stable while counting. */
+.elementor-counter-number-wrapper,
+.elementor-counter-number,
+.elementor-counter-number-prefix,
+.elementor-counter-number-suffix {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
