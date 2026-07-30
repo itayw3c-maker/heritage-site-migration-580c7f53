@@ -380,7 +380,7 @@ export function enhanceElementor(root: ParentNode = document) {
   revealAnimations(root);
   addSubmenuArrows(root);
   applyStickies(root);
-  mountTrustindex();
+  mountTrustindexLazy();
   mountRpiBadge();
   decodeCfEmails(root);
   setupLeadForms(document);
@@ -724,6 +724,56 @@ function applyStickies(root: ParentNode) {
     }
     (el as HTMLElement & { _stickyApplied?: boolean })._stickyApplied = true;
   });
+}
+
+// Third-party reviews widget: keep it off the initial critical path. It mounts
+// when the reviews section approaches the viewport, or on idle after load.
+function mountTrustindexLazy() {
+  const tpl = document.getElementById("trustindex-google-widget-html");
+  if (!tpl) return;
+  const marked = tpl as HTMLElement & { _tiLazyWired?: boolean };
+  if (marked._tiLazyWired) return;
+  marked._tiLazyWired = true;
+
+  // The template itself lives inside a display:none container, which never
+  // intersects — observe the visible carrier <div> instead.
+  let target =
+    document.querySelector<HTMLElement>('div[data-src*="loader.js"]') ?? null;
+  if (!target) {
+    let p = tpl.parentElement;
+    while (p && getComputedStyle(p).display === "none") p = p.parentElement;
+    target = (p ?? document.body) as HTMLElement;
+  }
+  let done = false;
+  const fire = () => {
+    if (done) return;
+    done = true;
+    mountTrustindex();
+  };
+
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          io.disconnect();
+          fire();
+        }
+      },
+      { rootMargin: "600px 0px" },
+    );
+    io.observe(target);
+    return;
+  }
+
+  const idle = () => {
+    const w = window as unknown as Window & {
+      requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void;
+    };
+    if (w.requestIdleCallback) w.requestIdleCallback(fire, { timeout: 5000 });
+    else w.setTimeout(fire, 3000);
+  };
+  if (document.readyState === "complete") idle();
+  else (window as unknown as Window).addEventListener("load", idle, { once: true });
 }
 
 function mountTrustindex() {
