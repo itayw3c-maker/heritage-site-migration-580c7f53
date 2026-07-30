@@ -124,10 +124,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
       { rel: "icon", type: "image/png", sizes: "192x192", href: "/wp-content/uploads/2024/04/Vector-2.png" },
       { rel: "apple-touch-icon", href: "/wp-content/uploads/2024/04/Vector-2.png" },
-      // Heavy Elementor CSS is loaded as a normal blocking stylesheet: the
-      // previous preload+swap approach reflowed the whole page after first
-      // paint and produced CLS ≈ 1.0 on mobile.
-      { rel: "stylesheet", href: "/assets/elementor-heavy.css" },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       {
@@ -245,6 +241,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  // Per-page CSS split: the home page ships only the rules it actually renders
+  // (public/assets/home-critical.css, built by scripts/home-critical.mjs) as the
+  // blocking stylesheet, and pulls the full Elementor bundle asynchronously for
+  // later client-side navigations. Every other route keeps the full bundle
+  // blocking — swapping it in after paint is what caused CLS ≈ 1.0 before.
+  const shellPathname = useRouterState({ select: (s) => s.location.pathname });
+  const isHome = false; void shellPathname;
+  const deferHeavyCss =
+    "(function(){var h='/assets/elementor-heavy.css';" +
+    "function add(){if(document.querySelector('link[data-heavy-css]'))return;" +
+    "var l=document.createElement('link');l.rel='stylesheet';l.href=h;" +
+    "l.setAttribute('data-heavy-css','1');document.head.appendChild(l);}" +
+    "if(document.readyState==='complete'){('requestIdleCallback'in window)?requestIdleCallback(add,{timeout:2000}):setTimeout(add,200);}" +
+    "else{window.addEventListener('load',function(){('requestIdleCallback'in window)?requestIdleCallback(add,{timeout:2000}):setTimeout(add,200);});}})();";
   const googleFontsHref =
     "https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Roboto:wght@100..900&family=Roboto+Slab:wght@100..900&display=swap";
   const fixdigitalHead =
@@ -254,6 +264,14 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="he-IL" dir="rtl">
       <head>
         <HeadContent />
+        {isHome ? (
+          <>
+            <link rel="stylesheet" href="/assets/home-critical.css" />
+            <script dangerouslySetInnerHTML={{ __html: deferHeavyCss }} />
+          </>
+        ) : (
+          <link rel="stylesheet" href="/assets/elementor-heavy.css" data-heavy-css="1" />
+        )}
         {/* Google Fonts — blocking stylesheet (display=swap). Loading it
             asynchronously caused a late font swap that reflowed the page. */}
         <link rel="stylesheet" href={googleFontsHref} />
