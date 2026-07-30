@@ -634,6 +634,28 @@ body.page-id-624 .elementor-element-6173dd1 > .elementor-container {
   bottom: auto !important;
   text-align: center;
 }
+/* Elementor ממקם את הנקודות ב-absolute עם translate מחושב
+   (‎.elementor-widget-loop-carousel .swiper-pagination-bullets{transform:translate(...)}).
+   מרגע שאנחנו מכריחים position:static, ה-translate הזה מסיט את השורה
+   בחצי מרוחב המיכל (570px ב-1280). מנטרלים אותו וממרכזים בפועל. */
+.elementor-widget-image-carousel .swiper-pagination,
+.elementor-widget-loop-carousel .swiper-pagination,
+.elementor-widget-testimonial-carousel .swiper-pagination,
+.elementor-widget-reviews .swiper-pagination,
+.elementor-widget-image-carousel .swiper-pagination-bullets,
+.elementor-widget-loop-carousel .swiper-pagination-bullets,
+.elementor-widget-testimonial-carousel .swiper-pagination-bullets,
+.elementor-widget-reviews .swiper-pagination-bullets {
+  transform: none !important;
+  inset-inline-start: auto !important;
+  left: auto !important;
+  right: auto !important;
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px;
+}
 
 /* 5. Archive legal disclaimer → right-aligned RTL */
 .elementor-element-63eb5de,
