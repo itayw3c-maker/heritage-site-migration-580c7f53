@@ -247,7 +247,7 @@ function RootShell({ children }: { children: ReactNode }) {
   // later client-side navigations. Every other route keeps the full bundle
   // blocking — swapping it in after paint is what caused CLS ≈ 1.0 before.
   const shellPathname = useRouterState({ select: (s) => s.location.pathname });
-  const isHome = false; void shellPathname;
+  const isHome = shellPathname === "/" || shellPathname === "";
   const deferHeavyCss =
     "(function(){var h='/assets/elementor-heavy.css';" +
     "function add(){if(document.querySelector('link[data-heavy-css]'))return;" +
