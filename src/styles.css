@@ -1062,3 +1062,30 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
 @media (max-width: 700px) {
   body.page-id-3268 .elementor-gallery__container { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ============================================================
+   קרוסלת "ההצלחות שלנו" — תבנית loop 4114
+   1) כפתור "לפרטים" נדבק לתחתית הכרטיס (גובה אחיד)
+   2) נקודות ה-pagination ממורכזות
+   ============================================================ */
+.elementor-4114 .elementor-element.elementor-element-ce11e28 {
+  height: 100%;
+}
+.elementor-4114 .elementor-element.elementor-element-ce11e28 > .e-con-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.elementor-4114 .elementor-element.elementor-element-ce11e28 > .e-con-inner > .elementor-element-d2e8618 {
+  margin-top: auto !important;
+}
+
+.elementor-57 .elementor-element.elementor-element-4299169 .swiper-pagination,
+.elementor-57 .elementor-element.elementor-element-4299169 .elementor-pagination,
+.elementor-57 .elementor-element.elementor-element-4299169 .swiper-pagination-bullets {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+}
