@@ -1089,3 +1089,28 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
   width: 100%;
   text-align: center;
 }
+
+/* ============================================================
+   סקשן "צוות החברה" בדף הבית — קישור "עוד" כפתור מלא
+   בסגנון "לפרטים ←" (זהב, מעוגל). ממוסגר לסקשן aef99dc בלבד.
+   ============================================================ */
+.elementor-57 .elementor-element.elementor-element-aef99dc .elementor-widget-text-editor .elementor-widget-container > p:last-child > a {
+  display: inline-block;
+  background-color: #cba436;
+  color: #fff !important;
+  font-family: "Assistant", Sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  text-decoration: none;
+  padding: 12px 24px;
+  border: 2px solid #cba436;
+  border-radius: 50px;
+  margin-top: 8px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.elementor-57 .elementor-element.elementor-element-aef99dc .elementor-widget-text-editor .elementor-widget-container > p:last-child > a:hover,
+.elementor-57 .elementor-element.elementor-element-aef99dc .elementor-widget-text-editor .elementor-widget-container > p:last-child > a:focus-visible {
+  background-color: transparent;
+  color: #cba436 !important;
+}
