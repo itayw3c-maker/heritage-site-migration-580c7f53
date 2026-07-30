@@ -1114,3 +1114,43 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
   background-color: transparent;
   color: #cba436 !important;
 }
+
+/* "לכל הסרטונים" button under the homepage videos carousel — matches "לכל ההצלחות" */
+.elementor-element-videos-all > .elementor-widget-container { margin: 20px 0 0 0; }
+.elementor-element-videos-all .elementor-button {
+  background-color: var(--e-global-color-33ec037);
+  font-family: "Assistant", Sans-serif;
+  font-weight: 500;
+  fill: #ffffff;
+  color: #ffffff;
+  border-radius: 100px 100px 100px 100px;
+}
+
+/* Injected navigation arrows for image carousels that ship without any
+   scroll affordance (e.g. the damage-category thumbnail carousels). */
+.elementor-widget-image-carousel .swiper .e-injected-swiper-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  color: #056fc4;
+  cursor: pointer;
+  opacity: 0.9;
+}
+.elementor-widget-image-carousel .swiper .e-injected-swiper-button svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+.elementor-widget-image-carousel .swiper .e-injected-swiper-button:hover { opacity: 1; }
+.elementor-widget-image-carousel .swiper .e-injected-swiper-button.elementor-swiper-button-prev { left: 6px; }
+.elementor-widget-image-carousel .swiper .e-injected-swiper-button.elementor-swiper-button-next { right: 6px; }
+.elementor-widget-image-carousel .swiper .e-injected-swiper-button.swiper-button-disabled { opacity: 0.35; }
