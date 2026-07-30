@@ -132,9 +132,32 @@ function hydrateLazyMedia(root: ParentNode) {
     el.removeAttribute("data-lazy-src");
     el.removeAttribute("data-lazy-srcset");
     el.removeAttribute("data-lazy-sizes");
-    if (el.tagName === "IMG") el.setAttribute("loading", "eager");
   });
   cleanupBrokenImages(root);
+  applyLoadingPriority(root);
+}
+
+// LCP hero — preloaded in the route head; must stay eager + high priority.
+const LCP_IMAGE_HINT = "רפאל-שמאות-רכוש.webp";
+
+// Only images in (or just below) the first viewport load eagerly; everything
+// else falls back to native lazy loading so the initial payload stays small.
+function applyLoadingPriority(root: ParentNode) {
+  const apply = () => {
+    const threshold = (typeof window !== "undefined" ? window.innerHeight : 800) * 1.5;
+    root.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
+      const src = img.getAttribute("src") ?? "";
+      if (src.includes(LCP_IMAGE_HINT) || decodeURIComponent(src).includes(LCP_IMAGE_HINT)) {
+        img.setAttribute("loading", "eager");
+        img.setAttribute("fetchpriority", "high");
+        return;
+      }
+      const top = img.getBoundingClientRect().top;
+      img.setAttribute("loading", top < threshold ? "eager" : "lazy");
+    });
+  };
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(apply);
+  else apply();
 }
 
 // Remove leftover WP "Super Picture" lightbox placeholders (no runtime here) and
