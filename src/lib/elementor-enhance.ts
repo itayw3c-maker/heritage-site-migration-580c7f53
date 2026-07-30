@@ -122,6 +122,38 @@ function hydrateLazyMedia(root: ParentNode) {
     if (cur === "" || cur === "about:blank" || cur.startsWith("data:")) {
       el.setAttribute("src", real);
     }
+    const srcset = el.getAttribute("data-lazy-srcset");
+    if (srcset) {
+      const curSet = el.getAttribute("srcset") ?? "";
+      if (curSet === "" || curSet.startsWith("data:")) el.setAttribute("srcset", srcset);
+    }
+    const sizes = el.getAttribute("data-lazy-sizes");
+    if (sizes && !el.getAttribute("sizes")) el.setAttribute("sizes", sizes);
+    el.removeAttribute("data-lazy-src");
+    el.removeAttribute("data-lazy-srcset");
+    el.removeAttribute("data-lazy-sizes");
+    if (el.tagName === "IMG") el.setAttribute("loading", "eager");
+  });
+  cleanupBrokenImages(root);
+}
+
+// Remove leftover WP "Super Picture" lightbox placeholders (no runtime here) and
+// any <img> with no usable source, which otherwise renders as a broken icon.
+function cleanupBrokenImages(root: ParentNode) {
+  root
+    .querySelectorAll(
+      "#super-picture-image-viewer, #super-picture-image-loading, #super-picture-image-min-box, img.super-picture-img-loading, img.super-picture-img-error",
+    )
+    .forEach((el) => el.remove());
+  // Wrappers are removed only when they hold no real image.
+  root.querySelectorAll(".super-picture-image-wrapper").forEach((el) => {
+    if (!el.querySelector("img[src]:not([src=''])")) el.remove();
+  });
+  root.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
+    const src = img.getAttribute("src") ?? "";
+    if ((src === "" || src === "about:blank") && !img.getAttribute("data-lazy-src")) {
+      img.remove();
+    }
   });
 }
 
