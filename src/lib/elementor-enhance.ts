@@ -61,8 +61,25 @@ function initSwipers(root: ParentNode) {
     if (wantDots) modules.push(Pagination);
     if (s.autoplay === "yes") modules.push(Autoplay);
 
-    const prevBtn = widget.querySelector<HTMLElement>(".elementor-swiper-button-prev");
-    const nextBtn = widget.querySelector<HTMLElement>(".elementor-swiper-button-next");
+    let prevBtn = widget.querySelector<HTMLElement>(".elementor-swiper-button-prev");
+    let nextBtn = widget.querySelector<HTMLElement>(".elementor-swiper-button-next");
+
+    // Image carousels that are horizontally scrollable but ship without any
+    // affordance (no arrows, no dots) get injected arrows in the site's style,
+    // so it's clear there is more content to scroll.
+    const slideCount = swiperEl.querySelectorAll(".swiper-slide").length;
+    let forceArrows = false;
+    if (
+      !prevBtn &&
+      !nextBtn &&
+      slideCount > 1 &&
+      widget.classList.contains("elementor-widget-image-carousel")
+    ) {
+      const [p, n] = injectSwiperArrows(swiperEl);
+      prevBtn = p;
+      nextBtn = n;
+      forceArrows = true;
+    }
 
     let paginationEl = swiperEl.querySelector<HTMLElement>(".swiper-pagination");
     if (wantDots && !paginationEl) {
@@ -97,8 +114,9 @@ function initSwipers(root: ParentNode) {
       };
     }
 
-    if (wantArrows && prevBtn && nextBtn) {
+    if ((wantArrows || forceArrows) && prevBtn && nextBtn) {
       config.navigation = { prevEl: prevBtn, nextEl: nextBtn };
+      if (forceArrows && !modules.includes(Navigation)) modules.push(Navigation);
     }
     if (wantDots && paginationEl) {
       config.pagination = { el: paginationEl, clickable: true };
@@ -114,6 +132,32 @@ function initSwipers(root: ParentNode) {
 }
 
 function hydrateLazyMedia(root: ParentNode) {
+  return hydrateLazyMediaImpl(root);
+}
+
+const CHEVRON_LEFT =
+  '<svg aria-hidden="true" class="e-font-icon-svg e-eicon-chevron-left" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg"><path d="M646 125C629 125 613 133 604 142L308 442C296 454 292 471 292 487 292 504 296 521 308 533L604 854C617 867 629 875 646 875 663 875 679 871 692 858 704 846 713 829 713 812 713 796 708 779 692 767L438 487 692 225C700 217 708 204 708 187 708 171 704 154 692 142 675 129 663 125 646 125Z"></path></svg>';
+const CHEVRON_RIGHT =
+  '<svg aria-hidden="true" class="e-font-icon-svg e-eicon-chevron-right" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg"><path d="M696 533C708 521 713 504 713 487 713 471 708 454 696 446L400 146C388 133 375 125 354 125 338 125 325 129 313 142 300 154 292 171 292 187 292 204 296 221 308 233L563 492 304 771C292 783 288 800 288 817 288 833 296 850 308 863 321 871 338 875 354 875 371 875 388 867 400 854L696 533Z"></path></svg>';
+
+function injectSwiperArrows(swiperEl: HTMLElement): [HTMLElement, HTMLElement] {
+  const make = (dir: "prev" | "next") => {
+    const el = document.createElement("div");
+    el.className = `elementor-swiper-button elementor-swiper-button-${dir} e-injected-swiper-button`;
+    el.setAttribute("role", "button");
+    el.setAttribute("tabindex", "0");
+    el.setAttribute("aria-label", dir === "prev" ? "הקודם" : "הבא");
+    el.innerHTML = dir === "prev" ? CHEVRON_LEFT : CHEVRON_RIGHT;
+    return el;
+  };
+  const prev = make("prev");
+  const next = make("next");
+  swiperEl.appendChild(prev);
+  swiperEl.appendChild(next);
+  return [prev, next];
+}
+
+function hydrateLazyMediaImpl(root: ParentNode) {
   const els = root.querySelectorAll<HTMLElement>("iframe[data-lazy-src], img[data-lazy-src]");
   els.forEach((el) => {
     const real = el.getAttribute("data-lazy-src");
