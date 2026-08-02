@@ -801,8 +801,8 @@ body.page-id-624 .elementor-element-6173dd1 > .elementor-container {
   color: var(--e-global-color-beaabc7, #056fc4);
   font-family: "Assistant", Sans-serif;
   font-weight: 600;
-  font-size: 15px;
-  line-height: 1.35;
+  font-size: 17px;
+  line-height: 1.4;
   text-decoration: none;
 }
 #side .sidebar-related-box .elementor-post__read-more,
@@ -810,8 +810,14 @@ body.page-id-624 .elementor-element-6173dd1 > .elementor-container {
   color: var(--e-global-color-33ec037, #cba436);
   font-family: "Assistant", Sans-serif;
   font-weight: 500;
-  font-size: 13px;
+  font-size: 15px;
   text-decoration: none;
+}
+/* Related-posts sidebar excerpt: enlarge proportionally with title/read-more. */
+#side .sidebar-related-box .elementor-post__excerpt p,
+.elementor-location-archive .sidebar-related-box .elementor-post__excerpt p {
+  font-size: 16px;
+  line-height: 1.55;
 }
 
 /* Archive sidebar sticky: force wrap around existing sticky container */
