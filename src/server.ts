@@ -119,6 +119,33 @@ function withHtmlCacheHeaders(response: Response): Response {
 
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    // --- TEMPORARY DIAGNOSTIC: Cache API round-trip probe (safe, no behavior change) ---
+    let diag = "";
+    try {
+      const cachesGlobal = (globalThis as any).caches;
+      const def = cachesGlobal && cachesGlobal.default;
+      diag = "caches=" + typeof cachesGlobal + ";default=" + typeof def;
+      if (def && typeof def.put === "function" && typeof def.match === "function") {
+        const k = new Request("https://cache-probe.internal/__probe");
+        await def.put(k, new Response("ok", { headers: { "cache-control": "public, max-age=60" } }));
+        const got = await def.match(k);
+        diag += ";roundtrip=" + (got ? await got.text() : "miss");
+      } else {
+        diag += ";no-cache-api";
+      }
+    } catch (e) {
+      diag = "err:" + (e && (e as Error).message ? (e as Error).message : String(e));
+    }
+    const withDiag = (res: Response): Response => {
+      try {
+        const headers = new Headers(res.headers);
+        headers.set("x-cache-diag", diag);
+        return new Response(res.body, { status: res.status, headers });
+      } catch {
+        return res;
+      }
+    };
+
     const cacheable = isCacheableDocumentRequest(request);
     let cacheKey: Request | null = null;
     if (cacheable) {
@@ -138,6 +165,7 @@ export default {
           if (hit) {
             const headers = new Headers(hit.headers);
             headers.set("x-edge-cache", "HIT");
+            headers.set("x-cache-diag", diag);
             return new Response(hit.body, { status: hit.status, headers });
           }
         }
@@ -154,10 +182,10 @@ export default {
       normalized = await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
       console.error(error);
-      return new Response(renderErrorPage(), {
+      return withDiag(new Response(renderErrorPage(), {
         status: 500,
         headers: { "content-type": "text/html; charset=utf-8" },
-      });
+      }));
     }
 
     // 3) WRITE — best effort; any failure returns the untouched SSR response.
@@ -173,14 +201,15 @@ export default {
           headers.delete("pragma");
           headers.delete("expires");
           headers.set("x-edge-cache", "MISS");
+          headers.set("x-cache-diag", diag);
           return new Response(normalized.body, { status: normalized.status, headers });
         }
       } catch (error) {
         console.error("edge-cache write skipped", error);
-        return normalized;
+        return withDiag(normalized);
       }
     }
 
-    return normalized;
+    return withDiag(normalized);
   },
 };
