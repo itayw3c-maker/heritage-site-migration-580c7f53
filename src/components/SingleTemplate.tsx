@@ -5,6 +5,11 @@ import movieTpl from "@/generated/templates/movie.html?raw";
 import successTpl from "@/generated/templates/success.html?raw";
 import serviceTpl from "@/generated/templates/service.html?raw";
 import { enhanceElementor } from "@/lib/elementor-enhance";
+import {
+  buildRelated,
+  type IndexPostLite,
+  type RelatedHtml,
+} from "@/lib/related-posts";
 
 export type SingleType = "post" | "shorts" | "movie" | "success" | "service" | "static";
 
@@ -24,14 +29,6 @@ export interface SingleRecord {
   featured_image_url?: string;
 }
 
-interface IndexPostLite {
-  slug: string;
-  title: string;
-  date: string;
-  excerpt: string;
-  thumbnail?: string;
-  categories?: number[];
-}
 interface IndexBundleLite {
   posts: IndexPostLite[];
 }
@@ -50,53 +47,6 @@ function loadIndex(): Promise<IndexBundleLite | null> {
       .catch(() => null);
   }
   return indexPromise;
-}
-
-function escAttr(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-function pickRelated(posts: IndexPostLite[], currentSlug: string, limit: number): IndexPostLite[] {
-  const current = posts.find((p) => p.slug === currentSlug);
-  const cats = new Set(current?.categories ?? []);
-  const filtered = posts.filter(
-    (p) => p.slug !== currentSlug && (p.categories ?? []).some((c) => cats.has(c)),
-  );
-  return filtered.slice(0, limit);
-}
-
-function relatedArticleFull(p: IndexPostLite): string {
-  const href = `/${p.slug}/`;
-  const catCls = (p.categories ?? []).map((c) => `category-${c}`).join(" ");
-  const thumb = p.thumbnail
-    ? `<a class="elementor-post__thumbnail__link" href="${escAttr(href)}" tabindex="-1"><div class="elementor-post__thumbnail"><img src="${escAttr(p.thumbnail)}" alt="${escAttr(p.title)}" loading="lazy" /></div></a>`
-    : "";
-  return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry ${catCls}" role="listitem">
-${thumb}
-<div class="elementor-post__text">
-<div class="elementor-post__title">
-<a href="${escAttr(href)}">${p.title}</a>
-</div>
-<div class="elementor-post__excerpt">
-<p>${p.excerpt ?? ""}</p>
-</div>
-<div class="elementor-post__read-more-wrapper">
-<a aria-label="קרא עוד אודות ${escAttr(p.title)}" class="elementor-post__read-more" href="${escAttr(href)}" tabindex="-1">קראו עוד »</a>
-</div>
-</div>
-</article>`;
-}
-
-function relatedArticleTitleOnly(p: IndexPostLite): string {
-  const href = `/${p.slug}/`;
-  const catCls = (p.categories ?? []).map((c) => `category-${c}`).join(" ");
-  return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry ${catCls}" role="listitem">
-<div class="elementor-post__text">
-<div class="elementor-post__title">
-<a href="${escAttr(href)}">${p.title}</a>
-</div>
-</div>
-</article>`;
 }
 
 const TEMPLATES: Partial<Record<SingleType, string>> = {
