@@ -1,8 +1,31 @@
-import Swiper from "swiper";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
+// Swiper (JS + CSS) is loaded on demand: most pages have no carousel at all,
+// so keeping it out of the critical bundle removes ~150KB of parse/execute.
+type SwiperBundle = {
+  Swiper: typeof import("swiper").default;
+  Navigation: unknown;
+  Pagination: unknown;
+  Autoplay: unknown;
+};
+
+let swiperBundle: Promise<SwiperBundle> | null = null;
+
+function loadSwiper(): Promise<SwiperBundle> {
+  if (!swiperBundle) {
+    swiperBundle = Promise.all([
+      import("swiper"),
+      import("swiper/modules"),
+      import("swiper/css"),
+      import("swiper/css/navigation"),
+      import("swiper/css/pagination"),
+    ]).then(([core, mods]) => ({
+      Swiper: core.default,
+      Navigation: mods.Navigation,
+      Pagination: mods.Pagination,
+      Autoplay: mods.Autoplay,
+    }));
+  }
+  return swiperBundle;
+}
 
 function parseSettings(el: Element): Record<string, unknown> | null {
   const raw = (el as HTMLElement).getAttribute("data-settings");
@@ -33,6 +56,12 @@ function spacingOf(v: unknown): number | undefined {
 }
 
 function initSwipers(root: ParentNode) {
+  if (!root.querySelector(".swiper, .swiper-container")) return;
+  void loadSwiper().then((S) => initSwipersWith(root, S));
+}
+
+function initSwipersWith(root: ParentNode, S: SwiperBundle) {
+  const { Swiper, Navigation, Pagination, Autoplay } = S;
   const widgets = root.querySelectorAll<HTMLElement>(".elementor-widget[data-settings]");
   widgets.forEach((widget) => {
     const swiperEl = widget.querySelector<HTMLElement>(".swiper, .swiper-container");
