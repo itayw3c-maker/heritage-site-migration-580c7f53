@@ -77,8 +77,20 @@ function isCacheableDocumentRequest(request: Request): boolean {
 
 function isCacheableDocumentResponse(response: Response): boolean {
   if (response.status !== 200) return false;
-  if (response.headers.has("set-cookie")) return false;
   return (response.headers.get("content-type") ?? "").includes("text/html");
+}
+
+// Cloudflare adds __cf_bm (Bot Management) per-client; it must never be shared
+// through a cached document, but it must not block caching either. Session /
+// auth cookies DO block caching.
+const BLOCKING_COOKIE = /(^|;|\s)(sb-[^=]*-auth-token|session|__Secure|__Host)/i;
+
+function hasBlockingSetCookie(response: Response): boolean {
+  const all = typeof (response.headers as unknown as { getSetCookie?: () => string[] })
+    .getSetCookie === "function"
+    ? (response.headers as unknown as { getSetCookie: () => string[] }).getSetCookie()
+    : [response.headers.get("set-cookie") ?? ""];
+  return all.some((c) => c && !/^\s*__cf_bm=/i.test(c) && BLOCKING_COOKIE.test(c));
 }
 
 function withHtmlCacheHeaders(response: Response): Response {
@@ -86,6 +98,8 @@ function withHtmlCacheHeaders(response: Response): Response {
   headers.set("cache-control", HTML_CACHE_CONTROL);
   headers.delete("pragma");
   headers.delete("expires");
+  // Never store a per-client cookie in a shared document.
+  headers.delete("set-cookie");
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -122,6 +136,7 @@ export default {
         if (hit) {
           const headers = new Headers(hit.headers);
           headers.set("x-edge-cache", "HIT");
+          headers.set("x-rr-wrapper", "1");
           return new Response(hit.body, { status: hit.status, headers });
         }
       }
@@ -130,22 +145,30 @@ export default {
       const response = await handler.fetch(request, env, ctx);
       const normalized = await normalizeCatastrophicSsrResponse(response);
 
-      if (cacheable && isCacheableDocumentResponse(normalized)) {
+      if (cacheable && isCacheableDocumentResponse(normalized) && !hasBlockingSetCookie(normalized)) {
         const cached = withHtmlCacheHeaders(normalized);
         if (cache) {
           waitUntil(ctx, cache.put(cacheKey, cached.clone()));
         }
         const headers = new Headers(cached.headers);
         headers.set("x-edge-cache", "MISS");
+        headers.set("x-rr-wrapper", "1");
         return new Response(cached.body, { status: cached.status, headers });
       }
 
-      return normalized;
+      const out = new Headers(normalized.headers);
+      out.set("x-rr-wrapper", "1");
+      out.set("x-edge-cache", "BYPASS");
+      return new Response(normalized.body, {
+        status: normalized.status,
+        statusText: normalized.statusText,
+        headers: out,
+      });
     } catch (error) {
       console.error(error);
       return new Response(renderErrorPage(), {
         status: 500,
-        headers: { "content-type": "text/html; charset=utf-8" },
+        headers: { "content-type": "text/html; charset=utf-8", "x-rr-wrapper": "1" },
       });
     }
   },
