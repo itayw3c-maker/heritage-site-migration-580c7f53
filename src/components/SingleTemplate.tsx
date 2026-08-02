@@ -7,6 +7,7 @@ import serviceTpl from "@/generated/templates/service.html?raw";
 import { enhanceElementor } from "@/lib/elementor-enhance";
 import {
   buildRelated,
+  escAttr,
   type IndexPostLite,
   type RelatedHtml,
 } from "@/lib/related-posts";
@@ -95,25 +96,35 @@ function buildFeaturedImage(url: string | undefined, alt: string): string {
   return `<img alt="${escAttr(alt)}" class="attachment-large size-large" src="${escAttr(url)}" loading="lazy" />`;
 }
 
-export function SingleTemplate({ record, slug }: { record: SingleRecord; slug?: string }) {
-  const [related, setRelated] = useState<{ w1: string; w2: string }>({ w1: "", w2: "" });
+export function SingleTemplate({
+  record,
+  slug,
+  related: relatedProp,
+}: {
+  record: SingleRecord;
+  slug?: string;
+  related?: RelatedHtml;
+}) {
+  const [fetched, setFetched] = useState<RelatedHtml>({ w1: "", w2: "" });
+  const related = relatedProp ?? fetched;
 
   useEffect(() => {
+    // When the route loader already resolved related posts server-side there is
+    // nothing to fetch (and no post-hydration content swap / layout shift).
+    if (relatedProp) return;
     let cancelled = false;
     if (record.type !== "post" || !slug) {
-      setRelated({ w1: "", w2: "" });
+      setFetched({ w1: "", w2: "" });
       return;
     }
     loadIndex().then((idx) => {
       if (cancelled || !idx) return;
-      const r1 = pickRelated(idx.posts, slug, 4).map(relatedArticleFull).join("\n");
-      const r2 = pickRelated(idx.posts, slug, 8).map(relatedArticleTitleOnly).join("\n");
-      setRelated({ w1: r1, w2: r2 });
+      setFetched(buildRelated(idx.posts, slug));
     });
     return () => {
       cancelled = true;
     };
-  }, [record, slug]);
+  }, [record, slug, relatedProp]);
 
   const html = useMemo(() => {
     if (record.type === "static") return record.main_html ?? "";
