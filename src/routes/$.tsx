@@ -4,6 +4,7 @@ import { SingleTemplate, type SingleRecord } from "@/components/SingleTemplate";
 import { getSeoRecord } from "@/lib/seo.functions";
 import { buildSeoHead } from "@/lib/seo-head";
 import { checkContentPath } from "@/lib/content-existence.functions";
+import { getContentRecord } from "@/lib/content-record.functions";
 
 export const Route = createFileRoute("/$")({
   loader: async ({ params }) => {
@@ -15,17 +16,19 @@ export const Route = createFileRoute("/$")({
       /* keep raw */
     }
     const path = decoded.replace(/^\/+|\/+$/g, "");
-    if (!path || path.startsWith("admin")) return { seo: null };
-    const [seo, exists] = await Promise.all([
+    if (!path || path.startsWith("admin"))
+      return { seo: null, record: null, related: { w1: "", w2: "" } };
+    const [seo, exists, content] = await Promise.all([
       getSeoRecord({ data: { path } }),
       checkContentPath({ data: { path } }),
+      getContentRecord({ data: { path } }),
     ]);
     if (!exists) {
       // Throwing notFound() lets TanStack set the HTTP 404 status during SSR
       // and render the route's notFoundComponent below.
       throw notFound();
     }
-    return { seo };
+    return { seo, record: content.record, related: content.related };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
@@ -48,11 +51,14 @@ function NotFoundRoute() {
 
 function PlaceholderPage() {
   const { _splat } = Route.useParams();
+  const { record: ssrRecord, related: ssrRelated } = Route.useLoaderData();
   const slug = decodeURIComponent(_splat ?? "").replace(/^\/+|\/+$/g, "");
   const [record, setRecord] = useState<SingleRecord | null>(null);
   const [status, setStatus] = useState<"loading" | "found" | "missing">("loading");
 
   useEffect(() => {
+    // SSR already delivered the record for template-driven pages.
+    if (ssrRecord) return;
     let cancelled = false;
     setStatus("loading");
     setRecord(null);
@@ -75,7 +81,11 @@ function PlaceholderPage() {
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [slug, ssrRecord]);
+
+  if (ssrRecord) {
+    return <SingleTemplate record={ssrRecord} slug={slug} related={ssrRelated} />;
+  }
 
   if (status === "found" && record) {
     return <SingleTemplate record={record} slug={slug} />;

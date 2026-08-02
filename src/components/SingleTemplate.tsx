@@ -5,6 +5,12 @@ import movieTpl from "@/generated/templates/movie.html?raw";
 import successTpl from "@/generated/templates/success.html?raw";
 import serviceTpl from "@/generated/templates/service.html?raw";
 import { enhanceElementor } from "@/lib/elementor-enhance";
+import {
+  buildRelated,
+  escAttr,
+  type IndexPostLite,
+  type RelatedHtml,
+} from "@/lib/related-posts";
 
 export type SingleType = "post" | "shorts" | "movie" | "success" | "service" | "static";
 
@@ -24,14 +30,6 @@ export interface SingleRecord {
   featured_image_url?: string;
 }
 
-interface IndexPostLite {
-  slug: string;
-  title: string;
-  date: string;
-  excerpt: string;
-  thumbnail?: string;
-  categories?: number[];
-}
 interface IndexBundleLite {
   posts: IndexPostLite[];
 }
@@ -50,53 +48,6 @@ function loadIndex(): Promise<IndexBundleLite | null> {
       .catch(() => null);
   }
   return indexPromise;
-}
-
-function escAttr(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-function pickRelated(posts: IndexPostLite[], currentSlug: string, limit: number): IndexPostLite[] {
-  const current = posts.find((p) => p.slug === currentSlug);
-  const cats = new Set(current?.categories ?? []);
-  const filtered = posts.filter(
-    (p) => p.slug !== currentSlug && (p.categories ?? []).some((c) => cats.has(c)),
-  );
-  return filtered.slice(0, limit);
-}
-
-function relatedArticleFull(p: IndexPostLite): string {
-  const href = `/${p.slug}/`;
-  const catCls = (p.categories ?? []).map((c) => `category-${c}`).join(" ");
-  const thumb = p.thumbnail
-    ? `<a class="elementor-post__thumbnail__link" href="${escAttr(href)}" tabindex="-1"><div class="elementor-post__thumbnail"><img src="${escAttr(p.thumbnail)}" alt="${escAttr(p.title)}" loading="lazy" /></div></a>`
-    : "";
-  return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry ${catCls}" role="listitem">
-${thumb}
-<div class="elementor-post__text">
-<div class="elementor-post__title">
-<a href="${escAttr(href)}">${p.title}</a>
-</div>
-<div class="elementor-post__excerpt">
-<p>${p.excerpt ?? ""}</p>
-</div>
-<div class="elementor-post__read-more-wrapper">
-<a aria-label="קרא עוד אודות ${escAttr(p.title)}" class="elementor-post__read-more" href="${escAttr(href)}" tabindex="-1">קראו עוד »</a>
-</div>
-</div>
-</article>`;
-}
-
-function relatedArticleTitleOnly(p: IndexPostLite): string {
-  const href = `/${p.slug}/`;
-  const catCls = (p.categories ?? []).map((c) => `category-${c}`).join(" ");
-  return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry ${catCls}" role="listitem">
-<div class="elementor-post__text">
-<div class="elementor-post__title">
-<a href="${escAttr(href)}">${p.title}</a>
-</div>
-</div>
-</article>`;
 }
 
 const TEMPLATES: Partial<Record<SingleType, string>> = {
@@ -145,25 +96,35 @@ function buildFeaturedImage(url: string | undefined, alt: string): string {
   return `<img alt="${escAttr(alt)}" class="attachment-large size-large" src="${escAttr(url)}" loading="lazy" />`;
 }
 
-export function SingleTemplate({ record, slug }: { record: SingleRecord; slug?: string }) {
-  const [related, setRelated] = useState<{ w1: string; w2: string }>({ w1: "", w2: "" });
+export function SingleTemplate({
+  record,
+  slug,
+  related: relatedProp,
+}: {
+  record: SingleRecord;
+  slug?: string;
+  related?: RelatedHtml;
+}) {
+  const [fetched, setFetched] = useState<RelatedHtml>({ w1: "", w2: "" });
+  const related = relatedProp ?? fetched;
 
   useEffect(() => {
+    // When the route loader already resolved related posts server-side there is
+    // nothing to fetch (and no post-hydration content swap / layout shift).
+    if (relatedProp) return;
     let cancelled = false;
     if (record.type !== "post" || !slug) {
-      setRelated({ w1: "", w2: "" });
+      setFetched({ w1: "", w2: "" });
       return;
     }
     loadIndex().then((idx) => {
       if (cancelled || !idx) return;
-      const r1 = pickRelated(idx.posts, slug, 4).map(relatedArticleFull).join("\n");
-      const r2 = pickRelated(idx.posts, slug, 8).map(relatedArticleTitleOnly).join("\n");
-      setRelated({ w1: r1, w2: r2 });
+      setFetched(buildRelated(idx.posts, slug));
     });
     return () => {
       cancelled = true;
     };
-  }, [record, slug]);
+  }, [record, slug, relatedProp]);
 
   const html = useMemo(() => {
     if (record.type === "static") return record.main_html ?? "";

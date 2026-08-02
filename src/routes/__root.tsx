@@ -313,13 +313,11 @@ function RootComponent() {
       hydrateFixDigital();
     };
     run();
-    const t = window.setTimeout(run, 50);
-    const t2 = window.setTimeout(run, 500);
-    return () => {
-      window.clearTimeout(t);
-      window.clearTimeout(t2);
-    };
-  });
+    // One deferred pass picks up markup injected by route components after
+    // hydration. Both enhanceElementor and hydrateFixDigital are idempotent.
+    const raf = window.requestAnimationFrame(run);
+    return () => window.cancelAnimationFrame(raf);
+  }, [isAdmin, pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
