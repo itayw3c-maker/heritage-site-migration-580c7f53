@@ -14,6 +14,7 @@ import { Route as AdminRouteRouteImport } from './routes/admin.route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SuccessIndexRouteImport } from './routes/success.index'
 import { Route as ShortsIndexRouteImport } from './routes/shorts.index'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -50,6 +51,11 @@ const SuccessIndexRoute = SuccessIndexRouteImport.update({
 const ShortsIndexRoute = ShortsIndexRouteImport.update({
   id: '/shorts/',
   path: '/shorts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
+  '/blog/': typeof BlogIndexRoute
   '/shorts/': typeof ShortsIndexRoute
   '/success/': typeof SuccessIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin': typeof AdminIndexRoute
+  '/blog': typeof BlogIndexRoute
   '/shorts': typeof ShortsIndexRoute
   '/success': typeof SuccessIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
@@ -159,6 +167,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
+  '/blog/': typeof BlogIndexRoute
   '/shorts/': typeof ShortsIndexRoute
   '/success/': typeof SuccessIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/users'
     | '/admin/'
+    | '/blog/'
     | '/shorts/'
     | '/success/'
     | '/admin/posts/$id'
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/users'
     | '/admin'
+    | '/blog'
     | '/shorts'
     | '/success'
     | '/admin/posts/$id'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/users'
     | '/admin/'
+    | '/blog/'
     | '/shorts/'
     | '/success/'
     | '/admin/posts/$id'
@@ -234,6 +246,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   ShortsIndexRoute: typeof ShortsIndexRoute
   SuccessIndexRoute: typeof SuccessIndexRoute
   ApiPublicGoogleReviewsRoute: typeof ApiPublicGoogleReviewsRoute
@@ -279,6 +292,13 @@ declare module '@tanstack/react-router' {
       path: '/shorts'
       fullPath: '/shorts/'
       preLoaderRoute: typeof ShortsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -404,6 +424,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   SplatRoute: SplatRoute,
+  BlogIndexRoute: BlogIndexRoute,
   ShortsIndexRoute: ShortsIndexRoute,
   SuccessIndexRoute: SuccessIndexRoute,
   ApiPublicGoogleReviewsRoute: ApiPublicGoogleReviewsRoute,
