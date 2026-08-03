@@ -16,6 +16,7 @@ import { Route as SuccessIndexRouteImport } from './routes/success.index'
 import { Route as ShortsIndexRouteImport } from './routes/shorts.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as CategoryCatslugIndexRouteImport } from './routes/category.$catslug.index'
@@ -62,6 +63,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRouteRoute,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/$': typeof SplatRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/shorts/': typeof ShortsIndexRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/$': typeof SplatRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/shorts': typeof ShortsIndexRoute
@@ -166,6 +174,7 @@ export interface FileRoutesById {
   '/$': typeof SplatRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/shorts/': typeof ShortsIndexRoute
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/$'
     | '/admin/login'
     | '/admin/users'
+    | '/blog/$slug'
     | '/admin/'
     | '/blog/'
     | '/shorts/'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/$'
     | '/admin/login'
     | '/admin/users'
+    | '/blog/$slug'
     | '/admin'
     | '/blog'
     | '/shorts'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/$'
     | '/admin/login'
     | '/admin/users'
+    | '/blog/$slug'
     | '/admin/'
     | '/blog/'
     | '/shorts/'
@@ -246,6 +258,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
+  BlogSlugRoute: typeof BlogSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ShortsIndexRoute: typeof ShortsIndexRoute
   SuccessIndexRoute: typeof SuccessIndexRoute
@@ -307,6 +320,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/users': {
       id: '/admin/users'
@@ -424,6 +444,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   SplatRoute: SplatRoute,
+  BlogSlugRoute: BlogSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   ShortsIndexRoute: ShortsIndexRoute,
   SuccessIndexRoute: SuccessIndexRoute,
