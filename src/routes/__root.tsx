@@ -21,7 +21,6 @@ import { CookieBanner } from "@/components/CookieBanner";
 import { enhanceElementor } from "@/lib/elementor-enhance";
 import { hydrateFixDigital } from "@/lib/fixdigital";
 import { rememberPasswordRecovery } from "@/lib/password-recovery-flag";
-import { supabase } from "@/integrations/supabase/client";
 
 declare global {
   interface Window {
@@ -31,9 +30,22 @@ declare global {
 
 if (typeof window !== "undefined" && !window.__rrPasswordRecoveryListenerAttached) {
   window.__rrPasswordRecoveryListenerAttached = true;
-  supabase.auth.onAuthStateChange((event) => {
-    if (event === "PASSWORD_RECOVERY") rememberPasswordRecovery();
-  });
+  // The Supabase auth client is ~300KB and is not needed for first paint, so it
+  // is imported lazily to keep it out of the entry chunk. The client still
+  // processes the recovery hash when it is finally created.
+  const attachRecoveryListener = () => {
+    import("@/integrations/supabase/client")
+      .then(({ supabase }) => {
+        supabase.auth.onAuthStateChange((event) => {
+          if (event === "PASSWORD_RECOVERY") rememberPasswordRecovery();
+        });
+      })
+      .catch(() => {});
+  };
+  const ric = (window as unknown as { requestIdleCallback?: (cb: () => void) => void })
+    .requestIdleCallback;
+  if (typeof ric === "function") ric(attachRecoveryListener);
+  else window.setTimeout(attachRecoveryListener, 1500);
 }
 
 function NotFoundComponent() {
