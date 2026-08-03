@@ -23,6 +23,7 @@ import { Route as CategoryCatslugIndexRouteImport } from './routes/category.$cat
 import { Route as AdminPostsIndexRouteImport } from './routes/admin.posts.index'
 import { Route as SuccessPagePageRouteImport } from './routes/success.page.$page'
 import { Route as ShortsPagePageRouteImport } from './routes/shorts.page.$page'
+import { Route as ApiPublicPublishArticleRouteImport } from './routes/api/public/publish-article'
 import { Route as ApiPublicGoogleReviewsRouteImport } from './routes/api/public/google-reviews'
 import { Route as AdminPostsIdRouteImport } from './routes/admin.posts.$id'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -99,6 +100,11 @@ const ShortsPagePageRoute = ShortsPagePageRouteImport.update({
   path: '/shorts/page/$page',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPublishArticleRoute = ApiPublicPublishArticleRouteImport.update({
+  id: '/api/public/publish-article',
+  path: '/api/public/publish-article',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicGoogleReviewsRoute = ApiPublicGoogleReviewsRouteImport.update({
   id: '/api/public/google-reviews',
   path: '/api/public/google-reviews',
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/success/': typeof SuccessIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
   '/api/public/google-reviews': typeof ApiPublicGoogleReviewsRoute
+  '/api/public/publish-article': typeof ApiPublicPublishArticleRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
   '/admin/posts/': typeof AdminPostsIndexRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/success': typeof SuccessIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
   '/api/public/google-reviews': typeof ApiPublicGoogleReviewsRoute
+  '/api/public/publish-article': typeof ApiPublicPublishArticleRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
   '/admin/posts': typeof AdminPostsIndexRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/success/': typeof SuccessIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
   '/api/public/google-reviews': typeof ApiPublicGoogleReviewsRoute
+  '/api/public/publish-article': typeof ApiPublicPublishArticleRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
   '/admin/posts/': typeof AdminPostsIndexRoute
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/success/'
     | '/admin/posts/$id'
     | '/api/public/google-reviews'
+    | '/api/public/publish-article'
     | '/shorts/page/$page'
     | '/success/page/$page'
     | '/admin/posts/'
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/success'
     | '/admin/posts/$id'
     | '/api/public/google-reviews'
+    | '/api/public/publish-article'
     | '/shorts/page/$page'
     | '/success/page/$page'
     | '/admin/posts'
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/success/'
     | '/admin/posts/$id'
     | '/api/public/google-reviews'
+    | '/api/public/publish-article'
     | '/shorts/page/$page'
     | '/success/page/$page'
     | '/admin/posts/'
@@ -263,6 +275,7 @@ export interface RootRouteChildren {
   ShortsIndexRoute: typeof ShortsIndexRoute
   SuccessIndexRoute: typeof SuccessIndexRoute
   ApiPublicGoogleReviewsRoute: typeof ApiPublicGoogleReviewsRoute
+  ApiPublicPublishArticleRoute: typeof ApiPublicPublishArticleRoute
   ShortsPagePageRoute: typeof ShortsPagePageRoute
   SuccessPagePageRoute: typeof SuccessPagePageRoute
   CategoryCatslugIndexRoute: typeof CategoryCatslugIndexRoute
@@ -370,6 +383,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShortsPagePageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/publish-article': {
+      id: '/api/public/publish-article'
+      path: '/api/public/publish-article'
+      fullPath: '/api/public/publish-article'
+      preLoaderRoute: typeof ApiPublicPublishArticleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/google-reviews': {
       id: '/api/public/google-reviews'
       path: '/api/public/google-reviews'
@@ -449,6 +469,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShortsIndexRoute: ShortsIndexRoute,
   SuccessIndexRoute: SuccessIndexRoute,
   ApiPublicGoogleReviewsRoute: ApiPublicGoogleReviewsRoute,
+  ApiPublicPublishArticleRoute: ApiPublicPublishArticleRoute,
   ShortsPagePageRoute: ShortsPagePageRoute,
   SuccessPagePageRoute: SuccessPagePageRoute,
   CategoryCatslugIndexRoute: CategoryCatslugIndexRoute,

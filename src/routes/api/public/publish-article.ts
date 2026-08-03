@@ -1,6 +1,7 @@
 // Publish API for the external "Service Content Master" pipeline.
 // Auth: Authorization: Bearer <PUBLISH_TOKEN> only.
 import { createFileRoute } from "@tanstack/react-router";
+import type { Json } from "@/integrations/supabase/types";
 
 const SITE = "https://www.rrshamaut.co.il";
 
@@ -94,10 +95,10 @@ export const Route = createFileRoute("/api/public/publish-article")({
           excerpt: str(body.excerpt),
           meta_title: str(body.meta_title),
           meta_description: str(body.meta_description),
-          faq_json: Array.isArray(body.faq_json) ? body.faq_json : null,
+          faq_json: (Array.isArray(body.faq_json) ? body.faq_json : null) as Json,
           schema_jsonld:
             body.schema_jsonld && typeof body.schema_jsonld === "object"
-              ? body.schema_jsonld
+              ? (body.schema_jsonld as Json)
               : null,
           cta: str(body.cta),
           status,
