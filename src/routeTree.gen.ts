@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as BlogSitemapDotxmlRouteImport } from './routes/blog-sitemap[.]xml'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as AdminRouteRouteImport } from './routes/admin.route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -30,6 +31,11 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as CategoryCatslugPagePageRouteImport } from './routes/category.$catslug.page.$page'
 import { Route as AdminPostsIdPreviewRouteImport } from './routes/admin.posts.$id.preview'
 
+const BlogSitemapDotxmlRoute = BlogSitemapDotxmlRouteImport.update({
+  id: '/blog-sitemap.xml',
+  path: '/blog-sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SplatRoute = SplatRouteImport.update({
   id: '/$',
   path: '/$',
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
+  '/blog-sitemap.xml': typeof BlogSitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/blog-sitemap.xml': typeof BlogSitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -180,6 +188,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
+  '/blog-sitemap.xml': typeof BlogSitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/$'
+    | '/blog-sitemap.xml'
     | '/admin/login'
     | '/admin/users'
     | '/blog/$slug'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$'
+    | '/blog-sitemap.xml'
     | '/admin/login'
     | '/admin/users'
     | '/blog/$slug'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/$'
+    | '/blog-sitemap.xml'
     | '/admin/login'
     | '/admin/users'
     | '/blog/$slug'
@@ -270,6 +282,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
+  BlogSitemapDotxmlRoute: typeof BlogSitemapDotxmlRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ShortsIndexRoute: typeof ShortsIndexRoute
@@ -285,6 +298,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/blog-sitemap.xml': {
+      id: '/blog-sitemap.xml'
+      path: '/blog-sitemap.xml'
+      fullPath: '/blog-sitemap.xml'
+      preLoaderRoute: typeof BlogSitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$': {
       id: '/$'
       path: '/$'
@@ -464,6 +484,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   SplatRoute: SplatRoute,
+  BlogSitemapDotxmlRoute: BlogSitemapDotxmlRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   ShortsIndexRoute: ShortsIndexRoute,
