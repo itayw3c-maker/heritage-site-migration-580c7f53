@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { getBlogList } from "@/lib/blog.functions";
+import type { BlogPost } from "@/lib/blog.server";
 import { BLOG_CSS } from "@/lib/blog-styles";
 
 const SITE = "https://www.rrshamaut.co.il";
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/blog/")({
 });
 
 function BlogIndex() {
-  const { posts } = Route.useLoaderData();
+  const { posts } = Route.useLoaderData() as { posts: BlogPost[] };
   return (
     <main className="rr-blog" dir="rtl">
       <style dangerouslySetInnerHTML={{ __html: BLOG_CSS }} />
