@@ -87,13 +87,17 @@ export type Database = {
         Row: {
           content_html: string | null
           created_at: string
+          cta: string | null
           excerpt: string | null
+          faq_json: Json | null
           featured_image: string | null
+          h1: string | null
           id: string
           meta_description: string | null
           meta_title: string | null
           post_type: string
           publish_at: string | null
+          schema_jsonld: Json | null
           slug: string
           status: string
           title: string
@@ -104,13 +108,17 @@ export type Database = {
         Insert: {
           content_html?: string | null
           created_at?: string
+          cta?: string | null
           excerpt?: string | null
+          faq_json?: Json | null
           featured_image?: string | null
+          h1?: string | null
           id?: string
           meta_description?: string | null
           meta_title?: string | null
           post_type?: string
           publish_at?: string | null
+          schema_jsonld?: Json | null
           slug: string
           status?: string
           title?: string
@@ -121,13 +129,17 @@ export type Database = {
         Update: {
           content_html?: string | null
           created_at?: string
+          cta?: string | null
           excerpt?: string | null
+          faq_json?: Json | null
           featured_image?: string | null
+          h1?: string | null
           id?: string
           meta_description?: string | null
           meta_title?: string | null
           post_type?: string
           publish_at?: string | null
+          schema_jsonld?: Json | null
           slug?: string
           status?: string
           title?: string

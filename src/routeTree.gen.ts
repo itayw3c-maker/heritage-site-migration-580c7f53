@@ -9,24 +9,33 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as BlogSitemapDotxmlRouteImport } from './routes/blog-sitemap[.]xml'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as AdminRouteRouteImport } from './routes/admin.route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SuccessIndexRouteImport } from './routes/success.index'
 import { Route as ShortsIndexRouteImport } from './routes/shorts.index'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as CategoryCatslugIndexRouteImport } from './routes/category.$catslug.index'
 import { Route as AdminPostsIndexRouteImport } from './routes/admin.posts.index'
 import { Route as SuccessPagePageRouteImport } from './routes/success.page.$page'
 import { Route as ShortsPagePageRouteImport } from './routes/shorts.page.$page'
+import { Route as ApiPublicPublishArticleRouteImport } from './routes/api/public/publish-article'
 import { Route as ApiPublicGoogleReviewsRouteImport } from './routes/api/public/google-reviews'
 import { Route as AdminPostsIdRouteImport } from './routes/admin.posts.$id'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as CategoryCatslugPagePageRouteImport } from './routes/category.$catslug.page.$page'
 import { Route as AdminPostsIdPreviewRouteImport } from './routes/admin.posts.$id.preview'
 
+const BlogSitemapDotxmlRoute = BlogSitemapDotxmlRouteImport.update({
+  id: '/blog-sitemap.xml',
+  path: '/blog-sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SplatRoute = SplatRouteImport.update({
   id: '/$',
   path: '/$',
@@ -52,10 +61,20 @@ const ShortsIndexRoute = ShortsIndexRouteImport.update({
   path: '/shorts/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRouteRoute,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
@@ -85,6 +104,11 @@ const SuccessPagePageRoute = SuccessPagePageRouteImport.update({
 const ShortsPagePageRoute = ShortsPagePageRouteImport.update({
   id: '/shorts/page/$page',
   path: '/shorts/page/$page',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicPublishArticleRoute = ApiPublicPublishArticleRouteImport.update({
+  id: '/api/public/publish-article',
+  path: '/api/public/publish-article',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicGoogleReviewsRoute = ApiPublicGoogleReviewsRouteImport.update({
@@ -118,13 +142,17 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
+  '/blog-sitemap.xml': typeof BlogSitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/blog/': typeof BlogIndexRoute
   '/shorts/': typeof ShortsIndexRoute
   '/success/': typeof SuccessIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
   '/api/public/google-reviews': typeof ApiPublicGoogleReviewsRoute
+  '/api/public/publish-article': typeof ApiPublicPublishArticleRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
   '/admin/posts/': typeof AdminPostsIndexRoute
@@ -136,13 +164,17 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/blog-sitemap.xml': typeof BlogSitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/blog': typeof BlogIndexRoute
   '/shorts': typeof ShortsIndexRoute
   '/success': typeof SuccessIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
   '/api/public/google-reviews': typeof ApiPublicGoogleReviewsRoute
+  '/api/public/publish-article': typeof ApiPublicPublishArticleRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
   '/admin/posts': typeof AdminPostsIndexRoute
@@ -156,13 +188,17 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
+  '/blog-sitemap.xml': typeof BlogSitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/blog/': typeof BlogIndexRoute
   '/shorts/': typeof ShortsIndexRoute
   '/success/': typeof SuccessIndexRoute
   '/admin/posts/$id': typeof AdminPostsIdRouteWithChildren
   '/api/public/google-reviews': typeof ApiPublicGoogleReviewsRoute
+  '/api/public/publish-article': typeof ApiPublicPublishArticleRoute
   '/shorts/page/$page': typeof ShortsPagePageRoute
   '/success/page/$page': typeof SuccessPagePageRoute
   '/admin/posts/': typeof AdminPostsIndexRoute
@@ -177,13 +213,17 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/$'
+    | '/blog-sitemap.xml'
     | '/admin/login'
     | '/admin/users'
+    | '/blog/$slug'
     | '/admin/'
+    | '/blog/'
     | '/shorts/'
     | '/success/'
     | '/admin/posts/$id'
     | '/api/public/google-reviews'
+    | '/api/public/publish-article'
     | '/shorts/page/$page'
     | '/success/page/$page'
     | '/admin/posts/'
@@ -195,13 +235,17 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$'
+    | '/blog-sitemap.xml'
     | '/admin/login'
     | '/admin/users'
+    | '/blog/$slug'
     | '/admin'
+    | '/blog'
     | '/shorts'
     | '/success'
     | '/admin/posts/$id'
     | '/api/public/google-reviews'
+    | '/api/public/publish-article'
     | '/shorts/page/$page'
     | '/success/page/$page'
     | '/admin/posts'
@@ -214,13 +258,17 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/$'
+    | '/blog-sitemap.xml'
     | '/admin/login'
     | '/admin/users'
+    | '/blog/$slug'
     | '/admin/'
+    | '/blog/'
     | '/shorts/'
     | '/success/'
     | '/admin/posts/$id'
     | '/api/public/google-reviews'
+    | '/api/public/publish-article'
     | '/shorts/page/$page'
     | '/success/page/$page'
     | '/admin/posts/'
@@ -234,9 +282,13 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
+  BlogSitemapDotxmlRoute: typeof BlogSitemapDotxmlRoute
+  BlogSlugRoute: typeof BlogSlugRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   ShortsIndexRoute: typeof ShortsIndexRoute
   SuccessIndexRoute: typeof SuccessIndexRoute
   ApiPublicGoogleReviewsRoute: typeof ApiPublicGoogleReviewsRoute
+  ApiPublicPublishArticleRoute: typeof ApiPublicPublishArticleRoute
   ShortsPagePageRoute: typeof ShortsPagePageRoute
   SuccessPagePageRoute: typeof SuccessPagePageRoute
   CategoryCatslugIndexRoute: typeof CategoryCatslugIndexRoute
@@ -246,6 +298,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/blog-sitemap.xml': {
+      id: '/blog-sitemap.xml'
+      path: '/blog-sitemap.xml'
+      fullPath: '/blog-sitemap.xml'
+      preLoaderRoute: typeof BlogSitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$': {
       id: '/$'
       path: '/$'
@@ -281,12 +340,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShortsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/users': {
       id: '/admin/users'
@@ -328,6 +401,13 @@ declare module '@tanstack/react-router' {
       path: '/shorts/page/$page'
       fullPath: '/shorts/page/$page'
       preLoaderRoute: typeof ShortsPagePageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/publish-article': {
+      id: '/api/public/publish-article'
+      path: '/api/public/publish-article'
+      fullPath: '/api/public/publish-article'
+      preLoaderRoute: typeof ApiPublicPublishArticleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/google-reviews': {
@@ -404,9 +484,13 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   SplatRoute: SplatRoute,
+  BlogSitemapDotxmlRoute: BlogSitemapDotxmlRoute,
+  BlogSlugRoute: BlogSlugRoute,
+  BlogIndexRoute: BlogIndexRoute,
   ShortsIndexRoute: ShortsIndexRoute,
   SuccessIndexRoute: SuccessIndexRoute,
   ApiPublicGoogleReviewsRoute: ApiPublicGoogleReviewsRoute,
+  ApiPublicPublishArticleRoute: ApiPublicPublishArticleRoute,
   ShortsPagePageRoute: ShortsPagePageRoute,
   SuccessPagePageRoute: SuccessPagePageRoute,
   CategoryCatslugIndexRoute: CategoryCatslugIndexRoute,
@@ -416,13 +500,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
