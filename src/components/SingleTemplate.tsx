@@ -96,6 +96,19 @@ function buildFeaturedImage(url: string | undefined, alt: string): string {
   return `<img alt="${escAttr(alt)}" class="attachment-large size-large" src="${escAttr(url)}" loading="lazy" />`;
 }
 
+// WordPress migration left <br /> tags inside <style> blocks of article
+// content_html. Rendered raw during SSR they break the CSS entirely, so strip
+// <br> only inside <style>...</style>. Pure string transform, fail-safe.
+function stripBrInStyle(html: string): string {
+  try {
+    return html.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, (block) =>
+      block.replace(/<br\s*\/?>/gi, "\n"),
+    );
+  } catch {
+    return html;
+  }
+}
+
 export function SingleTemplate({
   record,
   slug,
@@ -127,9 +140,9 @@ export function SingleTemplate({
   }, [record, slug, relatedProp]);
 
   const html = useMemo(() => {
-    if (record.type === "static") return record.main_html ?? "";
+    if (record.type === "static") return stripBrInStyle(record.main_html ?? "");
     const tpl = TEMPLATES[record.type];
-    return tpl ? fill(tpl, record, related.w1) : "";
+    return tpl ? stripBrInStyle(fill(tpl, record, related.w1)) : "";
   }, [record, related.w1]);
 
   useEffect(() => {
