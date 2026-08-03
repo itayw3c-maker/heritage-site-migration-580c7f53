@@ -11,9 +11,5 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
-    // NOTE: TanStack's built-in prerender cannot run here — with the nitro
-    // cloudflare-module build the server output is dist/server/index.mjs and
-    // its preview server looks for dist/server/server.js. Prerendering is done
-    // in scripts/prerender.mjs as a `postbuild` step against that bundle.
   },
 });
