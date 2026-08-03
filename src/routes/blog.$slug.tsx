@@ -17,7 +17,7 @@ export const Route = createFileRoute("/blog/$slug")({
     if (!post) {
       return { meta: [{ name: "robots", content: "noindex, nofollow" }] };
     }
-    const url = `${SITE}/blog/${encodeURIComponent(params.slug)}`;
+    const url = `${SITE}/blog/${encodeURIComponent(params.slug)}/`;
     const title = post.meta_title || post.h1 || post.title;
     const description = post.meta_description || post.excerpt || "";
     const image = post.featured_image

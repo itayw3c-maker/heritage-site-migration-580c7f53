@@ -134,7 +134,7 @@ export const Route = createFileRoute("/api/public/publish-article")({
           id = data.id;
         }
 
-        return json({ id, slug, status, url: `${SITE}/blog/${slug}` });
+        return json({ id, slug, status, url: `${SITE}/blog/${slug}/` });
       },
 
       DELETE: async ({ request }) => {

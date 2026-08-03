@@ -24,7 +24,7 @@ export const Route = createFileRoute("/blog-sitemap.xml")({
           `  <url>\n    <loc>${SITE}/blog/</loc>\n  </url>`,
           ...posts.map(
             (p) =>
-              `  <url>\n    <loc>${SITE}/blog/${encodeURIComponent(p.slug)}</loc>\n    <lastmod>${p.updated_at.slice(0, 10)}</lastmod>\n  </url>`,
+              `  <url>\n    <loc>${SITE}/blog/${encodeURIComponent(p.slug)}/</loc>\n    <lastmod>${p.updated_at.slice(0, 10)}</lastmod>\n  </url>`,
           ),
         ];
 
