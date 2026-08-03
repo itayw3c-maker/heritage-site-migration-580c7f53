@@ -1,6 +1,9 @@
 import { createFileRoute, Outlet, Link, redirect, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+
+// Imported dynamically: a static import here lands in the critical (non-split)
+// part of the route module and drags the Supabase auth client into the entry chunk.
+const loadSupabase = () => import("@/integrations/supabase/client").then((m) => m.supabase);
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -13,6 +16,7 @@ export const Route = createFileRoute("/admin")({
   beforeLoad: async ({ location }) => {
     const path = location.pathname.replace(/\/+$/, "");
     const isLoginPath = path === "/admin/login";
+    const supabase = await loadSupabase();
     const { data: sess } = await supabase.auth.getSession();
     if (!sess.session) {
       if (!isLoginPath) {
@@ -39,10 +43,13 @@ function AdminLayout() {
   const isPreview = /^\/admin\/posts\/[^/]+\/preview\/?$/.test(router.state.location.pathname);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
+    loadSupabase().then((supabase) =>
+      supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null)),
+    );
   }, [router.state.location.pathname]);
 
   async function handleSignOut() {
+    const supabase = await loadSupabase();
     await supabase.auth.signOut();
     router.navigate({ to: "/admin/login" });
   }

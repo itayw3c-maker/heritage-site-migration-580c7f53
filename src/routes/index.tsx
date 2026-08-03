@@ -20,6 +20,13 @@ export const Route = createFileRoute("/")({
           href: "/wp-content/uploads/2025/12/רפאל-שמאות-רכוש.webp",
           fetchpriority: "high",
         },
+        // Actual LCP element: the hero section background-image.
+        {
+          rel: "preload",
+          as: "image",
+          href: "/wp-content/uploads/2025/12/bg_main.webp",
+          fetchpriority: "high",
+        },
       ],
     };
   },
