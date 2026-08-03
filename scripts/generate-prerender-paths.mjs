@@ -27,6 +27,10 @@ function encodeSlug(slug) {
   return slug.split("/").map(encodeURIComponent).join("/");
 }
 
+function decodeSlug(s) {
+  try { return decodeURIComponent(s); } catch { return s; }
+}
+
 const paths = ["/"];
 
 for (const file of walk(CONTENT_DIR).sort()) {
@@ -47,7 +51,8 @@ for (const [id, cat] of Object.entries(idx.categories ?? {})) {
   const catNum = Number(id);
   const count = (idx.posts ?? []).filter((p) => p.categories?.includes(catNum)).length;
   if (!count) continue;
-  paths.push(...archivePaths(`/category/${encodeURIComponent(cat.slug)}`, count, PAGE_SIZES.category));
+  const catSlug = decodeSlug(cat.slug);
+  paths.push(...archivePaths(`/category/${encodeURIComponent(catSlug)}`, count, PAGE_SIZES.category));
 }
 paths.push(...archivePaths("/shorts", (idx.shorts ?? []).length, PAGE_SIZES.shorts));
 paths.push(...archivePaths("/success", (idx.success ?? []).length, PAGE_SIZES.success));
