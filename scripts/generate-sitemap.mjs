@@ -76,6 +76,6 @@ const xml =
 writeFileSync(OUT, xml);
 console.log(`Wrote ${OUT} with ${urls.length} URLs`);
 
-const robots = `User-agent: *\nAllow: /\nDisallow: /thank-you/\n\nSitemap: ${SITE}/sitemap.xml\n`;
+const robots = `User-agent: *\nAllow: /\nDisallow: /thank-you/\n\nSitemap: ${SITE}/sitemap.xml\nSitemap: ${SITE}/blog-sitemap.xml\n`;
 writeFileSync("public/robots.txt", robots);
 console.log("Wrote public/robots.txt");
