@@ -16,7 +16,8 @@ export interface BlogPost {
   meta_description: string | null;
   cta: string | null;
   faq_json: Array<{ question: string; answer: string }> | null;
-  schema_jsonld: unknown | null;
+  /** Pre-serialized JSON-LD, wire-safe for server-function payloads. */
+  schema_jsonld: string | null;
   publish_at: string | null;
   created_at: string;
   updated_at: string;
@@ -44,8 +45,11 @@ export function publicClient() {
 
 function normalize(row: Record<string, unknown>): BlogPost {
   const faq = row["faq_json"];
+  const schema = row["schema_jsonld"];
   return {
     ...(row as unknown as BlogPost),
+    schema_jsonld:
+      schema && typeof schema === "object" ? JSON.stringify(schema) : null,
     faq_json: Array.isArray(faq)
       ? (faq as Array<{ question: string; answer: string }>).filter(
           (i) => i && typeof i === "object",
