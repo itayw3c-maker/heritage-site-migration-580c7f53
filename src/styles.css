@@ -1200,3 +1200,28 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
 .rr-faq-db__item>div{margin-top:10px}
 .rr-cta-db{margin:2rem 0;background:#056FC4;color:#fff;border-radius:14px;padding:22px 24px;border-inline-start:6px solid #CBA436}
 .rr-cta-db p{margin:0;font-weight:700;color:#fff}
+
+/* ---- Migrated FAQ blocks (staging nested-accordion -> lvbl-faq markup) ----
+   Mirrors the .lvbl-article .lvbl-faq design so every article looks the same.
+   Scoped to .lvbl-faq only, so page-scoped rules keep winning where they exist. */
+.lvbl-faq{
+  --lvbl-accent:#8b6f47;
+  --lvbl-ink:#5c4528;
+  --lvbl-fg:#1f2937;
+  --lvbl-border:#e5e7eb;
+  --lvbl-accent-soft:color-mix(in srgb,var(--lvbl-accent) 12%,#fff);
+  --lvbl-accent-softer:color-mix(in srgb,var(--lvbl-accent) 6%,#fff);
+  --lvbl-accent-chip-border:color-mix(in srgb,var(--lvbl-accent) 25%,#fff);
+  margin:1.5rem 0 2.5rem;display:flex;flex-direction:column;gap:1rem;
+}
+.lvbl-faq .lvbl-faq-item{border:1px solid var(--lvbl-border);border-radius:.625rem;background:var(--lvbl-accent-softer);overflow:hidden;}
+.lvbl-faq .lvbl-faq-q{display:flex;align-items:center;gap:.875rem;width:100%;padding:1.125rem 1.25rem;cursor:pointer;font-weight:700;font-size:1.15rem;line-height:1.45;color:var(--lvbl-ink);list-style:none;}
+.lvbl-faq .lvbl-faq-q::-webkit-details-marker{display:none;}
+.lvbl-faq .lvbl-faq-num{display:inline-flex;align-items:center;justify-content:center;width:1.85rem;height:1.85rem;border-radius:50%;background:var(--lvbl-accent-soft);color:var(--lvbl-accent);font-size:.9rem;font-weight:800;flex-shrink:0;border:1px solid var(--lvbl-accent-chip-border);}
+.lvbl-faq .lvbl-faq-qt{flex:1;}
+.lvbl-faq .lvbl-faq-a{padding:1.1rem 1.25rem 1.35rem;font-size:1.1rem;line-height:1.85;color:var(--lvbl-fg);border-top:1px dashed var(--lvbl-border);}
+.lvbl-faq .lvbl-faq-a p{margin:.6rem 0;}
+@media (max-width:640px){
+  .lvbl-faq .lvbl-faq-q{padding:.875rem 1rem;font-size:1.05rem;}
+  .lvbl-faq .lvbl-faq-a{padding:.875rem 1rem 1rem;font-size:1rem;}
+}
