@@ -85,6 +85,7 @@ export type Database = {
       }
       posts: {
         Row: {
+          category_id: number
           content_html: string | null
           created_at: string
           cta: string | null
@@ -106,6 +107,7 @@ export type Database = {
           wp_status: string | null
         }
         Insert: {
+          category_id?: number
           content_html?: string | null
           created_at?: string
           cta?: string | null
@@ -127,6 +129,7 @@ export type Database = {
           wp_status?: string | null
         }
         Update: {
+          category_id?: number
           content_html?: string | null
           created_at?: string
           cta?: string | null

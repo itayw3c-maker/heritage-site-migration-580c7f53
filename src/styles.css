@@ -1192,3 +1192,11 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
+
+/* ---- DB-published articles: FAQ + CTA blocks (inherit site typography) ---- */
+.rr-faq-db{margin:0 0 1.5rem}
+.rr-faq-db__item{border:1px solid #e6ebf1;border-radius:10px;padding:14px 16px;margin:0 0 12px;background:#fbfdff}
+.rr-faq-db__item summary{font-weight:700;cursor:pointer}
+.rr-faq-db__item>div{margin-top:10px}
+.rr-cta-db{margin:2rem 0;background:#056FC4;color:#fff;border-radius:14px;padding:22px 24px;border-inline-start:6px solid #CBA436}
+.rr-cta-db p{margin:0;font-weight:700;color:#fff}

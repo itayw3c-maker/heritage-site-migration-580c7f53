@@ -23,12 +23,12 @@ export const Route = createFileRoute("/$")({
       checkContentPath({ data: { path } }),
       getContentRecord({ data: { path } }),
     ]);
-    if (!exists) {
+    if (!exists && !content.record) {
       // Throwing notFound() lets TanStack set the HTTP 404 status during SSR
       // and render the route's notFoundComponent below.
       throw notFound();
     }
-    return { seo, record: content.record, related: content.related };
+    return { seo: content.dbSeo ?? seo, record: content.record, related: content.related };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {

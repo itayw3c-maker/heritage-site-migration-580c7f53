@@ -27,9 +27,10 @@ export function pickRelated(
   posts: IndexPostLite[],
   currentSlug: string,
   limit: number,
+  currentCats?: number[],
 ): IndexPostLite[] {
   const current = posts.find((p) => p.slug === currentSlug);
-  const cats = new Set(current?.categories ?? []);
+  const cats = new Set(currentCats ?? current?.categories ?? []);
   const filtered = posts.filter(
     (p) => p.slug !== currentSlug && (p.categories ?? []).some((c) => cats.has(c)),
   );
@@ -70,9 +71,13 @@ export function relatedArticleTitleOnly(p: IndexPostLite): string {
 </article>`;
 }
 
-export function buildRelated(posts: IndexPostLite[], slug: string): RelatedHtml {
+export function buildRelated(
+  posts: IndexPostLite[],
+  slug: string,
+  currentCats?: number[],
+): RelatedHtml {
   return {
-    w1: pickRelated(posts, slug, 4).map(relatedArticleFull).join("\n"),
-    w2: pickRelated(posts, slug, 8).map(relatedArticleTitleOnly).join("\n"),
+    w1: pickRelated(posts, slug, 4, currentCats).map(relatedArticleFull).join("\n"),
+    w2: pickRelated(posts, slug, 8, currentCats).map(relatedArticleTitleOnly).join("\n"),
   };
 }

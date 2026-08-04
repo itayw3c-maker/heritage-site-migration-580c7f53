@@ -225,10 +225,12 @@ export function ArchivePage({
   kind,
   page,
   categorySlug,
+  extraPosts,
 }: {
   kind: ArchiveKind;
   page: number;
   categorySlug?: string;
+  extraPosts?: IndexPost[];
 }) {
   const [index, setIndex] = useState<IndexBundle | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -257,7 +259,10 @@ export function ArchivePage({
       const target = norm(categorySlug ?? "");
       const catId = Object.entries(cats).find(([, v]) => norm(v.slug) === target)?.[0];
       const catNum = catId ? Number(catId) : null;
-      posts = index.posts.filter((p) => (catNum == null ? false : p.categories?.includes(catNum)));
+      const merged = [...(extraPosts ?? []), ...index.posts];
+      posts = merged
+        .filter((p) => (catNum == null ? false : p.categories?.includes(catNum)))
+        .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
     } else if (kind === "shorts") {
       posts = index.shorts;
     } else {
@@ -279,7 +284,7 @@ export function ArchivePage({
       .split("__HOLE_ITEMS__").join(itemsHtml)
       .split("__HOLE_PAGINATION__").join(pagHtml)
       .split("__HOLE_RELATED_1__").join(relatedHtml);
-  }, [index, kind, page, categorySlug]);
+  }, [index, kind, page, categorySlug, extraPosts]);
 
   useEffect(() => {
     const base = TITLES[kind];

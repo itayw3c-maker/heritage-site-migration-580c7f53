@@ -16,6 +16,7 @@ export interface BlogPost {
   meta_description: string | null;
   cta: string | null;
   faq_json: Array<{ question: string; answer: string }> | null;
+  category_id: number | null;
   /** Pre-serialized JSON-LD, wire-safe for server-function payloads. */
   schema_jsonld: string | null;
   publish_at: string | null;
@@ -24,7 +25,7 @@ export interface BlogPost {
 }
 
 const COLUMNS =
-  "id, slug, title, h1, content_html, excerpt, featured_image, meta_title, meta_description, cta, faq_json, schema_jsonld, publish_at, created_at, updated_at";
+  "id, slug, title, h1, content_html, excerpt, featured_image, meta_title, meta_description, cta, faq_json, schema_jsonld, category_id, publish_at, created_at, updated_at";
 
 export function publicClient() {
   const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
