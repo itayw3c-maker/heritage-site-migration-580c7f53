@@ -1,5 +1,6 @@
-// Live sitemap for /blog articles (DB-driven, so it stays in sync with the
-// publish API). Referenced from public/robots.txt alongside the static sitemap.
+// Live sitemap for DB-published articles (kept in sync with the publish API).
+// Articles are served at root-level slugs, exactly like the migrated content.
+// Referenced from public/robots.txt alongside the build-time static sitemap.
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
@@ -20,13 +21,10 @@ export const Route = createFileRoute("/blog-sitemap.xml")({
           posts = [];
         }
 
-        const urls = [
-          `  <url>\n    <loc>${SITE}/blog/</loc>\n  </url>`,
-          ...posts.map(
-            (p) =>
-              `  <url>\n    <loc>${SITE}/blog/${encodeURIComponent(p.slug)}/</loc>\n    <lastmod>${p.updated_at.slice(0, 10)}</lastmod>\n  </url>`,
-          ),
-        ];
+        const urls = posts.map(
+          (p) =>
+            `  <url>\n    <loc>${SITE}/${encodeURIComponent(p.slug)}/</loc>\n    <lastmod>${p.updated_at.slice(0, 10)}</lastmod>\n  </url>`,
+        );
 
         const xml = [
           `<?xml version="1.0" encoding="UTF-8"?>`,

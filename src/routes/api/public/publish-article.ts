@@ -2,6 +2,7 @@
 // Auth: Authorization: Bearer <PUBLISH_TOKEN> only.
 import { createFileRoute } from "@tanstack/react-router";
 import type { Json } from "@/integrations/supabase/types";
+import { resolveCategory } from "@/lib/db-post";
 
 const SITE = "https://www.rrshamaut.co.il";
 
@@ -54,6 +55,7 @@ interface Payload {
   cta?: unknown;
   status?: unknown;
   published_at?: unknown;
+  category?: unknown;
 }
 
 const str = (v: unknown): string | null =>
@@ -86,6 +88,8 @@ export const Route = createFileRoute("/api/public/publish-article")({
         const status = rawStatus === "publish" ? "published" : "draft";
         const slug = str(body.slug) ? slugify(String(body.slug)) : slugify(title);
 
+        const categoryId = resolveCategory(body.category, `${title}\n${bodyHtml}`);
+
         const row = {
           post_type: "post",
           slug,
@@ -101,6 +105,7 @@ export const Route = createFileRoute("/api/public/publish-article")({
               ? (body.schema_jsonld as Json)
               : null,
           cta: str(body.cta),
+          category_id: categoryId,
           status,
           publish_at:
             str(body.published_at) ?? (status === "published" ? new Date().toISOString() : null),
@@ -134,7 +139,13 @@ export const Route = createFileRoute("/api/public/publish-article")({
           id = data.id;
         }
 
-        return json({ id, slug, status, url: `${SITE}/blog/${slug}/` });
+        return json({
+          id,
+          slug,
+          status,
+          category_id: categoryId,
+          url: `${SITE}/${slug}/`,
+        });
       },
 
       DELETE: async ({ request }) => {
