@@ -31,8 +31,11 @@ export async function loadContentRecord<T>(slug: string): Promise<T | null> {
   return fetchJson<T>(contentPathname(slug));
 }
 
-export async function loadRelated(slug: string): Promise<RelatedHtml> {
+export async function loadRelated(
+  slug: string,
+  cats?: number[],
+): Promise<RelatedHtml> {
   const idx = await fetchJson<{ posts?: IndexPostLite[] }>("/content/_indexes.json");
   if (!idx?.posts) return { w1: "", w2: "" };
-  return buildRelated(idx.posts, slug);
+  return buildRelated(idx.posts, slug, cats);
 }
