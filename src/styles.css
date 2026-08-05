@@ -1352,6 +1352,12 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
   transform: translateY(-2px);
   box-shadow: 0 14px 34px rgba(30, 58, 95, 0.26);
 }
+
+/* A global/Elementor button reset forces display:block on the <button>; re-assert the flex row card */
+.rr-social-float .rr-social-badge {
+  display: flex !important;
+}
+
 .rr-social-badge__icon {
   display: flex;
   align-items: center;
