@@ -20,7 +20,7 @@ export const Route = createFileRoute("/admin")({
     const { data: sess } = await supabase.auth.getSession();
     if (!sess.session) {
       if (!isLoginPath) {
-        throw redirect({ to: "/admin/login" });
+        throw redirect({ to: "/admin/login/" });
       }
       return;
     }
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/admin")({
     if (!isAdminData) {
       await supabase.auth.signOut();
       if (!isLoginPath) {
-        throw redirect({ to: "/admin/login" });
+        throw redirect({ to: "/admin/login/" });
       }
     }
   },
@@ -51,7 +51,7 @@ function AdminLayout() {
   async function handleSignOut() {
     const supabase = await loadSupabase();
     await supabase.auth.signOut();
-    router.navigate({ to: "/admin/login" });
+    router.navigate({ to: "/admin/login/" });
   }
 
   if (isLogin) {
@@ -70,10 +70,10 @@ function AdminLayout() {
     <div dir="rtl" className="admin-shell">
       <header className="admin-topbar">
         <div className="admin-topbar__inner">
-          <Link to="/admin/posts" className="admin-topbar__brand">ניהול תוכן</Link>
+          <Link to="/admin/posts/" className="admin-topbar__brand">ניהול תוכן</Link>
           <nav className="admin-topbar__nav">
-            <Link to="/admin/posts" className="admin-topbar__link" activeProps={{ className: "admin-topbar__link admin-topbar__link--active" }}>רשומות</Link>
-            <Link to="/admin/users" className="admin-topbar__link" activeProps={{ className: "admin-topbar__link admin-topbar__link--active" }}>משתמשים</Link>
+            <Link to="/admin/posts/" className="admin-topbar__link" activeProps={{ className: "admin-topbar__link admin-topbar__link--active" }}>רשומות</Link>
+            <Link to="/admin/users/" className="admin-topbar__link" activeProps={{ className: "admin-topbar__link admin-topbar__link--active" }}>משתמשים</Link>
           </nav>
           <div className="admin-topbar__user">
             {email ? <span className="admin-topbar__email">{email}</span> : null}

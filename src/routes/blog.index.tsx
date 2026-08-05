@@ -6,6 +6,6 @@ const ARTICLES_ARCHIVE = `/category/${encodeURIComponent("מידע-מקצועי"
 
 export const Route = createFileRoute("/blog/")({
   beforeLoad: () => {
-    throw redirect({ href: ARTICLES_ARCHIVE, statusCode: 301 });
+    throw redirect({ href: ARTICLES_ARCHIVE, statusCode: 301 } as unknown as Parameters<typeof redirect>[0]);
   },
 });

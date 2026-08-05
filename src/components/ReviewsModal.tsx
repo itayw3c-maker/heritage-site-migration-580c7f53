@@ -30,21 +30,20 @@ function ModalReviewCard({ review }: { review: Review }) {
   return (
     <li className="rr-review-card">
       <div className="rr-review-card__top">
-        {review.profile_photo_url ? (
-          <img
-            className="rr-review-card__avatar"
-            src={review.profile_photo_url}
-            alt=""
-            loading="lazy"
-            width={44}
-            height={44}
-            referrerPolicy="no-referrer"
-          />
-        ) : (
-          <span className="rr-review-card__avatar rr-review-card__avatar--initials">
-            {initials(review.author_name)}
-          </span>
-        )}
+        <span className="rr-review-card__avatar rr-review-card__avatar--initials" aria-hidden="true">
+          {initials(review.author_name)}
+          {review.profile_photo_url ? (
+            <img
+              src={review.profile_photo_url}
+              alt=""
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          ) : null}
+        </span>
         <div className="rr-review-card__meta">
           <span className="rr-review-card__name">{review.author_name}</span>
           {review.relative_time && (

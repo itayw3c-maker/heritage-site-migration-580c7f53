@@ -90,7 +90,7 @@ function EditPost() {
   return (
     <div className="admin-page">
       <div className="admin-page__head">
-        <button type="button" className="admin-btn admin-btn--ghost" onClick={() => router.navigate({ to: "/admin/posts" })}>→ חזרה לרשימה</button>
+        <button type="button" className="admin-btn admin-btn--ghost" onClick={() => router.navigate({ to: "/admin/posts/" })}>→ חזרה לרשימה</button>
         <h1 className="admin-page__title">עריכת רשומה</h1>
         <a
           href={`/admin/posts/${id}/preview`}
