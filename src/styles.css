@@ -1307,7 +1307,7 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
 .rr-social-float {
   position: fixed;
   /* clears the floating accessibility button that sits in the same corner */
-  inset-block-end: 96px;
+  inset-block-end: 200px;
   inset-inline-end: 20px;
   z-index: 9998;
   display: none;
