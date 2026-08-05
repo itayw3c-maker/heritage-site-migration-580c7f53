@@ -1310,18 +1310,17 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
 .rr-social-float {
   position: fixed;
   z-index: 9998;
-  display: flex;
+  display: none; /* hidden on mobile per client request */
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
-  /* MOBILE: on the left, just ABOVE the accessibility fab (left:12px, bottom:140px) */
   inset-inline-start: auto;
-  inset-inline-end: 12px;
-  inset-block-end: 200px;
+  inset-inline-end: 20px;
+  inset-block-end: 24px;
 }
 @media (min-width: 768px) {
   .rr-social-float {
-    /* DESKTOP: bottom-left corner; the accessibility fab (bottom:150px) sits above it */
+    display: flex; /* desktop only */
     inset-inline-end: 20px;
     inset-block-end: 24px;
   }
