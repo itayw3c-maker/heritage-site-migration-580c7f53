@@ -1306,7 +1306,8 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
 /* ============ Floating Google reviews badge + modal (rrshamaut branding) ==== */
 .rr-social-float {
   position: fixed;
-  inset-block-end: 20px;
+  /* clears the floating accessibility button that sits in the same corner */
+  inset-block-end: 96px;
   inset-inline-end: 20px;
   z-index: 9998;
   display: none;
