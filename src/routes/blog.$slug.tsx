@@ -5,6 +5,6 @@ export const Route = createFileRoute("/blog/$slug")({
   beforeLoad: ({ params }) => {
     let slug = params.slug;
     try { slug = decodeURIComponent(slug); } catch { /* keep raw */ }
-    throw redirect({ href: `/${encodeURIComponent(slug)}/`, statusCode: 301 });
+    throw redirect({ href: `/${encodeURIComponent(slug)}/`, statusCode: 301 } as unknown as Parameters<typeof redirect>[0]);
   },
 });

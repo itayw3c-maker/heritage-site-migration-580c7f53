@@ -105,7 +105,7 @@ function PostsList() {
               {filtered.map((r) => (
                 <tr key={r.id}>
                   <td>
-                    <Link to="/admin/posts/$id" params={{ id: r.id }} className="admin-link">
+                    <Link to="/admin/posts/$id/" params={{ id: r.id }} className="admin-link">
                       {r.title || <em>ללא כותרת</em>}
                     </Link>
                     <div className="admin-muted">/{r.slug}</div>

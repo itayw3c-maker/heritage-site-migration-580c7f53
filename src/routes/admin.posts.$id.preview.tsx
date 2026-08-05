@@ -83,7 +83,7 @@ function PreviewPage() {
       >
         <span>תצוגה מקדימה — {wp?.status ?? "…"}</span>
         <Link
-          to="/admin/posts/$id"
+          to="/admin/posts/$id/"
           params={{ id }}
           style={{ color: "#CBA436", textDecoration: "underline" }}
         >

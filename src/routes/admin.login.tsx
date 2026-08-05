@@ -68,7 +68,7 @@ function LoginPage() {
       return;
     }
     setLoading(false);
-    router.navigate({ to: "/admin/posts" });
+    router.navigate({ to: "/admin/posts/" });
   }
 
   async function handleReset(e: React.FormEvent) {
@@ -148,7 +148,7 @@ function LoginPage() {
       history.replaceState(null, "", window.location.pathname + window.location.search);
     }
     setMsg({ kind: "ok", text: "הסיסמה עודכנה בהצלחה" });
-    router.navigate({ to: "/admin/posts" });
+    router.navigate({ to: "/admin/posts/" });
   }
 
   const submitHandler =
