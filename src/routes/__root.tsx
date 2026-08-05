@@ -18,6 +18,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AccessibilityWidget } from "@/components/AccessibilityWidget";
 import { CookieBanner } from "@/components/CookieBanner";
+import { SocialRatingFloat } from "@/components/SocialRatingFloat";
 import { enhanceElementor } from "@/lib/elementor-enhance";
 import { hydrateFixDigital } from "@/lib/fixdigital";
 import { rememberPasswordRecovery } from "@/lib/password-recovery-flag";
@@ -340,6 +341,7 @@ function RootComponent() {
       {!isAdmin && <SiteFooter />}
       {!isAdmin && <AccessibilityWidget />}
       {!isAdmin && <CookieBanner />}
+      {!isAdmin && <SocialRatingFloat />}
     </QueryClientProvider>
   );
 }
