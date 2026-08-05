@@ -1225,3 +1225,80 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
   .lvbl-faq .lvbl-faq-q{padding:.875rem 1rem;font-size:1.05rem;}
   .lvbl-faq .lvbl-faq-a{padding:.875rem 1rem 1rem;font-size:1rem;}
 }
+
+/* ============ Client fixes ============ */
+
+/* 1. Floating Google reviews badge — larger on desktop only (~35%) */
+@media (min-width: 641px) {
+  #rpi-6226-static { width: 310px; }
+  #rpi-6226-static .rpi-badge,
+  .rpi-badge-cnt.rpi-badge-right .rpi-badge { width: 310px; min-width: 310px; }
+  #rpi-6226-static,
+  #rpi-6226-static.rpi-badge-cnt,
+  .rpi-badge-cnt.rpi-badge-right { max-width: 340px !important; }
+  #rpi-6226-static .rpi-badge-line { height: 8px; }
+  #rpi-6226-static .rpi-badge-body { gap: 14px; padding: 14px 16px; }
+  #rpi-6226-static .rpi-logo { width: 48px; height: 48px; }
+  #rpi-6226-static .rpi-name { font-size: 18px; }
+  #rpi-6226-static .rpi-stars { --rpi-star-size: 19px; font-size: 19px; }
+  #rpi-6226-static .rpi-based { font-size: 14px; }
+}
+
+/* 2. Default Elementor buttons: brand gold instead of the theme's green accent.
+   Buttons with their own explicit colors (higher specificity) are unaffected. */
+.elementor-widget-button .elementor-button {
+  background-color: #cba436;
+  color: #ffffff;
+  fill: #ffffff;
+}
+.elementor-widget-button .elementor-button:hover,
+.elementor-widget-button .elementor-button:focus {
+  background-color: #b8922c;
+  color: #ffffff;
+}
+.elementor-element-videos-all .elementor-button {
+  background-color: #cba436 !important;
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+.elementor-element-videos-all .elementor-button:hover,
+.elementor-element-videos-all .elementor-button:focus {
+  background-color: #b8922c !important;
+}
+
+/* 3. TikTok videos grid on /סרטונים/ */
+.lvbl-tiktok-section { margin-top: 40px; }
+.lvbl-tt-title {
+  font-family: "Assistant", Sans-serif;
+  font-weight: 800;
+  color: #056fc4;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.lvbl-tt-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+.lvbl-tt-item {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f5f7fb;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+}
+.lvbl-tt-frame {
+  display: block;
+  width: 100%;
+  height: 740px;
+  border: 0;
+}
+@media (max-width: 1024px) {
+  .lvbl-tt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .lvbl-tt-grid { grid-template-columns: 1fr; }
+  .lvbl-tt-frame { height: 700px; }
+}
