@@ -22,7 +22,11 @@
   direction: rtl;
   font-family: "Assistant", sans-serif;
   font-size: 16px;
+/* A global/Elementor button reset forces display:block on the <button>; re-assert the flex row card */
+.rr-social-float .rr-social-badge {
+  display: flex !important;
 }
+
 .elementor-pagination .page-numbers {
   display: inline-flex;
   align-items: center;
