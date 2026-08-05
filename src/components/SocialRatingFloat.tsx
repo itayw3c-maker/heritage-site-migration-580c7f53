@@ -53,6 +53,12 @@ export function SocialRatingFloat() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  useEffect(() => {
+    const openFromEvent = () => setOpen(true);
+    window.addEventListener("rr:open-reviews", openFromEvent);
+    return () => window.removeEventListener("rr:open-reviews", openFromEvent);
+  }, []);
+
   return (
     <>
       <div className="rr-social-float" aria-live="polite">
