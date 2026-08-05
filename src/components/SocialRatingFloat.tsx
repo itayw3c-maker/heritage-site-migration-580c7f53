@@ -42,7 +42,6 @@ export function Stars({ rating = 5, size = 14 }: { rating?: number; size?: numbe
 
 export function SocialRatingFloat() {
   const [open, setOpen] = useState(false);
-  const [visible, setVisible] = useState(true);
   const data = reviewsData;
 
   useEffect(() => {
@@ -57,47 +56,20 @@ export function SocialRatingFloat() {
   return (
     <>
       <div className="rr-social-float" aria-live="polite">
-        {visible && (
-          <button
-            type="button"
-            className="rr-social-badge"
-            onClick={() => setOpen(true)}
-            aria-label={`דירוג ${data.rating} בגוגל, ${data.total_reviews} ביקורות — פתיחת הביקורות`}
-          >
-            <span className="rr-social-badge__icon">
-              <GoogleG size={52} />
-            </span>
-            <span className="rr-social-badge__body">
-              <span className="rr-social-badge__rating">{data.rating.toFixed(1)}</span>
-              <Stars rating={data.rating} size={16} />
-              <span className="rr-social-badge__count">{data.total_reviews} ביקורות בגוגל</span>
-            </span>
-          </button>
-        )}
         <button
           type="button"
-          className="rr-social-toggle"
-          onClick={() => setVisible((v) => !v)}
-          aria-label={visible ? "הסתרת ווידג'ט הביקורות" : "הצגת ווידג'ט הביקורות"}
+          className="rr-social-badge"
+          onClick={() => setOpen(true)}
+          aria-label={`דירוג ${data.rating} בגוגל, ${data.total_reviews} ביקורות — פתיחת הביקורות`}
         >
-          {visible ? (
-            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                d="M6 6l12 12M18 6L6 18"
-              />
-            </svg>
-          ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-              />
-            </svg>
-          )}
+          <span className="rr-social-badge__icon">
+            <GoogleG size={52} />
+          </span>
+          <span className="rr-social-badge__body">
+            <span className="rr-social-badge__rating">{data.rating.toFixed(1)}</span>
+            <Stars rating={data.rating} size={16} />
+            <span className="rr-social-badge__count">{data.total_reviews} ביקורות בגוגל</span>
+          </span>
         </button>
       </div>
       {open && <ReviewsModal data={data} onClose={() => setOpen(false)} />}
