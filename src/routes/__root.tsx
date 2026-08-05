@@ -238,22 +238,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           },
         }),
       },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org/",
-          "@type": "Product",
-          name: "שירותי שמאות רכוש - רפאל RR",
-          description:
-            "שירותי שמאות רכוש מקצועיים ואמינים על ידי רפאל שמאות רכוש | RR. חוות דעת מומחה לבית משפט, נזקי מים, אש ופריצה.",
-          brand: { "@type": "Brand", name: "רפאל שמאות רכוש | RR" },
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "5.0",
-            ratingCount: "520",
-          },
-        }),
-      },
     ],
   }),
   shellComponent: RootShell,
