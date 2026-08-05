@@ -1307,17 +1307,31 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
 /* ============ Floating Google reviews badge + modal (rrshamaut branding) ==== */
 .rr-social-float {
   position: fixed;
-  /* clears the floating accessibility button that sits in the same corner */
-  inset-block-end: 200px;
-  inset-inline-end: 20px;
   z-index: 9998;
-  display: none;
+  display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
+  /* MOBILE: on the left, just ABOVE the accessibility fab (left:12px, bottom:140px) */
+  inset-inline-start: auto;
+  inset-inline-end: 12px;
+  inset-block-end: 200px;
 }
 @media (min-width: 768px) {
-  .rr-social-float { display: flex; }
+  .rr-social-float {
+    /* DESKTOP: bottom-left corner; the accessibility fab (bottom:150px) sits above it */
+    inset-inline-end: 20px;
+    inset-block-end: 24px;
+  }
+}
+/* MOBILE: compact badge */
+@media (max-width: 767px) {
+  .rr-social-badge { gap: 9px; padding: 8px 12px; }
+  .rr-social-badge__icon { width: 40px; height: 40px; }
+  .rr-social-badge__icon svg { width: 30px; height: 30px; }
+  .rr-social-badge__rating { font-size: 16px; }
+  .rr-social-badge__count { font-size: 11px; }
+  .rr-social-badge .rr-stars svg { width: 12px !important; height: 12px !important; }
 }
 .rr-social-badge {
   display: flex;
@@ -1348,19 +1362,6 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
 .rr-social-badge__body { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15; }
 .rr-social-badge__rating { font-size: 20px; font-weight: 800; color: #1e3a5f; }
 .rr-social-badge__count { white-space: nowrap; font-size: 12px; color: #5b6a7d; margin-top: 2px; }
-.rr-social-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  border: none;
-  background: #1e3a5f;
-  color: #c9a227;
-  cursor: pointer;
-  box-shadow: 0 6px 16px rgba(30, 58, 95, 0.3);
-}
 .rr-reviews-overlay {
   position: fixed;
   inset: 0;
@@ -1424,11 +1425,13 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
 .rr-review-card:last-child { border-bottom: none; }
 .rr-review-card__top { display: flex; align-items: center; gap: 10px; }
 .rr-review-card__avatar {
+  position: relative;
   width: 44px;
   height: 44px;
+  flex-shrink: 0;
   border-radius: 999px;
-  object-fit: cover;
   background: #1e3a5f;
+  overflow: hidden;
 }
 .rr-review-card__avatar--initials {
   display: inline-flex;
@@ -1436,6 +1439,14 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
   justify-content: center;
   color: #fff;
   font-weight: 700;
+  font-size: 15px;
+}
+.rr-review-card__avatar img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .rr-review-card__meta { display: flex; flex-direction: column; line-height: 1.25; }
 .rr-review-card__name { font-weight: 700; color: #1e3a5f; font-size: 15px; }
