@@ -410,7 +410,8 @@ export function enhanceElementor(root: ParentNode = document) {
   addSubmenuArrows(root);
   applyStickies(root);
   mountTrustindexLazy();
-  mountRpiBadge();
+  // The floating Google badge is now the React SocialRatingFloat widget
+  // (badge + reviews modal); the old static rpi badge is not injected anymore.
   decodeCfEmails(root);
   setupLeadForms(document);
   animateCounters(root);
