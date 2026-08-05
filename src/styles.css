@@ -1,3 +1,4 @@
+/* sync-test: confirming GitHub push reaches Lovable deploy pipeline */
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
