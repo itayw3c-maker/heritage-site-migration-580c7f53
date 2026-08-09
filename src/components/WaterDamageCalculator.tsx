@@ -171,6 +171,51 @@ export function WaterDamageCalculator() {
 
   return (
     <div dir="rtl" className="mx-auto w-full max-w-3xl px-4 py-8" id="wdc-top">
+      {/* The site theme applies an UNLAYERED reset to every bare <button>/<a>:
+          pink (#CC3366) text + 1px pink border at rest, and a pink background
+          on hover/focus. Because unlayered CSS beats Tailwind's @layer
+          utilities regardless of specificity, our controls can't style their
+          own color/background/border via utility classes — so we drive them
+          from this unlayered, #wdc-top-scoped stylesheet via marker classes
+          (.wdc-opt/.wdc-cta/.wdc-wa/.wdc-outline/.wdc-ghost). */}
+      <style>{`
+        /* Neutral reset for every control: theme's 1px pink border + pink text
+           + transparent bg are cancelled. Categories below re-apply our design.
+           These rules are unlayered so they beat the theme (higher specificity)
+           and Tailwind's @layer utilities (unlayered always wins over layers),
+           which is why color/background/border are driven from here, not from
+           utility classes, for the calculator's <button>/<a> elements. */
+        #wdc-top button, #wdc-top a {
+          color: inherit;
+          background-color: transparent;
+          border: 0 solid transparent;
+          text-decoration: none;
+        }
+        #wdc-top button:hover, #wdc-top button:focus,
+        #wdc-top a:hover, #wdc-top a:focus { color: inherit; background-color: transparent; }
+
+        /* selectable card / option / room */
+        #wdc-top .wdc-opt { border-width: 2px; border-style: solid; border-color: #e5e7eb; color: #111827; }
+        #wdc-top .wdc-opt:hover, #wdc-top .wdc-opt:focus { border-color: rgba(203,164,54,.6); background-color: rgba(203,164,54,.06); color: #111827; }
+        #wdc-top .wdc-opt.is-active { border-color: #CBA436; background-color: rgba(203,164,54,.09); color: #111827; }
+
+        /* primary gold CTA */
+        #wdc-top .wdc-cta { background-color: #CBA436; color: #fff; }
+        #wdc-top .wdc-cta:hover, #wdc-top .wdc-cta:focus { background-color: #B8912D; color: #fff; }
+        #wdc-top .wdc-cta:disabled { opacity: .6; }
+
+        /* WhatsApp */
+        #wdc-top .wdc-wa { background-color: #25D366; color: #fff; }
+        #wdc-top .wdc-wa:hover, #wdc-top .wdc-wa:focus { background-color: #1fb457; color: #fff; }
+
+        /* outline gold (call) */
+        #wdc-top .wdc-outline { border-width: 2px; border-style: solid; border-color: #CBA436; color: #B8912D; }
+        #wdc-top .wdc-outline:hover, #wdc-top .wdc-outline:focus { background-color: rgba(203,164,54,.08); color: #B8912D; }
+
+        /* ghost (back / new-calculation) */
+        #wdc-top .wdc-ghost { color: #4b5563; }
+        #wdc-top .wdc-ghost:hover, #wdc-top .wdc-ghost:focus { background-color: #f3f4f6; color: #374151; }
+      `}</style>
       <header className="mb-6 text-center">
         <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
           מחשבון להערכת נזקי מים
@@ -220,7 +265,7 @@ export function WaterDamageCalculator() {
             <button
               type="button"
               onClick={goBack}
-              className="inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+              className="wdc-ghost inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
             >
               <ArrowRight className="h-4 w-4" />
               חזרה
@@ -233,14 +278,7 @@ export function WaterDamageCalculator() {
             <button
               type="button"
               onClick={goNext}
-              className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-base font-bold text-white shadow-sm transition-colors"
-              style={{ backgroundColor: GOLD }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.backgroundColor = GOLD_DARK)
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.backgroundColor = GOLD)
-              }
+              className="wdc-cta inline-flex items-center gap-2 rounded-lg px-6 py-3 text-base font-bold shadow-sm transition-colors"
             >
               {isLastQuestion ? (
                 <>
@@ -260,7 +298,7 @@ export function WaterDamageCalculator() {
             <button
               type="button"
               onClick={reset}
-              className="inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+              className="wdc-ghost inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
             >
               <RotateCcw className="h-4 w-4" />
               חישוב חדש
@@ -312,10 +350,8 @@ function StepBody({
                   type="button"
                   onClick={() => onSelectType(card.id)}
                   className={cn(
-                    "flex h-full items-start gap-3 rounded-xl border-2 p-4 text-right transition-all",
-                    active
-                      ? "border-[#CBA436] bg-[#CBA436]/5"
-                      : "border-gray-200 hover:border-[#CBA436]/60 hover:bg-gray-50",
+                    "wdc-opt flex h-full items-start gap-3 rounded-xl p-4 text-right transition-all",
+                    active && "is-active",
                   )}
                 >
                   <span
@@ -500,10 +536,8 @@ function OptionList({
             type="button"
             onClick={() => onChange(opt.value)}
             className={cn(
-              "flex w-full items-center gap-3 rounded-xl border-2 p-4 text-right transition-all",
-              active
-                ? "border-[#CBA436] bg-[#CBA436]/5"
-                : "border-gray-200 hover:border-[#CBA436]/60 hover:bg-gray-50",
+              "wdc-opt flex w-full items-center gap-3 rounded-xl p-4 text-right transition-all",
+              active && "is-active",
             )}
           >
             <span
@@ -600,10 +634,8 @@ function RoomsSelect({
             type="button"
             onClick={() => onChange(opt.v)}
             className={cn(
-              "rounded-xl border-2 px-3 py-3 text-center text-sm font-medium transition-all",
-              active
-                ? "border-[#CBA436] bg-[#CBA436]/5 text-gray-900"
-                : "border-gray-200 text-gray-700 hover:border-[#CBA436]/60 hover:bg-gray-50",
+              "wdc-opt rounded-xl px-3 py-3 text-center text-sm font-medium transition-all",
+              active && "is-active",
             )}
           >
             {opt.label}
@@ -694,15 +726,14 @@ function ContactBar() {
         href={wa}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 py-3 font-bold text-white shadow-sm transition-opacity hover:opacity-90"
+        className="wdc-wa inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-bold shadow-sm transition-colors"
       >
         <MessageCircle className="h-5 w-5" />
         יצירת קשר בוואטסאפ
       </a>
       <a
         href={`tel:${WDC_CONFIG.contact.phoneDigits}`}
-        className="inline-flex items-center justify-center gap-2 rounded-xl border-2 px-5 py-3 font-bold transition-colors hover:bg-gray-50"
-        style={{ borderColor: GOLD, color: GOLD_DARK }}
+        className="wdc-outline inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-bold transition-colors"
       >
         <Phone className="h-5 w-5" />
         חיוג ישיר: {WDC_CONFIG.contact.phoneDisplay}
@@ -874,12 +905,7 @@ function LeadForm({ result }: { result: ReturnType<typeof calculate> }) {
       <button
         type="submit"
         disabled={submitting}
-        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-bold text-white shadow-sm transition-colors disabled:opacity-60"
-        style={{ backgroundColor: GOLD }}
-        onMouseOver={(e) =>
-          !submitting && (e.currentTarget.style.backgroundColor = GOLD_DARK)
-        }
-        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = GOLD)}
+        className="wdc-cta mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-bold shadow-sm transition-colors"
       >
         {submitting ? "שולח..." : "שליחת פרטים"}
       </button>
