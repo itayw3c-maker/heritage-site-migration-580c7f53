@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GoogleG, Stars } from "@/components/SocialRatingFloat";
 
 type Review = {
@@ -27,20 +27,22 @@ function initials(name: string) {
 }
 
 function ModalReviewCard({ review }: { review: Review }) {
+  const [photoLoaded, setPhotoLoaded] = useState(false);
+  const [photoFailed, setPhotoFailed] = useState(false);
   return (
     <li className="rr-review-card">
       <div className="rr-review-card__top">
         <span className="rr-review-card__avatar rr-review-card__avatar--initials" aria-hidden="true">
           {initials(review.author_name)}
-          {review.profile_photo_url ? (
+          {review.profile_photo_url && !photoFailed ? (
             <img
               src={review.profile_photo_url}
               alt=""
               loading="lazy"
               referrerPolicy="no-referrer"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
+              style={{ opacity: photoLoaded ? 1 : 0 }}
+              onLoad={() => setPhotoLoaded(true)}
+              onError={() => setPhotoFailed(true)}
             />
           ) : null}
         </span>
