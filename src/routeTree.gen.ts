@@ -13,6 +13,7 @@ import { Route as BlogSitemapDotxmlRouteImport } from './routes/blog-sitemap[.]x
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as AdminRouteRouteImport } from './routes/admin.route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WaterDamageCalculatorRouteImport } from './routes/water-damage-calculator'
 import { Route as SuccessIndexRouteImport } from './routes/success.index'
 import { Route as ShortsIndexRouteImport } from './routes/shorts.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -49,6 +50,11 @@ const AdminRouteRoute = AdminRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WaterDamageCalculatorRoute = WaterDamageCalculatorRouteImport.update({
+  id: '/water-damage-calculator',
+  path: '/water-damage-calculator',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SuccessIndexRoute = SuccessIndexRouteImport.update({
@@ -140,6 +146,7 @@ const AdminPostsIdPreviewRoute = AdminPostsIdPreviewRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/water-damage-calculator': typeof WaterDamageCalculatorRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
   '/blog-sitemap.xml': typeof BlogSitemapDotxmlRoute
@@ -163,6 +170,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/water-damage-calculator': typeof WaterDamageCalculatorRoute
   '/$': typeof SplatRoute
   '/blog-sitemap.xml': typeof BlogSitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
@@ -186,6 +194,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/water-damage-calculator': typeof WaterDamageCalculatorRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
   '/blog-sitemap.xml': typeof BlogSitemapDotxmlRoute
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/water-damage-calculator'
     | '/admin'
     | '/$'
     | '/blog-sitemap.xml'
@@ -234,6 +244,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/water-damage-calculator'
     | '/$'
     | '/blog-sitemap.xml'
     | '/admin/login'
@@ -256,6 +267,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/water-damage-calculator'
     | '/admin'
     | '/$'
     | '/blog-sitemap.xml'
@@ -280,6 +292,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  WaterDamageCalculatorRoute: typeof WaterDamageCalculatorRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
   BlogSitemapDotxmlRoute: typeof BlogSitemapDotxmlRoute
@@ -324,6 +337,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/water-damage-calculator': {
+      id: '/water-damage-calculator'
+      path: '/water-damage-calculator'
+      fullPath: '/water-damage-calculator'
+      preLoaderRoute: typeof WaterDamageCalculatorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/success/': {
@@ -482,6 +502,7 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  WaterDamageCalculatorRoute: WaterDamageCalculatorRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   SplatRoute: SplatRoute,
   BlogSitemapDotxmlRoute: BlogSitemapDotxmlRoute,

@@ -874,7 +874,7 @@ function mountMenuReviews() {
 }
 // ---------------- Lead form submission ----------------
 
-type FormPayload = {
+export type FormPayload = {
   name: string;
   phone: string;
   email: string | null;
@@ -919,6 +919,84 @@ function showFormMessage(
 function markInvalid(el: Element, invalid: boolean) {
   if (invalid) el.classList.add("rr-field-error");
   else el.classList.remove("rr-field-error");
+}
+
+/**
+ * Sends a validated lead through the full pipeline: Supabase `leads` insert,
+ * FixDigital attribution POST, and the email notification server fn.
+ * Shared by the Elementor form handler (submitLead) and the React forms
+ * (e.g. the water-damage calculator) so the pipeline lives in one place.
+ * Throws if the Supabase insert fails; FixDigital / notify failures are
+ * swallowed (best-effort) so a lead is never lost to a side-channel error.
+ */
+export async function sendLeadPayload(payload: FormPayload): Promise<void> {
+  const { supabase } = await import("@/integrations/supabase/client");
+  const { error } = await supabase.from("leads").insert(payload);
+  if (error) throw error;
+  // Send lead to FixDigital.
+  // NOTE on api_type=8: the integrate.js script only assigns self.leadUrl
+  // when api_type is 3 or 4, so window.fixdigital.sendLead posts to
+  // "undefined?…" and silently fails. We POST directly to add-lead-form
+  // and attach the tracking context (channelID/viewID from the cookies
+  // the script wrote) so the lead is attributed to the right channel.
+  try {
+    const getCookie = (name: string): string => {
+      const m = document.cookie.match(
+        new RegExp("(?:^|; )" + name.replace(/\./g, "\\.") + "=([^;]*)"),
+      );
+      return m ? decodeURIComponent(m[1]) : "";
+    };
+    const w = window as unknown as {
+      fixdigital_params?: {
+        api_clientkey?: string;
+        api_tenantkey?: string;
+        api_projectid?: string;
+        api_projecttypeid?: string;
+        api_type?: number | string;
+      };
+    };
+    const params = w.fixdigital_params ?? {};
+    const fd = new FormData();
+    fd.append("channelID", getCookie("fixdigital.origin_channeld") || "");
+    fd.append("viewID", getCookie("fixdigital.origin_viewid") || "");
+    fd.append("original_referrer", getCookie("fixdigital.origin_referer") || "");
+    fd.append("referrer", getCookie("fixdigital.referer") || "");
+    fd.append("visitorID", getCookie("fixdigital.origin_visitorid") || "");
+    fd.append("clientID", params.api_clientkey ?? "");
+    fd.append("tenantID", params.api_tenantkey ?? "");
+    fd.append("projectID", params.api_projectid ?? "");
+    fd.append("projectTypeID", params.api_projecttypeid ?? "");
+    fd.append("apitype", String(params.api_type ?? ""));
+    fd.append("pageUrl", payload.page_url);
+    fd.append("formUrl", payload.page_url);
+    // Lead fields
+    fd.append("name", payload.name);
+    fd.append("phone", payload.phone);
+    if (payload.email) fd.append("email", payload.email);
+    if (payload.damage_type) fd.append("damage_type", payload.damage_type);
+    if (payload.message) fd.append("message", payload.message);
+    fd.append("source", payload.form_name);
+    // keepalive so navigation right after doesn't abort the request
+    await fetch("https://api.fixdigital.co.il/add-lead-form", {
+      method: "POST",
+      body: fd,
+      mode: "no-cors",
+      keepalive: true,
+    }).catch((e) => console.warn("fixdigital lead POST failed", e));
+  } catch (e) {
+    console.warn("fixdigital lead failed", e);
+  }
+  try {
+    const { notifyLead } = await import("@/lib/leads.functions");
+    // Await so the request completes before we navigate (fetch would abort).
+    // Cap so a slow send never blocks the UX.
+    await Promise.race([
+      notifyLead({ data: payload }),
+      new Promise((resolve) => setTimeout(resolve, 8000)),
+    ]);
+  } catch (e) {
+    console.warn("lead email notify failed", e);
+  }
 }
 
 async function submitLead(form: HTMLFormElement) {
@@ -1005,76 +1083,7 @@ async function submitLead(form: HTMLFormElement) {
   if (submitBtn) submitBtn.disabled = true;
 
   try {
-    const { supabase } = await import("@/integrations/supabase/client");
-    const { error } = await supabase.from("leads").insert(payload);
-    if (error) throw error;
-    // Send lead to FixDigital.
-    // NOTE on api_type=8: the integrate.js script only assigns self.leadUrl
-    // when api_type is 3 or 4, so window.fixdigital.sendLead posts to
-    // "undefined?…" and silently fails. We POST directly to add-lead-form
-    // and attach the tracking context (channelID/viewID from the cookies
-    // the script wrote) so the lead is attributed to the right channel.
-    try {
-      const getCookie = (name: string): string => {
-        const m = document.cookie.match(
-          new RegExp("(?:^|; )" + name.replace(/\./g, "\\.") + "=([^;]*)"),
-        );
-        return m ? decodeURIComponent(m[1]) : "";
-      };
-      const w = window as unknown as {
-        fixdigital_params?: {
-          api_clientkey?: string;
-          api_tenantkey?: string;
-          api_projectid?: string;
-          api_projecttypeid?: string;
-          api_type?: number | string;
-        };
-      };
-      const params = w.fixdigital_params ?? {};
-      const fd = new FormData();
-      fd.append("channelID", getCookie("fixdigital.origin_channeld") || "");
-      fd.append("viewID", getCookie("fixdigital.origin_viewid") || "");
-      fd.append(
-        "original_referrer",
-        getCookie("fixdigital.origin_referer") || "",
-      );
-      fd.append("referrer", getCookie("fixdigital.referer") || "");
-      fd.append("visitorID", getCookie("fixdigital.origin_visitorid") || "");
-      fd.append("clientID", params.api_clientkey ?? "");
-      fd.append("tenantID", params.api_tenantkey ?? "");
-      fd.append("projectID", params.api_projectid ?? "");
-      fd.append("projectTypeID", params.api_projecttypeid ?? "");
-      fd.append("apitype", String(params.api_type ?? ""));
-      fd.append("pageUrl", payload.page_url);
-      fd.append("formUrl", payload.page_url);
-      // Lead fields
-      fd.append("name", payload.name);
-      fd.append("phone", payload.phone);
-      if (payload.email) fd.append("email", payload.email);
-      if (payload.damage_type) fd.append("damage_type", payload.damage_type);
-      if (payload.message) fd.append("message", payload.message);
-      fd.append("source", payload.form_name);
-      // keepalive so navigation right after doesn't abort the request
-      await fetch("https://api.fixdigital.co.il/add-lead-form", {
-        method: "POST",
-        body: fd,
-        mode: "no-cors",
-        keepalive: true,
-      }).catch((e) => console.warn("fixdigital lead POST failed", e));
-    } catch (e) {
-      console.warn("fixdigital lead failed", e);
-    }
-    try {
-      const { notifyLead } = await import("@/lib/leads.functions");
-      // Await so the request completes before we navigate (fetch would abort).
-      // Cap so a slow send never blocks the UX.
-      await Promise.race([
-        notifyLead({ data: payload }),
-        new Promise((resolve) => setTimeout(resolve, 8000)),
-      ]);
-    } catch (e) {
-      console.warn("lead email notify failed", e);
-    }
+    await sendLeadPayload(payload);
     window.location.href = "/thank-you/";
   } catch (err) {
     console.error("lead submit failed", err);
