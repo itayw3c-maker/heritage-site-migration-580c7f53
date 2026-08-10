@@ -1172,14 +1172,14 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.85);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-  color: #cba436;
+  color: #cba436 !important;
   cursor: pointer;
   opacity: 0.9;
 }
 .elementor-widget-image-carousel .swiper .e-injected-swiper-button svg {
   width: 14px;
   height: 14px;
-  fill: currentColor;
+  fill: #cba436 !important;
 }
 .elementor-widget-image-carousel .swiper .e-injected-swiper-button:hover { opacity: 1; }
 .elementor-widget-image-carousel .swiper .e-injected-swiper-button.elementor-swiper-button-prev { left: 6px; }
