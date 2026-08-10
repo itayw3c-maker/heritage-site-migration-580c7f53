@@ -1552,3 +1552,17 @@ footer .elementor-element-b655895 .elementor-custom-embed {
   .rr-shabbat-icon { width: 15px; height: 15px; }
   .rr-shabbat-icon svg { width: 9px; height: 9px; }
 }
+
+/* Screen-reader-only utility — used for the injected H1 on static pages
+   (about/team/jobs) that ship styled headings without a real <h1>. */
+.rr-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

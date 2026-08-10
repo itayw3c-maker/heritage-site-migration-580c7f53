@@ -73,8 +73,12 @@ export function buildSeoHead(rec: SeoRecord | null | undefined): HeadFragment {
   if (rec.twitter?.twitter_card) {
     meta.push({ name: "twitter:card", content: rec.twitter.twitter_card });
   }
-  if (rec.twitter?.twitter_image) {
-    meta.push({ name: "twitter:image", content: rec.twitter.twitter_image });
+  // Fall back to the page's own og:image so Twitter/X cards use the local
+  // per-page image instead of the root default (which was a stale
+  // Lovable-preview URL). Every page ships a local og:image.
+  const twitterImage = rec.twitter?.twitter_image || rec.og_image?.url;
+  if (twitterImage) {
+    meta.push({ name: "twitter:image", content: twitterImage });
   }
   if (rec.twitter?.twitter_misc) {
     const labels = Object.keys(rec.twitter.twitter_misc);

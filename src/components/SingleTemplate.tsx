@@ -140,7 +140,22 @@ export function SingleTemplate({
   }, [record, slug, relatedProp]);
 
   const html = useMemo(() => {
-    if (record.type === "static") return stripBrInStyle(record.main_html ?? "");
+    if (record.type === "static") {
+      const base = stripBrInStyle(record.main_html ?? "");
+      // SEO: static Elementor pages (about, team, jobs) use styled <h2>/<div>
+      // headings and ship no <h1>. Guarantee exactly one keyword-bearing H1 by
+      // prepending a screen-reader-only H1 from the page title when none exists.
+      if (base && !/<h1[\s>]/i.test(base)) {
+        const heading = (record.title ?? "")
+          .replace(/<[^>]+>/g, "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .trim();
+        if (heading) return `<h1 class="rr-sr-only">${heading}</h1>` + base;
+      }
+      return base;
+    }
     const tpl = TEMPLATES[record.type];
     return tpl ? stripBrInStyle(fill(tpl, record, related.w1)) : "";
   }, [record, related.w1]);
