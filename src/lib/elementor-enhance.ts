@@ -56,14 +56,45 @@ function spacingOf(v: unknown): number | undefined {
 }
 
 function initSwipers(root: ParentNode) {
-  if (!root.querySelector(".swiper, .swiper-container")) return;
-  void loadSwiper().then((S) => initSwipersWith(root, S));
+  // Swiper (~84KB + its per-carousel init) is the single heaviest bit of
+  // main-thread JS on the home page. Load + initialise each carousel only when
+  // it nears the viewport, so below-the-fold carousels don't block first load.
+  const widgets = Array.from(
+    root.querySelectorAll<HTMLElement>(".elementor-widget[data-settings]"),
+  ).filter(
+    (w) =>
+      w.querySelector(".swiper, .swiper-container") &&
+      !(w as HTMLElement & { _swiperObserved?: boolean })._swiperObserved,
+  );
+  if (!widgets.length) return;
+  const mark = (w: HTMLElement) => {
+    (w as HTMLElement & { _swiperObserved?: boolean })._swiperObserved = true;
+  };
+  if (typeof IntersectionObserver === "undefined") {
+    widgets.forEach(mark);
+    void loadSwiper().then((S) => widgets.forEach((w) => initOneSwiper(w, S)));
+    return;
+  }
+  const io = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        obs.unobserve(entry.target);
+        const widget = entry.target as HTMLElement;
+        void loadSwiper().then((S) => initOneSwiper(widget, S));
+      });
+    },
+    { rootMargin: "300px 0px" },
+  );
+  widgets.forEach((w) => {
+    mark(w);
+    io.observe(w);
+  });
 }
 
-function initSwipersWith(root: ParentNode, S: SwiperBundle) {
+function initOneSwiper(widget: HTMLElement, S: SwiperBundle) {
   const { Swiper, Navigation, Pagination, Autoplay } = S;
-  const widgets = root.querySelectorAll<HTMLElement>(".elementor-widget[data-settings]");
-  widgets.forEach((widget) => {
+  {
     const swiperEl = widget.querySelector<HTMLElement>(".swiper, .swiper-container");
     if (!swiperEl) return;
     if ((swiperEl as HTMLElement & { _swiperInited?: boolean })._swiperInited) return;
@@ -157,7 +188,7 @@ function initSwipersWith(root: ParentNode, S: SwiperBundle) {
     } catch (e) {
       console.warn("swiper init failed", e);
     }
-  });
+  }
 }
 
 function hydrateLazyMedia(root: ParentNode) {
