@@ -51,7 +51,7 @@ function NotFoundRoute() {
 
 function PlaceholderPage() {
   const { _splat } = Route.useParams();
-  const { record: ssrRecord, related: ssrRelated } = Route.useLoaderData();
+  const { record: ssrRecord, related: ssrRelated, seo } = Route.useLoaderData();
   const slug = decodeURIComponent(_splat ?? "").replace(/^\/+|\/+$/g, "");
   const [record, setRecord] = useState<SingleRecord | null>(null);
   const [status, setStatus] = useState<"loading" | "found" | "missing">("loading");
@@ -92,7 +92,18 @@ function PlaceholderPage() {
   }
 
   if (status === "loading") {
-    return <div style={{ minHeight: "60vh" }} />;
+    // Static pages (about/jobs/team) are skipped by the SSR content loader to
+    // keep their ~300KB records out of the HTML, so their body renders
+    // client-side. Emit an SSR H1 + intro from the SEO record so the initial
+    // HTML carries the page's topic and a real <h1> for crawlers.
+    const ssrTitle = seo?.og?.og_title;
+    const ssrDesc = seo?.og?.og_description;
+    return (
+      <div style={{ minHeight: "60vh" }}>
+        {ssrTitle ? <h1 className="rr-sr-only">{ssrTitle}</h1> : null}
+        {ssrDesc ? <p className="rr-sr-only">{ssrDesc}</p> : null}
+      </div>
+    );
   }
 
   return <NotFound404 />;

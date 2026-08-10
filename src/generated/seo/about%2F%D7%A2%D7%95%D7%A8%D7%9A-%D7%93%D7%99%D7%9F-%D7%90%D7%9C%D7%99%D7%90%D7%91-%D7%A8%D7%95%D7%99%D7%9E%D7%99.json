@@ -1,0 +1,24 @@
+{
+  "canonical": "https://www.rrshamaut.co.il/about/עורך-דין-אליאב-רוימי/",
+  "robots": {
+    "index": "index",
+    "follow": "follow",
+    "max-snippet": "max-snippet:-1",
+    "max-image-preview": "max-image-preview:large",
+    "max-video-preview": "max-video-preview:-1"
+  },
+  "og": {
+    "og_locale": "he_IL",
+    "og_type": "article",
+    "og_title": "עו\"ד אליאב רוימי – מכיר את חברות הביטוח מבפנים | רפאל שמאות רכוש",
+    "og_description": "עו\"ד אליאב רוימי, בעל ניסיון של למעלה מעשור בדיני ביטוח ונזקי רכוש, מייצג מבוטחים מול חברות הביטוח בתביעות נזקי מים, אש, פריצה ורטיבות. ליווי מקצועי בעברית ובאנגלית.",
+    "og_url": "https://www.rrshamaut.co.il/about/עורך-דין-אליאב-רוימי/",
+    "og_site_name": "רפאל שמאות רכוש | RR"
+  },
+  "og_image": {
+    "url": "https://www.rrshamaut.co.il/wp-content/uploads/2026/07/eliav-roimi-512x512.jpg"
+  },
+  "twitter": {
+    "twitter_card": "summary_large_image"
+  }
+}
