@@ -1,1 +1,142 @@
-{"canonical":"https://www.rrshamaut.co.il/","robots":{"index":"index","follow":"follow","max-snippet":"max-snippet:-1","max-image-preview":"max-image-preview:large","max-video-preview":"max-video-preview:-1"},"og":{"og_locale":"he_IL","og_type":"article","og_title":"שמאי רכוש רפאל ריבוח - הערכת נזקים מקצועית מול חברות הביטוח","og_description":"שמאי רכוש רפאל ריבוח המבין את עולם הביטוח מבפנים ובעל ניסיון בייצוג מבוטחים מול חברות הביטוח, הערכת נזק וחוות דעת לביה\"מ לקבלת פיצוי הוגן.","og_url":"https://www.rrshamaut.co.il/","og_site_name":"רפאל שמאות רכוש | RR","article_modified_time":"2026-07-09T07:03:07+00:00"},"og_image":{"width":523,"height":477,"url":"https://www.rrshamaut.co.il/wp-content/uploads/2024/04/אייקון-לוגו-ללא-רקע-1.png","type":"image/png"},"twitter":{"twitter_card":"summary_large_image","twitter_misc":{"זמן קריאה מוערך":"37 דקות"}},"schema":{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://www.rrshamaut.co.il/","url":"https://www.rrshamaut.co.il/","name":"שמאי רכוש רפאל ריבוח - הערכת נזקים מקצועית מול חברות הביטוח","isPartOf":{"@id":"https://www.rrshamaut.co.il/#website"},"primaryImageOfPage":{"@id":"https://www.rrshamaut.co.il/#primaryimage"},"image":{"@id":"https://www.rrshamaut.co.il/#primaryimage"},"thumbnailUrl":"https://www.rrshamaut.co.il/wp-content/uploads/2024/04/אייקון-לוגו-ללא-רקע-1.png","datePublished":"2026-01-15T04:51:20+00:00","dateModified":"2026-07-09T07:03:07+00:00","description":"שמאי רכוש רפאל ריבוח המבין את עולם הביטוח מבפנים ובעל ניסיון בייצוג מבוטחים מול חברות הביטוח, הערכת נזק וחוות דעת לביה\"מ לקבלת פיצוי הוגן.","breadcrumb":{"@id":"https://www.rrshamaut.co.il/#breadcrumb"},"inLanguage":"he-IL","potentialAction":[{"@type":"ReadAction","target":["https://www.rrshamaut.co.il/"]}]},{"@type":"ImageObject","inLanguage":"he-IL","@id":"https://www.rrshamaut.co.il/#primaryimage","url":"https://www.rrshamaut.co.il/wp-content/uploads/2024/04/אייקון-לוגו-ללא-רקע-1.png","contentUrl":"https://www.rrshamaut.co.il/wp-content/uploads/2024/04/אייקון-לוגו-ללא-רקע-1.png","width":523,"height":477,"caption":"רפאל שמאות רכוש - שמאי נזקי מים, אש ורכוש"},{"@type":"BreadcrumbList","@id":"https://www.rrshamaut.co.il/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"דף הבית","item":"https://www.rrshamaut.co.il/"},{"@type":"ListItem","position":2,"name":"דף הבית"}]},{"@type":"WebSite","@id":"https://www.rrshamaut.co.il/#website","url":"https://www.rrshamaut.co.il/","name":"רפאל שמאות רכוש | RR","description":"ניהול תביעות | הערכת נזקים | ייעוץ וליווי","publisher":{"@id":"https://www.rrshamaut.co.il/#organization"},"potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://www.rrshamaut.co.il/?s={search_term_string}"},"query-input":{"@type":"PropertyValueSpecification","valueRequired":true,"valueName":"search_term_string"}}],"inLanguage":"he-IL"},{"@type":"Organization","@id":"https://www.rrshamaut.co.il/#organization","name":"רפאל שמאות רכוש","url":"https://www.rrshamaut.co.il/","logo":{"@type":"ImageObject","inLanguage":"he-IL","@id":"https://www.rrshamaut.co.il/#/schema/logo/image/","url":"https://www.rrshamaut.co.il/wp-content/uploads/2024/04/לוגו.png","contentUrl":"https://www.rrshamaut.co.il/wp-content/uploads/2024/04/לוגו.png","width":548,"height":117,"caption":"רפאל שמאות רכוש"},"image":{"@id":"https://www.rrshamaut.co.il/#/schema/logo/image/"},"sameAs":["https://www.facebook.com/rrshamaut/","https://www.tiktok.com/@rephaelshamaut"]}]}}
+{
+  "canonical": "https://www.rrshamaut.co.il/",
+  "robots": {
+    "index": "index",
+    "follow": "follow",
+    "max-snippet": "max-snippet:-1",
+    "max-image-preview": "max-image-preview:large",
+    "max-video-preview": "max-video-preview:-1"
+  },
+  "og": {
+    "og_locale": "he_IL",
+    "og_type": "article",
+    "og_title": "שמאי רכוש רפאל ריבוח - הערכת נזקים מקצועית מול חברות הביטוח",
+    "og_description": "שמאי רכוש רפאל ריבוח המבין את עולם הביטוח מבפנים ובעל ניסיון בייצוג מבוטחים מול חברות הביטוח, הערכת נזק וחוות דעת לביה\"מ לקבלת פיצוי הוגן.",
+    "og_url": "https://www.rrshamaut.co.il/",
+    "og_site_name": "רפאל שמאות רכוש | RR",
+    "article_modified_time": "2026-07-09T07:03:07+00:00"
+  },
+  "og_image": {
+    "width": 1200,
+    "height": 630,
+    "url": "https://www.rrshamaut.co.il/og-cover.png",
+    "type": "image/png"
+  },
+  "twitter": {
+    "twitter_card": "summary_large_image",
+    "twitter_misc": {
+      "זמן קריאה מוערך": "37 דקות"
+    }
+  },
+  "schema": {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://www.rrshamaut.co.il/",
+        "url": "https://www.rrshamaut.co.il/",
+        "name": "שמאי רכוש רפאל ריבוח - הערכת נזקים מקצועית מול חברות הביטוח",
+        "isPartOf": {
+          "@id": "https://www.rrshamaut.co.il/#website"
+        },
+        "primaryImageOfPage": {
+          "@id": "https://www.rrshamaut.co.il/#primaryimage"
+        },
+        "image": {
+          "@id": "https://www.rrshamaut.co.il/#primaryimage"
+        },
+        "thumbnailUrl": "https://www.rrshamaut.co.il/wp-content/uploads/2024/04/אייקון-לוגו-ללא-רקע-1.png",
+        "datePublished": "2026-01-15T04:51:20+00:00",
+        "dateModified": "2026-07-09T07:03:07+00:00",
+        "description": "שמאי רכוש רפאל ריבוח המבין את עולם הביטוח מבפנים ובעל ניסיון בייצוג מבוטחים מול חברות הביטוח, הערכת נזק וחוות דעת לביה\"מ לקבלת פיצוי הוגן.",
+        "breadcrumb": {
+          "@id": "https://www.rrshamaut.co.il/#breadcrumb"
+        },
+        "inLanguage": "he-IL",
+        "potentialAction": [
+          {
+            "@type": "ReadAction",
+            "target": [
+              "https://www.rrshamaut.co.il/"
+            ]
+          }
+        ]
+      },
+      {
+        "@type": "ImageObject",
+        "inLanguage": "he-IL",
+        "@id": "https://www.rrshamaut.co.il/#primaryimage",
+        "url": "https://www.rrshamaut.co.il/wp-content/uploads/2024/04/אייקון-לוגו-ללא-רקע-1.png",
+        "contentUrl": "https://www.rrshamaut.co.il/wp-content/uploads/2024/04/אייקון-לוגו-ללא-רקע-1.png",
+        "width": 523,
+        "height": 477,
+        "caption": "רפאל שמאות רכוש - שמאי נזקי מים, אש ורכוש"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://www.rrshamaut.co.il/#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "דף הבית",
+            "item": "https://www.rrshamaut.co.il/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "דף הבית"
+          }
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://www.rrshamaut.co.il/#website",
+        "url": "https://www.rrshamaut.co.il/",
+        "name": "רפאל שמאות רכוש | RR",
+        "description": "ניהול תביעות | הערכת נזקים | ייעוץ וליווי",
+        "publisher": {
+          "@id": "https://www.rrshamaut.co.il/#organization"
+        },
+        "potentialAction": [
+          {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://www.rrshamaut.co.il/?s={search_term_string}"
+            },
+            "query-input": {
+              "@type": "PropertyValueSpecification",
+              "valueRequired": true,
+              "valueName": "search_term_string"
+            }
+          }
+        ],
+        "inLanguage": "he-IL"
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://www.rrshamaut.co.il/#organization",
+        "name": "רפאל שמאות רכוש",
+        "url": "https://www.rrshamaut.co.il/",
+        "logo": {
+          "@type": "ImageObject",
+          "inLanguage": "he-IL",
+          "@id": "https://www.rrshamaut.co.il/#/schema/logo/image/",
+          "url": "https://www.rrshamaut.co.il/wp-content/uploads/2024/04/לוגו.png",
+          "contentUrl": "https://www.rrshamaut.co.il/wp-content/uploads/2024/04/לוגו.png",
+          "width": 548,
+          "height": 117,
+          "caption": "רפאל שמאות רכוש"
+        },
+        "image": {
+          "@id": "https://www.rrshamaut.co.il/#/schema/logo/image/"
+        },
+        "sameAs": [
+          "https://www.facebook.com/rrshamaut/",
+          "https://www.tiktok.com/@rephaelshamaut"
+        ]
+      }
+    ]
+  }
+}

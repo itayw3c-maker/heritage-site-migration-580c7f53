@@ -129,8 +129,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "רפאל שמאות רכוש | RR - ניהול תביעות ביטוח, הערכת נזקים" },
       { name: "twitter:description", content: "רפאל שמאות רכוש - שמאי רכוש פרטי לניהול תביעות ביטוח, הערכת נזקים, ייעוץ וליווי מול חברות הביטוח." },
-      { property: "og:image", content: "https://www.rrshamaut.co.il/wp-content/uploads/2024/04/%D7%9C%D7%95%D7%92%D7%95.png" },
-      { name: "twitter:image", content: "https://www.rrshamaut.co.il/wp-content/uploads/2024/04/%D7%9C%D7%95%D7%92%D7%95.png" },
+      { property: "og:image", content: "https://www.rrshamaut.co.il/og-cover.png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { name: "twitter:image", content: "https://www.rrshamaut.co.il/og-cover.png" },
     ],
     links: [
       { rel: "icon", href: "/favicon.ico", sizes: "any" },
