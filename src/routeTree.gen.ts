@@ -9,11 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WaterDamageCalculatorRouteImport } from './routes/water-damage-calculator'
 import { Route as BlogSitemapDotxmlRouteImport } from './routes/blog-sitemap[.]xml'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as AdminRouteRouteImport } from './routes/admin.route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as WaterDamageCalculatorRouteImport } from './routes/water-damage-calculator'
 import { Route as SuccessIndexRouteImport } from './routes/success.index'
 import { Route as ShortsIndexRouteImport } from './routes/shorts.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -32,6 +32,11 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as CategoryCatslugPagePageRouteImport } from './routes/category.$catslug.page.$page'
 import { Route as AdminPostsIdPreviewRouteImport } from './routes/admin.posts.$id.preview'
 
+const WaterDamageCalculatorRoute = WaterDamageCalculatorRouteImport.update({
+  id: '/water-damage-calculator',
+  path: '/water-damage-calculator',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogSitemapDotxmlRoute = BlogSitemapDotxmlRouteImport.update({
   id: '/blog-sitemap.xml',
   path: '/blog-sitemap.xml',
@@ -50,11 +55,6 @@ const AdminRouteRoute = AdminRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WaterDamageCalculatorRoute = WaterDamageCalculatorRouteImport.update({
-  id: '/water-damage-calculator',
-  path: '/water-damage-calculator',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SuccessIndexRoute = SuccessIndexRouteImport.update({
@@ -146,10 +146,10 @@ const AdminPostsIdPreviewRoute = AdminPostsIdPreviewRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/water-damage-calculator': typeof WaterDamageCalculatorRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
   '/blog-sitemap.xml': typeof BlogSitemapDotxmlRoute
+  '/water-damage-calculator': typeof WaterDamageCalculatorRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -170,9 +170,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/water-damage-calculator': typeof WaterDamageCalculatorRoute
   '/$': typeof SplatRoute
   '/blog-sitemap.xml': typeof BlogSitemapDotxmlRoute
+  '/water-damage-calculator': typeof WaterDamageCalculatorRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -194,10 +194,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/water-damage-calculator': typeof WaterDamageCalculatorRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/$': typeof SplatRoute
   '/blog-sitemap.xml': typeof BlogSitemapDotxmlRoute
+  '/water-damage-calculator': typeof WaterDamageCalculatorRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -220,10 +220,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/water-damage-calculator'
     | '/admin'
     | '/$'
     | '/blog-sitemap.xml'
+    | '/water-damage-calculator'
     | '/admin/login'
     | '/admin/users'
     | '/blog/$slug'
@@ -244,9 +244,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/water-damage-calculator'
     | '/$'
     | '/blog-sitemap.xml'
+    | '/water-damage-calculator'
     | '/admin/login'
     | '/admin/users'
     | '/blog/$slug'
@@ -267,10 +267,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/water-damage-calculator'
     | '/admin'
     | '/$'
     | '/blog-sitemap.xml'
+    | '/water-damage-calculator'
     | '/admin/login'
     | '/admin/users'
     | '/blog/$slug'
@@ -292,10 +292,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  WaterDamageCalculatorRoute: typeof WaterDamageCalculatorRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
   BlogSitemapDotxmlRoute: typeof BlogSitemapDotxmlRoute
+  WaterDamageCalculatorRoute: typeof WaterDamageCalculatorRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ShortsIndexRoute: typeof ShortsIndexRoute
@@ -311,6 +311,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/water-damage-calculator': {
+      id: '/water-damage-calculator'
+      path: '/water-damage-calculator'
+      fullPath: '/water-damage-calculator'
+      preLoaderRoute: typeof WaterDamageCalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog-sitemap.xml': {
       id: '/blog-sitemap.xml'
       path: '/blog-sitemap.xml'
@@ -337,13 +344,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/water-damage-calculator': {
-      id: '/water-damage-calculator'
-      path: '/water-damage-calculator'
-      fullPath: '/water-damage-calculator'
-      preLoaderRoute: typeof WaterDamageCalculatorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/success/': {
@@ -502,10 +502,10 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  WaterDamageCalculatorRoute: WaterDamageCalculatorRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   SplatRoute: SplatRoute,
   BlogSitemapDotxmlRoute: BlogSitemapDotxmlRoute,
+  WaterDamageCalculatorRoute: WaterDamageCalculatorRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   ShortsIndexRoute: ShortsIndexRoute,
