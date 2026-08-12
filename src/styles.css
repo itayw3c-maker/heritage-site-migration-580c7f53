@@ -92,6 +92,71 @@
   outline-offset: 2px;
 }
 
+/* The theme's generic button reset — [type=button],[type=submit],button {
+   border:1px solid #c36; border-radius:3px; display:inline-block; padding:.5rem 1rem }
+   — loads after this sheet, and its [type=button] selector has the SAME specificity
+   as a plain class, so it won every property we didn't force. That squared off the
+   round FAB, left its icon 7px off-centre (flex centring is inert under display:block)
+   and painted the panel buttons with the theme's pink border. Adding the element to
+   the selector outranks it cleanly, without !important.
+   (.a11y-steps button already won on its own — that's why A-/A+ looked right.) */
+button.a11y-fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 0;
+  line-height: 0;
+  box-sizing: border-box;
+}
+button.a11y-fab > svg { display: block; flex: none; }
+
+/* The same reset also blanked the panel: every button rendered as pink #c36 text
+   on a transparent background at 16px/400, instead of its designed styling. */
+.a11y-panel button.a11y-close {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  padding: 0 6px;
+  color: #666;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1;
+}
+.a11y-panel button.a11y-close:hover,
+.a11y-panel button.a11y-close:focus-visible { color: #056FC4; }
+
+.a11y-panel button.a11y-item {
+  background: #fafafa;
+  border: 1px solid #d5d5d5;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #222;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: normal;
+}
+.a11y-panel button.a11y-item:hover,
+.a11y-panel button.a11y-item:focus-visible { border-color: #056FC4; }
+.a11y-panel button.a11y-item.is-on {
+  background: #056FC4;
+  border-color: #056FC4;
+  color: #fff;
+}
+
+.a11y-panel button.a11y-reset {
+  background: #CBA436;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 14px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+}
+.a11y-panel button.a11y-reset:hover,
+.a11y-panel button.a11y-reset:focus-visible { background: #b48f2c; }
+
 .a11y-panel {
   position: fixed;
   bottom: 150px;
