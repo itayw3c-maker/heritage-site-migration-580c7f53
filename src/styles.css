@@ -503,6 +503,34 @@ h1.rr-sitemap-title {
   .a11y-panel { right: auto !important; left: 12px !important; bottom: 198px !important; }
 }
 
+/* Mobile: shrink the floating call strip + accessibility button (client request) */
+@media (max-width: 767px) {
+  .a11y-fab {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+  }
+  .a11y-fab svg { width: 18px !important; height: 18px !important; }
+  .elementor-element-881c8eb .elementor-image-box-img img {
+    width: 34px !important;
+    height: 34px !important;
+  }
+  .elementor-element-881c8eb .elementor-image-box-title,
+  .elementor-element-881c8eb .elementor-image-box-title a {
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+  }
+  .elementor-element-881c8eb .elementor-image-box-description {
+    font-size: 15px !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+  }
+  .elementor-element-881c8eb .elementor-widget-container {
+    padding: 2px 10px 3px !important;
+  }
+}
+
 /* 2. Google reviews badge (rpi) → wide horizontal card */
 #rpi-6226-static {
   position: fixed !important;
@@ -1271,12 +1299,15 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
 
 /* 3. TikTok videos grid on /סרטונים/ */
 .lvbl-tiktok-section { margin-top: 40px; }
-.lvbl-tt-title {
+/* Elementor's heading-widget rules (higher specificity) override the bare class,
+   leaving the default light-blue color and zero margins — assert with !important. */
+.lvbl-tiktok-section .lvbl-tt-title {
   font-family: "Assistant", Sans-serif;
   font-weight: 800;
-  color: #056fc4;
-  text-align: center;
-  margin-bottom: 24px;
+  color: #cba436 !important; /* site button gold */
+  text-align: center !important;
+  margin: 8px auto 28px !important;
+  width: 100%;
 }
 .lvbl-tt-grid {
   display: grid;
@@ -1326,14 +1357,23 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
     inset-block-end: 24px;
   }
 }
-/* MOBILE: compact badge */
+/* MOBILE: compact reviews badge, floating just left of the WhatsApp bubble
+   (client request: icon + review count that opens the internal reviews modal) */
 @media (max-width: 767px) {
-  .rr-social-badge { gap: 9px; padding: 8px 12px; }
-  .rr-social-badge__icon { width: 40px; height: 40px; }
-  .rr-social-badge__icon svg { width: 30px; height: 30px; }
-  .rr-social-badge__rating { font-size: 16px; }
-  .rr-social-badge__count { font-size: 11px; }
-  .rr-social-badge .rr-stars svg { width: 12px !important; height: 12px !important; }
+  .rr-social-float {
+    display: flex;
+    inset-inline-start: auto;
+    inset-inline-end: auto;
+    left: auto;
+    right: 74px; /* WhatsApp bubble: right 13px + 52px wide + 9px gap */
+    bottom: 86px; /* aligned with the WhatsApp bubble */
+  }
+  .rr-social-float button.rr-social-badge { gap: 7px; padding: 5px 10px !important; border-width: 1.5px !important; }
+  .rr-social-float .rr-social-badge .rr-social-badge__icon { width: 28px; height: 28px; }
+  .rr-social-float .rr-social-badge .rr-social-badge__icon svg { width: 22px; height: 22px; }
+  .rr-social-float .rr-social-badge .rr-social-badge__rating { font-size: 13px; }
+  .rr-social-float .rr-social-badge .rr-social-badge__count { font-size: 10px; margin-top: 0; }
+  .rr-social-float .rr-social-badge .rr-stars svg { width: 10px !important; height: 10px !important; }
 }
 .rr-social-badge {
   display: flex;
@@ -1353,10 +1393,26 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
   box-shadow: 0 14px 34px rgba(30, 58, 95, 0.26);
 }
 
-/* A global/Elementor button reset forces display:block on the <button>; re-assert the flex row card */
+/* The theme's generic button reset ([type=button],button { background:transparent;
+   border:1px solid #c36; color:#c36; ... }) loads after this sheet and wins on the
+   <button> element, leaving the badge transparent with a pink border over the navy
+   footer. Re-assert the card look at higher specificity, gold-branded border. */
 .rr-social-float .rr-social-badge {
   display: flex !important;
+  background: #fff !important;
+  border: 2px solid #dfad20 !important;
+  border-radius: 16px !important;
+  color: #1e3a5f !important;
+  padding: 10px 14px !important;
 }
+.rr-social-float .rr-social-badge:hover,
+.rr-social-float .rr-social-badge:focus {
+  background: #fff !important;
+  color: #1e3a5f !important;
+  border-color: #c9a227 !important;
+}
+.rr-social-float .rr-social-badge__rating { color: #1e3a5f !important; }
+.rr-social-float .rr-social-badge__count { color: #44536a !important; }
 
 .rr-social-badge__icon {
   display: flex;
