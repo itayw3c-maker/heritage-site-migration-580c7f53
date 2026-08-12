@@ -435,6 +435,7 @@ export function enhanceElementor(root: ParentNode = document) {
   hydrateLazyMedia(root);
   injectVideos(root);
   hydrateRllYoutube(root);
+  hydrateTikTokEmbeds(root);
   initSwipers(root);
   setupOffCanvas(document);
   revealAnimations(root);
@@ -673,6 +674,70 @@ function hydrateRllYoutube(root: ParentNode) {
       el.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1${q}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
     });
   });
+}
+
+// TikTok embeds: loading many v2-embed iframes at once trips TikTok's rate
+// limiting and random cards render "הסרטון לא זמין כרגע". Content ships them
+// with data-tt-src; each iframe gets its real src only near the viewport, and
+// loads are serialized with a small gap so the player bootstraps never race.
+const ttQueue: HTMLIFrameElement[] = [];
+let ttDraining = false;
+function ttDrain() {
+  if (ttDraining) return;
+  ttDraining = true;
+  const next = () => {
+    const frame = ttQueue.shift();
+    if (!frame) {
+      ttDraining = false;
+      return;
+    }
+    const src = frame.getAttribute("data-tt-src");
+    if (src) {
+      frame.setAttribute("src", src);
+      frame.removeAttribute("data-tt-src");
+    }
+    window.setTimeout(next, 350);
+  };
+  next();
+}
+
+function hydrateTikTokEmbeds(root: ParentNode) {
+  const frames = Array.from(
+    root.querySelectorAll<HTMLIFrameElement>("iframe[data-tt-src]"),
+  ).filter((f) => !(f as HTMLIFrameElement & { _ttObserved?: boolean })._ttObserved);
+  if (!frames.length) return;
+  frames.forEach((f) => {
+    (f as HTMLIFrameElement & { _ttObserved?: boolean })._ttObserved = true;
+  });
+  if (typeof IntersectionObserver === "undefined") {
+    ttQueue.push(...frames);
+    ttDrain();
+    return;
+  }
+  const io = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        obs.unobserve(entry.target);
+        ttQueue.push(entry.target as HTMLIFrameElement);
+        ttDrain();
+      });
+    },
+    { rootMargin: "400px 0px" },
+  );
+  frames.forEach((f) => io.observe(f));
+  // Safety net: if IO never fires (all frames far below the fold and the user
+  // jumps straight there, or IO is unavailable/broken), start loading whatever
+  // is still pending after a quiet delay — the drain still spaces the loads.
+  window.setTimeout(() => {
+    frames.forEach((f) => {
+      if (f.getAttribute("data-tt-src") && ttQueue.indexOf(f) === -1) {
+        io.unobserve(f);
+        ttQueue.push(f);
+      }
+    });
+    ttDrain();
+  }, 6000);
 }
 
 function addSubmenuArrows(root: ParentNode) {
