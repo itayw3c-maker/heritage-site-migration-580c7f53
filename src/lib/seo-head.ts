@@ -184,6 +184,34 @@ export function augmentShortSeo(
   }
 }
 
+export function augmentSuccessSeo(
+  rec: SeoRecord | null,
+  record: {
+    title?: string;
+    meta_description?: string;
+    content_html?: string;
+    featured_image_url?: string;
+  },
+): SeoRecord | null {
+  const augmented = augmentShortSeo(rec, record);
+  if (!augmented?.schema) return augmented;
+  try {
+    const schema = JSON.parse(augmented.schema) as { "@graph"?: unknown[] };
+    const graph = Array.isArray(schema["@graph"]) ? schema["@graph"] : [];
+    const article = graph.find((item) => (item as { "@type"?: unknown })?.["@type"] === "Article") as
+      | { articleSection?: string; image?: { "@type": string; url: string } }
+      | undefined;
+    if (!article) return augmented;
+    article.articleSection = "סיפורי הצלחה בתביעות ביטוח ושמאות רכוש";
+    if (record.featured_image_url) {
+      article.image = { "@type": "ImageObject", url: record.featured_image_url };
+    }
+    return { ...augmented, schema: JSON.stringify(schema) };
+  } catch {
+    return augmented;
+  }
+}
+
 export function correctArticleWordCount(
   rec: SeoRecord | null,
   record: { content_html?: string },
