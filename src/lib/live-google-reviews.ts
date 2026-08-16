@@ -84,6 +84,7 @@ function reviewCard(r: Review): HTMLElement {
   const stars = el("div", "crs-stars");
   const check = el("span", "crs-check");
   check.title = "ביקורת מאומתת";
+  check.setAttribute("role", "img");
   check.setAttribute("aria-label", "ביקורת מאומתת");
   stars.appendChild(check);
   stars.appendChild(starsRow(r.rating, "crs-starlist"));

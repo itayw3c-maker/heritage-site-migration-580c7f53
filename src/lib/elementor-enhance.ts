@@ -432,6 +432,7 @@ function revealAnimations(root: ParentNode) {
 }
 
 export function enhanceElementor(root: ParentNode = document) {
+  improveAccessibility(root);
   hydrateLazyMedia(root);
   injectVideos(root);
   hydrateRllYoutube(root);
@@ -452,6 +453,39 @@ export function enhanceElementor(root: ParentNode = document) {
   enhancePhoneInputs(root);
   hydrateGalleries(root);
   setupNestedTabs(root);
+}
+
+function improveAccessibility(root: ParentNode) {
+  root.querySelectorAll<HTMLElement>(".elementor-swiper-button-prev").forEach((button) => {
+    if (!button.getAttribute("aria-label")) button.setAttribute("aria-label", "הקודם");
+  });
+  root.querySelectorAll<HTMLElement>(".elementor-swiper-button-next").forEach((button) => {
+    if (!button.getAttribute("aria-label")) button.setAttribute("aria-label", "הבא");
+  });
+
+  // Elementor exports carousel containers as ARIA lists even though their
+  // direct children are wrappers rather than listitems. A named region models
+  // the interaction accurately and avoids a malformed accessibility tree.
+  root.querySelectorAll<HTMLElement>(".swiper[role='list']").forEach((swiper) => {
+    swiper.setAttribute("role", "region");
+    if (!swiper.getAttribute("aria-label")) swiper.setAttribute("aria-label", "קרוסלת תוכן");
+  });
+
+  root.querySelectorAll<HTMLAnchorElement>("a:not([aria-label])").forEach((link) => {
+    const href = link.getAttribute("href") ?? "";
+    const visibleName = `${link.textContent ?? ""} ${Array.from(link.querySelectorAll("img"))
+      .map((img) => img.getAttribute("alt") ?? "")
+      .join(" ")}`.trim();
+    if (visibleName) return;
+    let label = "";
+    if (href.includes("elementor-action") && href.includes("off_canvas")) label = "פתיחת תפריט";
+    else if (/instagram\.com/i.test(href)) label = "רפאל שמאות רכוש באינסטגרם";
+    else if (/youtube\.com/i.test(href)) label = "רפאל שמאות רכוש ביוטיוב";
+    else if (/tiktok\.com/i.test(href)) label = "רפאל שמאות רכוש בטיקטוק";
+    else if (/facebook\.com/i.test(href)) label = "רפאל שמאות רכוש בפייסבוק";
+    else if (/whatsapp\.com|wa\.me/i.test(href)) label = "יצירת קשר בוואטסאפ";
+    if (label) link.setAttribute("aria-label", label);
+  });
 }
 
 function setupNestedTabs(root: ParentNode) {
