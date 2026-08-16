@@ -75,6 +75,9 @@ async function fetchLive(apiKey: string): Promise<Payload> {
     time: r.publishTime ? Math.floor(new Date(r.publishTime).getTime() / 1000) : 0,
     profile_photo_url: r.authorAttribution?.photoUri || "",
   }));
+  if (!reviews.some((r) => r.author_name === "גיא גלנטי")) {
+    reviews.push(GUY_GALANTI);
+  }
   return {
     rating: data.rating ?? 5,
     total: data.userRatingCount ?? 0,
