@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /thank-you/
-Disallow: /*.html$
 
 Sitemap: https://www.rrshamaut.co.il/sitemap.xml
 Sitemap: https://www.rrshamaut.co.il/blog-sitemap.xml
