@@ -78,6 +78,15 @@ export const Route = createFileRoute("/api/public/google-reviews")({
     handlers: {
       OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
       GET: async () => {
+        const GUY_GALANTI: Review = {
+          author_name: "גיא גלנטי",
+          rating: 5,
+          text: "הגעתי לרפאל דרך המלצות באינטרנט והוא ייצג אותי בהתנהלות מול חברת ביטוח גדולה. נדיר לראות בעל מקצוע ישראלי כזה מקצועי ומתוקתק שלא מעגל פינות. הוא מכיר את החומר היטב, זמין והנחה אותי ביד בכל התהליך ועשה את הסיוט של ההתנהלות מול חברת ביטוח לחיים קלים. ממליץ עליו מכל הלב ובמידה ואצטרך שוב בעתיד ברור לי שחוזר אליו. תודה רבה",
+          relative_time: "לפני חודש",
+          time: 1780963200,
+          profile_photo_url: "",
+        };
+
         const apiKey = process.env.GOOGLE_PLACES_API_KEY;
         if (!apiKey) {
           // No key configured — return empty payload so the client falls back
@@ -90,10 +99,20 @@ export const Route = createFileRoute("/api/public/google-reviews")({
         }
         try {
           const data = await fetchLive(apiKey);
+          // Pinned review — always include at the end if not already returned by Google
+          if (!data.reviews.some((r) => r.author_name === "גיא גלנטי")) {
+            data.reviews.push(GUY_GALANTI);
+          }
           cache = { at: now, data };
           return json({ ...data, cached: false });
         } catch (err) {
-          if (cache) return json({ ...cache.data, cached: true, stale: true });
+          if (cache) {
+            // Pinned review — also include if we're falling back to stale cache
+            if (!cache.data.reviews.some((r) => r.author_name === "גיא גלנטי")) {
+              cache.data.reviews.push(GUY_GALANTI);
+            }
+            return json({ ...cache.data, cached: true, stale: true });
+          }
           return json({ rating: 5, total: 0, reviews: [], error: (err as Error).message });
         }
       },
