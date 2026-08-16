@@ -956,13 +956,8 @@ html, body {
 /* ============ Live Google Reviews carousel ============ */
 .crs-mount { direction: rtl; width: 100%; }
 .crs-widget-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  padding-bottom: 16px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #eef0f2;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding-bottom: 16px; margin-bottom: 20px; border-bottom: 1px solid #eef0f2;
 }
 .crs-rating-row { display: flex; align-items: center; gap: 8px; }
 .crs-rating-num { font-size: 22px; font-weight: 700; color: #1a1a1a; }
@@ -971,80 +966,44 @@ html, body {
 .crs-hstar.on { color: #f9ab00; }
 .crs-total { color: #5f6368; font-size: 13px; }
 .crs-glogo { height: 22px; width: auto; margin-right: auto; }
-
 .crs-outer { position: relative; display: flex; align-items: center; gap: 8px; }
 .crs-viewport { overflow: hidden; width: 100%; }
-.crs-track {
-  display: flex;
-  gap: 16px;
-  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
-  will-change: transform;
-}
+.crs-track { display: flex; gap: 16px; transition: transform 0.35s cubic-bezier(.4,0,.2,1); will-change: transform; }
 .crs-slide { flex: 0 0 calc(33.333% - 11px); }
 @media (max-width: 960px) { .crs-slide { flex: 0 0 calc(50% - 8px); } }
 @media (max-width: 640px) { .crs-slide { flex: 0 0 100%; } }
-
 .crs-card {
-  background: #fafafa;
-  border: 1px solid #eef0f2;
-  border-radius: 10px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-  box-sizing: border-box;
+  background: #fafafa; border: 1px solid #eef0f2; border-radius: 10px;
+  padding: 16px; display: flex; flex-direction: column; gap: 10px;
+  height: 100%; box-sizing: border-box;
 }
 .crs-card-head { display: flex; align-items: center; gap: 10px; }
 .crs-gicon { flex-shrink: 0; opacity: 0.85; }
 .crs-who { flex: 1; min-width: 0; }
-.crs-name {
-  font-weight: 600; color: #1a1a1a; font-size: 14px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
+.crs-name { font-weight: 600; color: #1a1a1a; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .crs-date { color: #5f6368; font-size: 12px; }
-.crs-avatar {
-  width: 40px; height: 40px; border-radius: 50%;
-  object-fit: cover; flex-shrink: 0;
-}
-.crs-avatar-fallback {
-  display: flex; align-items: center; justify-content: center;
-  background: #056FC4; color: #fff; font-weight: 600; font-size: 14px;
-}
+.crs-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.crs-avatar-fallback { display: flex; align-items: center; justify-content: center; background: #056FC4; color: #fff; font-weight: 600; font-size: 14px; }
 .crs-stars { display: flex; align-items: center; gap: 4px; }
 .crs-star { color: #dadce0; font-size: 16px; line-height: 1; }
 .crs-star.on { color: #f9ab00; }
 .crs-check { color: #1a73e8; font-size: 13px; font-weight: 700; }
 .crs-body { display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .crs-text {
-  color: #3c4043;
-  font-size: 14px;
-  line-height: 1.7;
-  margin: 0;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  overflow-wrap: break-word;
+  color: #3c4043; font-size: 14px; line-height: 1.7; margin: 0;
+  overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4; overflow-wrap: break-word;
 }
-.crs-more {
-  background: none; border: none; padding: 0;
-  color: #056FC4; font-size: 13px; font-weight: 600;
-  cursor: pointer; text-align: right; font-family: inherit;
-}
+.crs-more { background: none; border: none; padding: 0; color: #056FC4; font-size: 13px; font-weight: 600; cursor: pointer; text-align: right; font-family: inherit; }
 .crs-btn {
-  flex-shrink: 0;
-  width: 36px; height: 36px; border-radius: 50%;
-  border: 1px solid #dadce0;
-  background: #fff;
-  color: #5f6368;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid #dadce0; background: #fff; color: #5f6368;
+  font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
   transition: background 0.15s, border-color 0.15s;
 }
 .crs-btn:hover:not(:disabled) { background: #f1f3f4; border-color: #bdc1c6; }
 .crs-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
 
 
 
