@@ -1,29 +1,29 @@
-// Client-side live reviews carousel: replaces the trustindex widget with a
-// pixel-accurate carousel that matches the Trustindex visual style.
-// Uses a MutationObserver so it fires even if Trustindex's CDN loads late.
+// Client-side Google reviews carousel that replaces the Trustindex widget.
+// Built from real DOM nodes (never innerHTML + <script>, which never executes)
+// and mounted via a MutationObserver so it also fires when Trustindex's CDN
+// renders late and would otherwise overwrite us.
 
-type Review = {
-  author_name: string;
-  rating: number;
-  text: string;
-  relative_time: string;
-  time: number;
-  profile_photo_url: string;
-};
+import { SEED_REVIEWS, SEED_RATING, SEED_TOTAL, type Review } from "./google-reviews-seed";
+
 type Payload = {
   rating: number;
   total: number;
   reviews: Review[];
-  error?: string;
 };
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+const GAP = 24;
+const GOOGLE_ICON = "https://cdn.trustindex.io/assets/platform/Google/icon.svg";
+const GOOGLE_LOGO = "https://cdn.trustindex.io/assets/platform/Google/logo.svg";
+
+function el<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  className?: string,
+  text?: string,
+): HTMLElementTagNameMap[K] {
+  const n = document.createElement(tag);
+  if (className) n.className = className;
+  if (text != null) n.textContent = text;
+  return n;
 }
 
 function initials(name: string): string {
@@ -36,107 +36,175 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
-function starsHtml(rating: number, size: "sm" | "lg" = "sm"): string {
+function starsRow(rating: number, cls: string): HTMLElement {
+  const wrap = el("span", cls);
   const full = Math.round(rating);
-  const cls = size === "lg" ? "crs-hstar" : "crs-star";
-  let out = "";
   for (let i = 0; i < 5; i++) {
-    out += `<span class="${cls}${i < full ? " on" : ""}">★</span>`;
+    wrap.appendChild(el("span", i < full ? "crs-star on" : "crs-star", "★"));
   }
-  return out;
+  return wrap;
 }
 
-function reviewCard(r: Review, idx: number): string {
-  const avatarHtml = r.profile_photo_url
-    ? `<img class="crs-avatar" src="${escapeHtml(r.profile_photo_url)}" alt="${escapeHtml(r.author_name)}" loading="lazy" referrerpolicy="no-referrer">`
-    : `<div class="crs-avatar crs-avatar-fallback">${escapeHtml(initials(r.author_name))}</div>`;
-
-  return `
-<div class="crs-slide" data-idx="${idx}">
-  <div class="crs-card">
-    <div class="crs-card-head">
-      <img class="crs-gicon" src="https://cdn.trustindex.io/assets/platform/Google/icon.svg" alt="Google" width="20" height="20">
-      <div class="crs-who">
-        <div class="crs-name">${escapeHtml(r.author_name)}</div>
-        <div class="crs-date">${escapeHtml(r.relative_time)}</div>
-      </div>
-      ${avatarHtml}
-    </div>
-    <div class="crs-stars">
-      ${starsHtml(r.rating)}
-      <span class="crs-check" title="ביקורת מאומתת">✓</span>
-    </div>
-    <div class="crs-body">
-      <p class="crs-text">${escapeHtml(r.text)}</p>
-      <button class="crs-more" type="button" onclick="
-        var p=this.previousElementSibling;
-        p.style.webkitLineClamp='unset';p.style.overflow='visible';
-        this.style.display='none'
-      ">קרא עוד</button>
-    </div>
-  </div>
-</div>`;
+function initialsAvatar(r: Review): HTMLElement {
+  return el("div", "crs-avatar crs-avatar-fallback", initials(r.author_name));
 }
 
-function widgetHtml(data: Payload): string {
-  const cards = data.reviews.map((r, i) => reviewCard(r, i)).join("\n");
-  const total = data.total > 0 ? data.total.toLocaleString("he-IL") : "";
-  const totalLine = total ? `<div class="crs-total">מבוסס על ${total} ביקורות</div>` : "";
+function avatar(r: Review): HTMLElement {
+  if (!r.profile_photo_url) return initialsAvatar(r);
+  const img = el("img", "crs-avatar");
+  img.src = r.profile_photo_url;
+  img.alt = r.author_name;
+  img.loading = "lazy";
+  img.referrerPolicy = "no-referrer";
+  img.addEventListener("error", () => img.replaceWith(initialsAvatar(r)), { once: true });
+  return img;
+}
 
-  return `
-<div class="crs-mount" dir="rtl">
-  <div class="crs-widget-head">
-    <div class="crs-rating-row">
-      <span class="crs-rating-num">${data.rating.toFixed(1)}</span>
-      <span class="crs-hstars">${starsHtml(data.rating, "lg")}</span>
-    </div>
-    ${totalLine}
-    <img class="crs-glogo" src="https://cdn.trustindex.io/assets/platform/Google/logo.svg" alt="Google" width="100" height="34">
-  </div>
-  <div class="crs-outer" id="crs-outer">
-    <button class="crs-btn crs-btn-prev" aria-label="הקודם" id="crs-prev">&#10094;</button>
-    <div class="crs-viewport">
-      <div class="crs-track" id="crs-track">${cards}</div>
-    </div>
-    <button class="crs-btn crs-btn-next" aria-label="הבא" id="crs-next">&#10095;</button>
-  </div>
-</div>
-<script>
-(function(){
-  var track = document.getElementById('crs-track');
-  if (!track) return;
-  var slides = Array.from(track.querySelectorAll('.crs-slide'));
-  var pos = 0;
-  function visCount() {
-    var w = window.innerWidth;
-    return w <= 640 ? 1 : w <= 960 ? 2 : 3;
-  }
-  function maxPos() { return Math.max(0, slides.length - visCount()); }
-  function update() {
-    var slideW = slides[0] ? slides[0].offsetWidth + 16 : 0;
-    // RTL: positive translateX moves track to the left (shows later slides)
-    track.style.transform = 'translateX(' + (pos * slideW) + 'px)';
-    document.getElementById('crs-prev').disabled = pos >= maxPos();
-    document.getElementById('crs-next').disabled = pos <= 0;
-  }
-  document.getElementById('crs-prev').addEventListener('click', function(){
-    if (pos < maxPos()) { pos++; update(); }
+function reviewCard(r: Review): HTMLElement {
+  const slide = el("div", "crs-slide");
+  const card = el("div", "crs-card");
+
+  const head = el("div", "crs-card-head");
+  const gicon = el("img", "crs-gicon");
+  gicon.src = GOOGLE_ICON;
+  gicon.alt = "Google";
+  gicon.width = 22;
+  gicon.height = 22;
+  gicon.loading = "lazy";
+
+  const who = el("div", "crs-who");
+  who.appendChild(el("div", "crs-name", r.author_name));
+  who.appendChild(el("div", "crs-date", r.relative_time));
+
+  // RTL flex order: first child renders rightmost. Avatar right, G icon left.
+  head.appendChild(avatar(r));
+  head.appendChild(who);
+  head.appendChild(gicon);
+
+  const stars = el("div", "crs-stars");
+  const check = el("span", "crs-check");
+  check.title = "ביקורת מאומתת";
+  check.setAttribute("aria-label", "ביקורת מאומתת");
+  stars.appendChild(check);
+  stars.appendChild(starsRow(r.rating, "crs-starlist"));
+
+  const body = el("div", "crs-body");
+  const text = el("p", "crs-text", r.text);
+  body.appendChild(text);
+
+  card.appendChild(head);
+  card.appendChild(stars);
+  card.appendChild(body);
+
+  requestAnimationFrame(() => {
+    if (text.scrollHeight > text.clientHeight + 2) {
+      const more = el("button", "crs-more", "קרא עוד");
+      more.type = "button";
+      more.addEventListener("click", () => {
+        text.classList.add("crs-text-open");
+        more.remove();
+      });
+      body.appendChild(more);
+    }
   });
-  document.getElementById('crs-next').addEventListener('click', function(){
-    if (pos > 0) { pos--; update(); }
+
+  slide.appendChild(card);
+  return slide;
+}
+
+function header(data: Payload): HTMLElement {
+  const head = el("div", "crs-widget-head");
+  head.appendChild(starsRow(data.rating, "crs-hstars"));
+  if (data.total > 0) {
+    head.appendChild(
+      el("div", "crs-total", `מבוסס על ${data.total.toLocaleString("he-IL")} ביקורות`),
+    );
+  }
+  const logo = el("img", "crs-glogo");
+  logo.src = GOOGLE_LOGO;
+  logo.alt = "Google";
+  logo.width = 180;
+  logo.height = 60;
+  head.appendChild(logo);
+  return head;
+}
+
+function wireCarousel(
+  track: HTMLElement,
+  prev: HTMLButtonElement,
+  next: HTMLButtonElement,
+  count: number,
+) {
+  let pos = 0;
+
+  const visible = () => {
+    const w = window.innerWidth;
+    return w <= 640 ? 1 : w <= 1024 ? 2 : 3;
+  };
+  const maxPos = () => Math.max(0, count - visible());
+
+  const render = () => {
+    const slide = track.firstElementChild as HTMLElement | null;
+    const step = slide ? slide.offsetWidth + GAP : 0;
+    track.style.transform = `translateX(${pos * step}px)`;
+    prev.disabled = pos <= 0;
+    next.disabled = pos >= maxPos();
+  };
+
+  prev.addEventListener("click", () => {
+    if (pos > 0) {
+      pos--;
+      render();
+    }
   });
-  window.addEventListener('resize', function(){ if (pos > maxPos()) pos = maxPos(); update(); });
-  update();
-})();
-</script>`;
+  next.addEventListener("click", () => {
+    if (pos < maxPos()) {
+      pos++;
+      render();
+    }
+  });
+  window.addEventListener("resize", () => {
+    if (pos > maxPos()) pos = maxPos();
+    render();
+  });
+
+  requestAnimationFrame(render);
+}
+
+function buildWidget(data: Payload): HTMLElement {
+  const mount = el("div", "crs-mount");
+  mount.dir = "rtl";
+  mount.appendChild(header(data));
+
+  const outer = el("div", "crs-outer");
+  const viewport = el("div", "crs-viewport");
+  const track = el("div", "crs-track");
+  data.reviews.forEach((r) => track.appendChild(reviewCard(r)));
+  viewport.appendChild(track);
+
+  const prev = el("button", "crs-btn crs-prev", "❯");
+  prev.type = "button";
+  prev.setAttribute("aria-label", "ביקורות קודמות");
+  const next = el("button", "crs-btn crs-next", "❮");
+  next.type = "button";
+  next.setAttribute("aria-label", "ביקורות הבאות");
+
+  outer.appendChild(viewport);
+  outer.appendChild(prev);
+  outer.appendChild(next);
+  mount.appendChild(outer);
+
+  wireCarousel(track, prev, next, data.reviews.length);
+  return mount;
 }
 
 function updateRpiBadge(data: Payload) {
   const badge = document.querySelector("#rpi-6226-static .rpi-badge-cnt");
   if (!badge) return;
   const based = badge.querySelector(".rpi-based");
-  if (based && data.total > 0)
+  if (based && data.total > 0) {
     based.textContent = `מבוסס על ${data.total.toLocaleString("he-IL")} ביקורות`;
+  }
   const stars = badge.querySelector(".rpi-stars") as HTMLElement | null;
   if (stars) {
     stars.style.setProperty("--rating", data.rating.toFixed(1));
@@ -144,91 +212,71 @@ function updateRpiBadge(data: Payload) {
   }
 }
 
-// Find and replace the Trustindex widget anchor element.
-// Supports both pre-hydration (<pre class="ti-widget">) and
-// post-hydration (.ti-widget-container) selectors.
 function findAnchors(root: Document | HTMLElement): HTMLElement[] {
   const pre = Array.from(
-    root.querySelectorAll<HTMLElement>(
-      ".elementor-shortcode pre.ti-widget, .elementor-shortcode > pre.ti-widget",
-    ),
+    root.querySelectorAll<HTMLElement>(".elementor-shortcode pre.ti-widget"),
   );
   if (pre.length) return pre;
-  const rendered = Array.from(
-    root.querySelectorAll<HTMLElement>(".ti-widget-container"),
-  );
-  return rendered;
+  return Array.from(root.querySelectorAll<HTMLElement>(".ti-widget-container"));
 }
 
 function mountWidget(anchors: HTMLElement[], data: Payload) {
   anchors.forEach((a) => {
-    const wrap = document.createElement("div");
-    wrap.className = "crs-mount-wrapper";
-    wrap.innerHTML = widgetHtml(data);
     const shortcode = a.closest(".elementor-shortcode") as HTMLElement | null;
-    if (shortcode) {
-      shortcode.innerHTML = "";
-      shortcode.appendChild(wrap);
-    } else {
-      a.replaceWith(wrap);
-    }
+    const host = shortcode ?? a;
+    host.replaceChildren(buildWidget(data));
   });
   updateRpiBadge(data);
 }
 
-let fetched = false;
-let fetchPromise: Promise<Payload | null> | null = null;
+const FALLBACK: Payload = {
+  rating: SEED_RATING,
+  total: SEED_TOTAL,
+  reviews: SEED_REVIEWS,
+};
 
-async function fetchData(): Promise<Payload | null> {
+let fetchPromise: Promise<Payload> | null = null;
+
+function fetchData(): Promise<Payload> {
   if (fetchPromise) return fetchPromise;
   fetchPromise = (async () => {
     try {
       const res = await fetch("/api/public/google-reviews");
-      if (!res.ok) return null;
+      if (!res.ok) return FALLBACK;
       const data = (await res.json()) as Payload;
-      if (!data.reviews?.length) return null;
+      if (!data.reviews?.length) return FALLBACK;
       return data;
     } catch {
-      return null;
+      return FALLBACK;
     }
   })();
   return fetchPromise;
 }
 
-export function mountLiveGoogleReviews(
-  root: Document | HTMLElement = document,
-): void {
-  // Attempt immediate mount (if Trustindex already rendered)
-  const anchors = findAnchors(root);
-  if (anchors.length || document.getElementById("rpi-6226-static")) {
-    if (!fetched) {
-      fetched = true;
-      fetchData().then((data) => {
-        if (!data) return;
-        const a2 = findAnchors(root);
-        if (a2.length) mountWidget(a2, data);
-      });
-    }
-  }
+let mounted = false;
 
-  // Also watch via MutationObserver so we catch Trustindex loading late
-  if (typeof MutationObserver === "undefined") return;
-  const observer = new MutationObserver(() => {
-    const a = findAnchors(root);
-    if (!a.length) return;
-    observer.disconnect();
-    if (fetched) return; // already handled above
-    fetched = true;
-    fetchData().then((data) => {
-      if (!data) return;
-      const a2 = findAnchors(root);
-      if (a2.length) mountWidget(a2, data);
-    });
+function tryMount(root: Document | HTMLElement): boolean {
+  if (mounted) return true;
+  const anchors = findAnchors(root);
+  if (!anchors.length) return false;
+  mounted = true;
+  fetchData().then((data) => {
+    const live = findAnchors(root);
+    mountWidget(live.length ? live : anchors, data);
   });
+  return true;
+}
+
+export function mountLiveGoogleReviews(root: Document | HTMLElement = document): void {
+  if (tryMount(root)) return;
+  if (typeof MutationObserver === "undefined") return;
+
   const target = root instanceof Document ? root.body : root;
-  if (target) {
-    observer.observe(target, { childList: true, subtree: true });
-    // Disconnect after 10s to avoid leaking
-    setTimeout(() => observer.disconnect(), 10000);
-  }
+  if (!target) return;
+
+  const observer = new MutationObserver(() => {
+    if (tryMount(root)) observer.disconnect();
+  });
+  observer.observe(target, { childList: true, subtree: true });
+  window.setTimeout(() => observer.disconnect(), 15000);
 }
