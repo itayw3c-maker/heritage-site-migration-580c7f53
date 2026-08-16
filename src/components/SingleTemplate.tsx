@@ -81,9 +81,10 @@ function fill(tpl: string, rec: SingleRecord, relatedHtml1: string): string {
   const videoSettings = (rec.video_settings ?? "{}").replace(/"/g, "&quot;");
   const featuredImage =
     rec.type === "success" ? buildFeaturedImage(rec.featured_image_url, rec.title ?? "") : "";
+  const content = improveContentHtml(rec.content_html ?? "", rec.title ?? "");
   return tpl
     .split("__HOLE_TITLE__").join(rec.title ?? "")
-    .split("__HOLE_CONTENT__").join(rec.content_html ?? "")
+    .split("__HOLE_CONTENT__").join(content)
     .split("__HOLE_BREADCRUMB__").join(rec.breadcrumb_html ?? "")
     .split("__HOLE_DATE__").join(rec.updated_date ?? "")
     .split("__HOLE_VIDEO_SETTINGS__").join(videoSettings)
@@ -94,6 +95,32 @@ function fill(tpl: string, rec: SingleRecord, relatedHtml1: string): string {
 function buildFeaturedImage(url: string | undefined, alt: string): string {
   if (!url) return "";
   return `<img alt="${escAttr(alt)}" class="attachment-large size-large" src="${escAttr(url)}" loading="lazy" />`;
+}
+
+function improveContentHtml(html: string, pageTitle: string): string {
+  const fallbackAlt = escAttr(`תמונה מתוך ${pageTitle}`);
+  return html
+    .replace(/<a\b([^>]*\bhref=["'](?:\/|https?:\/\/(?:www\.)?rrshamaut\.co\.il)[^>]*?)>/gi, (tag) =>
+      tag.replace(/\s+target=["']_blank["']/i, ""),
+    )
+    .replace(/<img\b([^>]*)>/gi, (tag, attrs: string) => {
+      if (/\balt=["'][^"']+["']/i.test(attrs)) return tag;
+      if (/\balt=["']["']/i.test(attrs)) {
+        return tag.replace(/\balt=["']["']/i, `alt="${fallbackAlt}"`);
+      }
+      return tag.replace(/^<img\b/i, `<img alt="${fallbackAlt}"`);
+    });
+}
+
+function buildVideoSummary(record: SingleRecord): string {
+  const title = escAttr(record.title ?? "הסרטון המקצועי");
+  const description = escAttr(record.meta_description ?? "");
+  return `<section class="rr-video-summary" aria-label="מידע נוסף על ${title}">
+    <h2>על מה מדבר הסרטון?</h2>
+    ${description ? `<p>${description}</p>` : ""}
+    <p>המידע בסרטון מסייע לבעלי נכסים להבין את שלבי התיעוד, הערכת הנזק וההתנהלות מול חברת הביטוח. כל אירוע נזק מחייב בדיקה מקצועית בהתאם לנסיבות, לפוליסה ולמצב הנכס.</p>
+    <p><a href="/category/%D7%9E%D7%99%D7%93%D7%A2-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99/">למאמרים המקצועיים</a> · <a href="/about/">אודות רפאל שמאות רכוש</a> · <a href="/shorts/">לסרטונים נוספים</a></p>
+  </section>`;
 }
 
 // WordPress migration left <br /> tags inside <style> blocks of article
@@ -157,7 +184,8 @@ export function SingleTemplate({
       return base;
     }
     const tpl = TEMPLATES[record.type];
-    return tpl ? stripBrInStyle(fill(tpl, record, related.w1)) : "";
+    const rendered = tpl ? stripBrInStyle(fill(tpl, record, related.w1)) : "";
+    return record.type === "movie" ? rendered + buildVideoSummary(record) : rendered;
   }, [record, related.w1]);
 
   useEffect(() => {

@@ -44,9 +44,26 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+// Search Console contains tens of thousands of legacy spam URLs shaped like
+// /abcde/x123456.html. They were never real site content. A 410 tells crawlers
+// to retire them faster than a generic 404 and avoids spending SSR resources.
+function isKnownSpamPath(pathname: string): boolean {
+  return /^\/[a-z]{5}\/[a-z]\d+\.html\/?$/i.test(pathname);
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      if (isKnownSpamPath(new URL(request.url).pathname)) {
+        return new Response("Gone", {
+          status: 410,
+          headers: {
+            "content-type": "text/plain; charset=utf-8",
+            "x-robots-tag": "noindex, nofollow",
+            "cache-control": "public, max-age=86400",
+          },
+        });
+      }
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);

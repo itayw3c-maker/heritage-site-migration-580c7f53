@@ -1884,3 +1884,28 @@ footer .elementor-element-b655895 .elementor-custom-embed {
   white-space: nowrap;
   border: 0;
 }
+
+/* Visible context for migrated video pages, useful to people and answer engines. */
+.rr-video-summary {
+  width: min(860px, calc(100% - 32px));
+  margin: 32px auto 56px;
+  padding: 28px;
+  border: 1px solid #e3e8ee;
+  border-radius: 12px;
+  background: #fff;
+  color: #25313c;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+.rr-video-summary h2 {
+  margin: 0 0 12px;
+  color: #056fc4;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+.rr-video-summary p { margin: 0 0 14px; }
+.rr-video-summary a {
+  color: #056fc4;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
