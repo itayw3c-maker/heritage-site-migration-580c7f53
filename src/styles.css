@@ -568,6 +568,13 @@ h1.rr-sitemap-title {
   .a11y-panel { right: auto !important; left: 12px !important; bottom: 198px !important; }
 }
 
+/* Mobile: "גלריית הפרויקטים" section has an 80px top margin baked into the original
+   desktop design (--margin-top on elementor-element-c3d0fa1) — too much empty space
+   on narrow screens, so shrink it there (client request). */
+@media (max-width: 767px) {
+  .elementor-element-c3d0fa1 { --margin-top: 20px !important; }
+}
+
 /* Mobile: shrink the floating call strip + accessibility button (client request) */
 @media (max-width: 767px) {
   .a11y-fab {
@@ -578,8 +585,10 @@ h1.rr-sitemap-title {
   }
   .a11y-fab svg { width: 18px !important; height: 18px !important; }
   .elementor-element-881c8eb .elementor-image-box-img img {
-    width: 34px !important;
-    height: 34px !important;
+    width: 24px !important;
+    height: 24px !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
   }
   .elementor-element-881c8eb .elementor-image-box-title,
   .elementor-element-881c8eb .elementor-image-box-title a {
@@ -1622,7 +1631,7 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
 .rr-reviews-modal__close {
   position: absolute;
   top: 14px;
-  inset-inline-start: 14px;
+  inset-inline-end: 14px;
   background: #f2f4f8;
   border: none;
   border-radius: 999px;
