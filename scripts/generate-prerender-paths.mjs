@@ -8,6 +8,8 @@ const CONTENT_DIR = "public/content";
 const OUT = "src/generated/prerender-paths.json";
 
 const PAGE_SIZES = { category: 9, shorts: 6, success: 30 };
+const EXCLUDE_SLUGS = new Set(["about/השמאי-רפאל-ריבוח-מייסד-ובעלים-2"]);
+const VIRTUAL_SLUGS = ["about/עורך-דין-קובי-ליבוביץ"];
 
 function walk(dir) {
   const out = [];
@@ -34,8 +36,10 @@ function decodeSlug(s) {
 const paths = ["/"];
 
 for (const file of walk(CONTENT_DIR).sort()) {
-  paths.push(`/${encodeSlug(slugFromPath(file))}/`);
+  const slug = slugFromPath(file);
+  if (!EXCLUDE_SLUGS.has(slug)) paths.push(`/${encodeSlug(slug)}/`);
 }
+for (const slug of VIRTUAL_SLUGS) paths.push(`/${encodeSlug(slug)}/`);
 
 // Archives (with real pagination)
 const idx = JSON.parse(readFileSync(join(CONTENT_DIR, "_indexes.json"), "utf8"));

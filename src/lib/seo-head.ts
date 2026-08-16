@@ -107,6 +107,39 @@ export function seoFileKey(path: string): string {
   return key ? encodeURIComponent(key) : "__home__";
 }
 
+export function overrideSeoIdentity(
+  rec: SeoRecord | null,
+  overrides: { canonical?: string; title?: string },
+): SeoRecord | null {
+  if (!rec) return rec;
+  const next: SeoRecord = {
+    ...rec,
+    canonical: overrides.canonical ?? rec.canonical,
+    og: rec.og ? { ...rec.og } : rec.og,
+  };
+  if (next.og && overrides.title) next.og.og_title = overrides.title;
+  if (next.og && overrides.canonical) next.og.og_url = overrides.canonical;
+  if (!rec.schema) return next;
+  try {
+    let serialized = rec.schema;
+    if (overrides.canonical && rec.canonical) {
+      serialized = serialized.split(rec.canonical).join(overrides.canonical);
+    }
+    const schema = JSON.parse(serialized) as { "@graph"?: unknown[] };
+    if (overrides.title && Array.isArray(schema["@graph"])) {
+      for (const item of schema["@graph"]) {
+        if ((item as { "@type"?: unknown })?.["@type"] === "WebPage") {
+          (item as { name?: string }).name = overrides.title;
+        }
+      }
+    }
+    next.schema = JSON.stringify(schema);
+  } catch {
+    // Keep the original schema if an imported record is malformed.
+  }
+  return next;
+}
+
 export function augmentVideoSeo(
   rec: SeoRecord | null,
   record: { title?: string; meta_description?: string; video_settings?: string },

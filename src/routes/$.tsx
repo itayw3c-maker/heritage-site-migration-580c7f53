@@ -8,6 +8,7 @@ import {
   augmentVideoSeo,
   buildSeoHead,
   correctArticleWordCount,
+  overrideSeoIdentity,
 } from "@/lib/seo-head";
 import { checkContentPath } from "@/lib/content-existence.functions";
 import { getContentRecord } from "@/lib/content-record.functions";
@@ -22,7 +23,10 @@ export const Route = createFileRoute("/$")({
       /* keep raw */
     }
     const path = decoded.replace(/^\/+|\/+$/g, "");
-    if (path === "about/השמאי-רפאל-ריבוח-מייסד-ובעלים-2") {
+    const rafaelPath = "about/השמאי-רפאל-ריבוח-מייסד-ובעלים";
+    const duplicateRafaelPath = `${rafaelPath}-2`;
+    const kobiPath = "about/עורך-דין-קובי-ליבוביץ";
+    if (path === duplicateRafaelPath) {
       throw redirect({
         href: "/about/%D7%94%D7%A9%D7%9E%D7%90%D7%99-%D7%A8%D7%A4%D7%90%D7%9C-%D7%A8%D7%99%D7%91%D7%95%D7%97-%D7%9E%D7%99%D7%99%D7%A1%D7%93-%D7%95%D7%91%D7%A2%D7%9C%D7%99%D7%9D/",
         statusCode: 301,
@@ -30,17 +34,33 @@ export const Route = createFileRoute("/$")({
     }
     if (!path || path.startsWith("admin"))
       return { seo: null, record: null, related: { w1: "", w2: "" } };
+    // The WordPress export assigned the canonical Rafael slug to Kobi's
+    // profile and put Rafael under a `-2` duplicate. Preserve both entities:
+    // Rafael owns the established canonical URL; Kobi gets a descriptive URL.
+    const lookupPath = path === rafaelPath ? duplicateRafaelPath : path === kobiPath ? rafaelPath : path;
     const [seo, exists, content] = await Promise.all([
-      getSeoRecord({ data: { path } }),
-      checkContentPath({ data: { path } }),
-      getContentRecord({ data: { path } }),
+      getSeoRecord({ data: { path: lookupPath } }),
+      checkContentPath({ data: { path: lookupPath } }),
+      getContentRecord({ data: { path: lookupPath } }),
     ]);
     if (!exists && !content.record) {
       // Throwing notFound() lets TanStack set the HTTP 404 status during SSR
       // and render the route's notFoundComponent below.
       throw notFound();
     }
-    const pageSeo = correctArticleWordCount(content.dbSeo ?? seo, content.record ?? {});
+    let pageSeo = correctArticleWordCount(content.dbSeo ?? seo, content.record ?? {});
+    const titleOverrides: Record<string, string> = {
+      "signs-of-water-damage": "סימנים מוקדמים לנזקי מים בבית ובעסק | רפאל שמאות רכוש",
+      "נזילת-מים-מהשכן-למעלה-כל-מה-שצריך-לדעת":
+        "נזילת מים מהשכן למעלה: הוכחת נזק ותביעה | רפאל שמאות רכוש",
+      "insurance-claims-lawyer": "עורך דין ושמאי בליווי תביעות ביטוח | רפאל שמאות רכוש",
+      "נזקי-מים-ועליות-קפילריות-הבנה-מעמיקה":
+        "נזקי מים ועלייה קפילרית: זיהוי וטיפול | רפאל שמאות רכוש",
+    };
+    pageSeo = overrideSeoIdentity(pageSeo, {
+      canonical: path === kobiPath ? `https://www.rrshamaut.co.il/${encodeURI(kobiPath)}/` : undefined,
+      title: titleOverrides[path],
+    });
     return {
       seo:
         content.record?.type === "movie"
