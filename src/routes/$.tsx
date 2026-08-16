@@ -1,8 +1,8 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SingleTemplate, type SingleRecord } from "@/components/SingleTemplate";
 import { getSeoRecord } from "@/lib/seo.functions";
-import { buildSeoHead } from "@/lib/seo-head";
+import { augmentVideoSeo, buildSeoHead, correctArticleWordCount } from "@/lib/seo-head";
 import { checkContentPath } from "@/lib/content-existence.functions";
 import { getContentRecord } from "@/lib/content-record.functions";
 
@@ -16,6 +16,12 @@ export const Route = createFileRoute("/$")({
       /* keep raw */
     }
     const path = decoded.replace(/^\/+|\/+$/g, "");
+    if (path === "about/השמאי-רפאל-ריבוח-מייסד-ובעלים-2") {
+      throw redirect({
+        href: "/about/%D7%94%D7%A9%D7%9E%D7%90%D7%99-%D7%A8%D7%A4%D7%90%D7%9C-%D7%A8%D7%99%D7%91%D7%95%D7%97-%D7%9E%D7%99%D7%99%D7%A1%D7%93-%D7%95%D7%91%D7%A2%D7%9C%D7%99%D7%9D/",
+        statusCode: 301,
+      } as unknown as Parameters<typeof redirect>[0]);
+    }
     if (!path || path.startsWith("admin"))
       return { seo: null, record: null, related: { w1: "", w2: "" } };
     const [seo, exists, content] = await Promise.all([
@@ -28,7 +34,15 @@ export const Route = createFileRoute("/$")({
       // and render the route's notFoundComponent below.
       throw notFound();
     }
-    return { seo: content.dbSeo ?? seo, record: content.record, related: content.related };
+    const pageSeo = correctArticleWordCount(content.dbSeo ?? seo, content.record ?? {});
+    return {
+      seo:
+        content.record?.type === "movie"
+          ? augmentVideoSeo(pageSeo, content.record)
+          : pageSeo,
+      record: content.record,
+      related: content.related,
+    };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {

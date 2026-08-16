@@ -1180,6 +1180,8 @@ async function submitLead(form: HTMLFormElement) {
 
   try {
     await sendLeadPayload(payload);
+    const { trackEvent } = await import("@/lib/analytics");
+    trackEvent("generate_lead", { form_name: payload.form_name });
     window.location.href = "/thank-you/";
   } catch (err) {
     console.error("lead submit failed", err);

@@ -106,3 +106,71 @@ export function seoFileKey(path: string): string {
   const key = (path || "").replace(/^\/+|\/+$/g, "");
   return key ? encodeURIComponent(key) : "__home__";
 }
+
+export function augmentVideoSeo(
+  rec: SeoRecord | null,
+  record: { title?: string; meta_description?: string; video_settings?: string },
+): SeoRecord | null {
+  if (!rec?.schema || !record.video_settings) return rec;
+  try {
+    const settings = JSON.parse(record.video_settings) as { youtube_url?: string };
+    const youtubeUrl = settings.youtube_url ?? "";
+    const id = youtubeUrl.match(/(?:shorts\/|youtu\.be\/|[?&]v=)([A-Za-z0-9_-]{6,})/)?.[1];
+    if (!id) return rec;
+    const schema = JSON.parse(rec.schema) as { "@graph"?: unknown[] };
+    const graph = Array.isArray(schema["@graph"]) ? schema["@graph"] : [];
+    if (graph.some((item) => (item as { "@type"?: unknown })?.["@type"] === "VideoObject")) {
+      return rec;
+    }
+    const page = graph.find((item) => (item as { "@type"?: unknown })?.["@type"] === "WebPage") as
+      | { "@id"?: string; datePublished?: string; dateModified?: string }
+      | undefined;
+    graph.unshift({
+      "@type": "VideoObject",
+      "@id": `${rec.canonical ?? page?.["@id"] ?? ""}#video`,
+      name: record.title || rec.og?.og_title,
+      description: record.meta_description || rec.og?.og_description,
+      thumbnailUrl: `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`,
+      uploadDate: page?.datePublished,
+      dateModified: page?.dateModified,
+      embedUrl: `https://www.youtube.com/embed/${id}`,
+      contentUrl: `https://www.youtube.com/watch?v=${id}`,
+      inLanguage: "he-IL",
+      isFamilyFriendly: true,
+      publisher: { "@id": "https://www.rrshamaut.co.il/#organization" },
+      mainEntityOfPage: { "@id": rec.canonical ?? page?.["@id"] },
+    });
+    return { ...rec, schema: JSON.stringify(schema) };
+  } catch {
+    return rec;
+  }
+}
+
+export function correctArticleWordCount(
+  rec: SeoRecord | null,
+  record: { content_html?: string },
+): SeoRecord | null {
+  if (!rec?.schema || !record.content_html) return rec;
+  try {
+    const schema = JSON.parse(rec.schema) as { "@graph"?: unknown[] };
+    const graph = Array.isArray(schema["@graph"]) ? schema["@graph"] : [];
+    const article = graph.find((item) => {
+      const type = (item as { "@type"?: unknown })?.["@type"];
+      return type === "Article" || type === "BlogPosting" ||
+        (Array.isArray(type) && type.some((value) => value === "Article" || value === "BlogPosting"));
+    }) as { wordCount?: number } | undefined;
+    if (!article) return rec;
+    const text = record.content_html
+      .replace(/<script[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style[\s\S]*?<\/style>/gi, " ")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&[a-z#0-9]+;/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    const wordCount = text ? text.split(/\s+/).length : 0;
+    if (wordCount > 0) article.wordCount = wordCount;
+    return { ...rec, schema: JSON.stringify(schema) };
+  } catch {
+    return rec;
+  }
+}

@@ -801,6 +801,8 @@ function LeadForm({ result }: { result: ReturnType<typeof calculate> }) {
     setSubmitting(true);
     try {
       await sendLeadPayload(payload);
+      const { trackEvent } = await import("@/lib/analytics");
+      trackEvent("generate_lead", { form_name: payload.form_name });
       setDone(true);
       requestAnimationFrame(() =>
         document
