@@ -339,9 +339,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {!isAdmin && <SiteHeader />}
-      <div id="main-content" tabIndex={-1}>
+      <main id="main-content" tabIndex={-1}>
         <Outlet />
-      </div>
+      </main>
       {!isAdmin && <SiteFooter />}
       {!isAdmin && <AccessibilityWidget />}
       {!isAdmin && <CookieBanner />}
