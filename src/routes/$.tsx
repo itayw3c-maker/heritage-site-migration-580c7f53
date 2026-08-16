@@ -2,7 +2,12 @@ import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SingleTemplate, type SingleRecord } from "@/components/SingleTemplate";
 import { getSeoRecord } from "@/lib/seo.functions";
-import { augmentVideoSeo, buildSeoHead, correctArticleWordCount } from "@/lib/seo-head";
+import {
+  augmentShortSeo,
+  augmentVideoSeo,
+  buildSeoHead,
+  correctArticleWordCount,
+} from "@/lib/seo-head";
 import { checkContentPath } from "@/lib/content-existence.functions";
 import { getContentRecord } from "@/lib/content-record.functions";
 
@@ -39,7 +44,9 @@ export const Route = createFileRoute("/$")({
       seo:
         content.record?.type === "movie"
           ? augmentVideoSeo(pageSeo, content.record)
-          : pageSeo,
+          : content.record?.type === "shorts"
+            ? augmentShortSeo(pageSeo, content.record)
+            : pageSeo,
       record: content.record,
       related: content.related,
     };
