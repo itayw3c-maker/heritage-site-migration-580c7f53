@@ -78,13 +78,10 @@ async function fetchLive(apiKey: string): Promise<Payload> {
     time: r.publishTime ? Math.floor(new Date(r.publishTime).getTime() / 1000) : 0,
     profile_photo_url: r.authorAttribution?.photoUri || "",
   }));
-  if (!reviews.some((r) => r.author_name === "גיא גלנטי")) {
-    reviews.push(GUY_GALANTI);
-  }
   return {
-    rating: data.rating ?? 5,
-    total: data.userRatingCount ?? 0,
-    reviews,
+    rating: data.rating ?? SEED_RATING,
+    total: data.userRatingCount ?? SEED_TOTAL,
+    reviews: mergeWithSeed(reviews),
   };
 }
 
@@ -95,14 +92,9 @@ export const Route = createFileRoute("/api/public/google-reviews")({
       GET: async () => {
         const apiKey = process.env.GOOGLE_PLACES_API_KEY;
         if (!apiKey) {
-          // No key configured — return the pinned review so the widget still
-          // shows real social proof without triggering a runtime error.
-          return json({
-            rating: 5,
-            total: 0,
-            reviews: [GUY_GALANTI],
-            disabled: true,
-          });
+          // No key configured — serve the seed wall so the carousel still shows
+          // real social proof rather than triggering a runtime error.
+          return json({ ...FALLBACK, disabled: true });
         }
         const now = Date.now();
         if (cache && now - cache.at < CACHE_TTL_MS) {
@@ -116,12 +108,7 @@ export const Route = createFileRoute("/api/public/google-reviews")({
           if (cache) {
             return json({ ...cache.data, cached: true, stale: true });
           }
-          return json({
-            rating: 5,
-            total: 0,
-            reviews: [GUY_GALANTI],
-            error: (err as Error).message,
-          });
+          return json({ ...FALLBACK, error: (err as Error).message });
         }
       },
     },
