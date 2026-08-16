@@ -112,13 +112,14 @@ function improveContentHtml(html: string, pageTitle: string): string {
     });
 }
 
-function buildVideoSummary(record: SingleRecord): string {
-  const title = escAttr(record.title ?? "הסרטון המקצועי");
+function buildMediaSummary(record: SingleRecord): string {
+  const isShort = record.type === "shorts";
+  const title = escAttr(record.title ?? (isShort ? "המידע המקצועי" : "הסרטון המקצועי"));
   const description = escAttr(record.meta_description ?? "");
   return `<section class="rr-video-summary" aria-label="מידע נוסף על ${title}">
-    <h2>על מה מדבר הסרטון?</h2>
+    <h2>${isShort ? "הנקודות החשובות בקצרה" : "על מה מדבר הסרטון?"}</h2>
     ${description ? `<p>${description}</p>` : ""}
-    <p>המידע בסרטון מסייע לבעלי נכסים להבין את שלבי התיעוד, הערכת הנזק וההתנהלות מול חברת הביטוח. כל אירוע נזק מחייב בדיקה מקצועית בהתאם לנסיבות, לפוליסה ולמצב הנכס.</p>
+    <p>המידע בעמוד מסייע לבעלי נכסים להבין את שלבי התיעוד, הערכת הנזק וההתנהלות מול חברת הביטוח. כל אירוע נזק מחייב בדיקה מקצועית בהתאם לנסיבות, לפוליסה ולמצב הנכס.</p>
     <p><a href="/category/%D7%9E%D7%99%D7%93%D7%A2-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99/">למאמרים המקצועיים</a> · <a href="/about/">אודות רפאל שמאות רכוש</a> · <a href="/shorts/">לסרטונים נוספים</a></p>
   </section>`;
 }
@@ -185,7 +186,9 @@ export function SingleTemplate({
     }
     const tpl = TEMPLATES[record.type];
     const rendered = tpl ? stripBrInStyle(fill(tpl, record, related.w1)) : "";
-    return record.type === "movie" ? rendered + buildVideoSummary(record) : rendered;
+    return record.type === "movie" || record.type === "shorts"
+      ? rendered + buildMediaSummary(record)
+      : rendered;
   }, [record, related.w1]);
 
   useEffect(() => {

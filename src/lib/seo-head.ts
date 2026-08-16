@@ -146,6 +146,44 @@ export function augmentVideoSeo(
   }
 }
 
+export function augmentShortSeo(
+  rec: SeoRecord | null,
+  record: { title?: string; meta_description?: string; content_html?: string },
+): SeoRecord | null {
+  if (!rec?.schema) return rec;
+  try {
+    const schema = JSON.parse(rec.schema) as { "@graph"?: unknown[] };
+    const graph = Array.isArray(schema["@graph"]) ? schema["@graph"] : [];
+    if (graph.some((item) => (item as { "@type"?: unknown })?.["@type"] === "Article")) {
+      return rec;
+    }
+    const page = graph.find((item) => (item as { "@type"?: unknown })?.["@type"] === "WebPage") as
+      | { "@id"?: string; datePublished?: string; dateModified?: string }
+      | undefined;
+    const text = `${record.content_html ?? ""} ${record.meta_description ?? ""}`
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&[a-z#0-9]+;/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    graph.unshift({
+      "@type": "Article",
+      "@id": `${rec.canonical ?? page?.["@id"] ?? ""}#article`,
+      headline: record.title || rec.og?.og_title,
+      description: record.meta_description || rec.og?.og_description,
+      datePublished: page?.datePublished,
+      dateModified: page?.dateModified,
+      inLanguage: "he-IL",
+      wordCount: text ? text.split(/\s+/).length : undefined,
+      author: { "@id": "https://www.rrshamaut.co.il/#organization" },
+      publisher: { "@id": "https://www.rrshamaut.co.il/#organization" },
+      mainEntityOfPage: { "@id": rec.canonical ?? page?.["@id"] },
+    });
+    return { ...rec, schema: JSON.stringify(schema) };
+  } catch {
+    return rec;
+  }
+}
+
 export function correctArticleWordCount(
   rec: SeoRecord | null,
   record: { content_html?: string },
