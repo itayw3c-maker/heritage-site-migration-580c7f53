@@ -1,29 +1,32 @@
 import { createFileRoute } from "@tanstack/react-router";
+import {
+  SEED_REVIEWS,
+  SEED_RATING,
+  SEED_TOTAL,
+  type Review,
+} from "@/lib/google-reviews-seed";
 
 const PLACE_ID = "ChIJRSmMi4xWVSURJZWuczwr72w";
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6h
 
-type Review = {
-  author_name: string;
-  rating: number;
-  text: string;
-  relative_time: string;
-  time: number;
-  profile_photo_url: string;
-};
 type Payload = {
   rating: number;
   total: number;
   reviews: Review[];
 };
 
-const GUY_GALANTI: Review = {
-  author_name: "גיא גלנטי",
-  rating: 5,
-  text: "הגעתי לרפאל דרך המלצות באינטרנט והוא ייצג אותי בהתנהלות מול חברת ביטוח גדולה. נדיר לראות בעל מקצוע ישראלי כזה מקצועי ומתוקתק שלא מעגל פינות. הוא מכיר את החומר היטב, זמין והנחה אותי ביד בכל התהליך ועשה את הסיוט של ההתנהלות מול חברת ביטוח לחיים קלים. ממליץ עליו מכל הלב ובמידה ואצטרך שוב בעתיד ברור לי שחוזר אליו. תודה רבה",
-  relative_time: "לפני חודש",
-  time: 1780963200,
-  profile_photo_url: "",
+// The Places API only ever returns 5 reviews. Merge them over the full seed set
+// (scraped from the live Trustindex widget) so the carousel always shows the
+// whole wall, with fresh API copy winning for any reviewer present in both.
+function mergeWithSeed(live: Review[]): Review[] {
+  const seen = new Set(live.map((r) => r.author_name));
+  return [...live, ...SEED_REVIEWS.filter((r) => !seen.has(r.author_name))];
+}
+
+const FALLBACK: Payload = {
+  rating: SEED_RATING,
+  total: SEED_TOTAL,
+  reviews: SEED_REVIEWS,
 };
 
 let cache: { at: number; data: Payload } | null = null;
@@ -75,13 +78,10 @@ async function fetchLive(apiKey: string): Promise<Payload> {
     time: r.publishTime ? Math.floor(new Date(r.publishTime).getTime() / 1000) : 0,
     profile_photo_url: r.authorAttribution?.photoUri || "",
   }));
-  if (!reviews.some((r) => r.author_name === "גיא גלנטי")) {
-    reviews.push(GUY_GALANTI);
-  }
   return {
-    rating: data.rating ?? 5,
-    total: data.userRatingCount ?? 0,
-    reviews,
+    rating: data.rating ?? SEED_RATING,
+    total: data.userRatingCount ?? SEED_TOTAL,
+    reviews: mergeWithSeed(reviews),
   };
 }
 
@@ -92,14 +92,9 @@ export const Route = createFileRoute("/api/public/google-reviews")({
       GET: async () => {
         const apiKey = process.env.GOOGLE_PLACES_API_KEY;
         if (!apiKey) {
-          // No key configured — return the pinned review so the widget still
-          // shows real social proof without triggering a runtime error.
-          return json({
-            rating: 5,
-            total: 0,
-            reviews: [GUY_GALANTI],
-            disabled: true,
-          });
+          // No key configured — serve the seed wall so the carousel still shows
+          // real social proof rather than triggering a runtime error.
+          return json({ ...FALLBACK, disabled: true });
         }
         const now = Date.now();
         if (cache && now - cache.at < CACHE_TTL_MS) {
@@ -113,12 +108,7 @@ export const Route = createFileRoute("/api/public/google-reviews")({
           if (cache) {
             return json({ ...cache.data, cached: true, stale: true });
           }
-          return json({
-            rating: 5,
-            total: 0,
-            reviews: [GUY_GALANTI],
-            error: (err as Error).message,
-          });
+          return json({ ...FALLBACK, error: (err as Error).message });
         }
       },
     },
