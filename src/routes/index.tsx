@@ -5,6 +5,14 @@ import { getSeoRecord } from "@/lib/seo.functions";
 import { buildSeoHead } from "@/lib/seo-head";
 import { mountLiveGoogleReviews } from "@/lib/live-google-reviews";
 
+// Lighthouse identifies this background as the homepage LCP element. Keeping
+// the URL only behind an Elementor CSS variable delays discovery even with a
+// preload hint, so expose the identical image directly in the SSR HTML.
+const optimizedMainHtml = mainHtml.replace(
+  'data-id="dabb116"',
+  'data-id="dabb116" style="background-image:url(\'/wp-content/uploads/2025/12/bg_main.webp\')"',
+);
+
 export const Route = createFileRoute("/")({
   loader: async () => ({ seo: await getSeoRecord({ data: { path: "" } }) }),
   head: ({ loaderData }) => {
@@ -49,5 +57,5 @@ function Index() {
     };
   }, []);
 
-  return <div dangerouslySetInnerHTML={{ __html: mainHtml }} />;
+  return <div dangerouslySetInnerHTML={{ __html: optimizedMainHtml }} />;
 }
