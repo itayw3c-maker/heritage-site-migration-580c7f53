@@ -7,7 +7,10 @@ const SITE = "https://www.rrshamaut.co.il";
 const CONTENT_DIR = "public/content";
 const OUT = "public/sitemap.xml";
 const SLUGS_OUT = "src/generated/content-slugs.json";
-const EXCLUDE_SLUGS = new Set(["thank-you"]);
+const EXCLUDE_SLUGS = new Set([
+  "thank-you",
+  "about/השמאי-רפאל-ריבוח-מייסד-ובעלים-2",
+]);
 
 function walk(dir) {
   const out = [];
