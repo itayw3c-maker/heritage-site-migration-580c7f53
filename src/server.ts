@@ -48,7 +48,10 @@ function isH3SwallowedErrorBody(body: string): boolean {
 // /abcde/x123456.html. They were never real site content. A 410 tells crawlers
 // to retire them faster than a generic 404 and avoids spending SSR resources.
 function isKnownSpamPath(pathname: string): boolean {
-  return /^\/[a-z]{5}\/[a-z]\d+\.html\/?$/i.test(pathname);
+  return (
+    /^\/[a-z]{5}\/[a-z]\d+\.html\/?$/i.test(pathname) ||
+    /^\/products\/\d+\/?$/i.test(pathname)
+  );
 }
 
 export default {
