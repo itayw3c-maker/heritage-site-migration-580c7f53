@@ -124,6 +124,17 @@ function buildMediaSummary(record: SingleRecord): string {
   </section>`;
 }
 
+function buildSuccessSummary(record: SingleRecord): string {
+  const title = escAttr(record.title ?? "סיפור ההצלחה");
+  const description = escAttr(record.meta_description ?? "");
+  return `<section class="rr-video-summary rr-success-summary" aria-label="פרטים נוספים על ${title}">
+    <h2>עיקרי המקרה</h2>
+    ${description ? `<p>${description}</p>` : ""}
+    <p>התוצאה המוצגת מתייחסת למקרה המסוים ולנסיבותיו. גובה הפיצוי והטיפול בכל תביעה נקבעים לפי היקף הנזק, תנאי הפוליסה, התיעוד והבדיקה המקצועית.</p>
+    <p><a href="/success/">לסיפורי הצלחה נוספים</a> · <a href="/%D7%99%D7%99%D7%A2%D7%95%D7%A5-%D7%95%D7%9C%D7%99%D7%95%D7%95%D7%99-%D7%AA%D7%91%D7%99%D7%A2%D7%95%D7%AA-%D7%91%D7%99%D7%98%D7%95%D7%97/">ייעוץ וליווי תביעות ביטוח</a> · <a href="/%D7%A6%D7%95%D7%A8-%D7%A7%D7%A9%D7%A8/">יצירת קשר</a></p>
+  </section>`;
+}
+
 // WordPress migration left <br /> tags inside <style> blocks of article
 // content_html. Rendered raw during SSR they break the CSS entirely, so strip
 // <br> only inside <style>...</style>. Pure string transform, fail-safe.
@@ -186,9 +197,11 @@ export function SingleTemplate({
     }
     const tpl = TEMPLATES[record.type];
     const rendered = tpl ? stripBrInStyle(fill(tpl, record, related.w1)) : "";
-    return record.type === "movie" || record.type === "shorts"
-      ? rendered + buildMediaSummary(record)
-      : rendered;
+    if (record.type === "movie" || record.type === "shorts") {
+      return rendered + buildMediaSummary(record);
+    }
+    if (record.type === "success") return rendered + buildSuccessSummary(record);
+    return rendered;
   }, [record, related.w1]);
 
   useEffect(() => {

@@ -4,6 +4,7 @@ import { SingleTemplate, type SingleRecord } from "@/components/SingleTemplate";
 import { getSeoRecord } from "@/lib/seo.functions";
 import {
   augmentShortSeo,
+  augmentSuccessSeo,
   augmentVideoSeo,
   buildSeoHead,
   correctArticleWordCount,
@@ -46,6 +47,8 @@ export const Route = createFileRoute("/$")({
           ? augmentVideoSeo(pageSeo, content.record)
           : content.record?.type === "shorts"
             ? augmentShortSeo(pageSeo, content.record)
+            : content.record?.type === "success"
+              ? augmentSuccessSeo(pageSeo, content.record)
             : pageSeo,
       record: content.record,
       related: content.related,
