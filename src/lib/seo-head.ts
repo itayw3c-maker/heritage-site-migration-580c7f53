@@ -458,6 +458,11 @@ export function augmentExpertSeo(
         "https://www.rrshamaut.co.il/movie/fire-damage-no-building-insurance-cost/",
         "https://www.rrshamaut.co.il/success/תשלום-בגין-נזקי-שריפה-ע״ס-125000/",
       ],
+      "שמאי-נזק-שער-חשמלי": [
+        "https://www.rrshamaut.co.il/שמאי-נזקי-התנגשות/",
+        "https://www.rrshamaut.co.il/ייעוץ-וליווי-תביעות-ביטוח/",
+        "https://www.rrshamaut.co.il/damage-assessments-loss-adjusting/",
+      ],
       "נזקי-מים-עליה-קפילארית-כיצד-לפעול": [
         "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/",
         "https://www.rrshamaut.co.il/movie/capillary-moisture-after-plumbing-damage/",
@@ -525,6 +530,11 @@ export function augmentExpertSeo(
             ? {
                 question: "מתי מזמינים שמאי נזקי שריפה ומה הוא בודק?",
                 answer: "מזמינים שמאי נזקי שריפה לאחר שהזירה בטוחה לכניסה ולפני פינוי או שיקום נרחב. השמאי מתעד ומכמת נזקי מבנה, תכולה, עשן, פיח, חום ומי כיבוי ומכין חוות דעת מנומקת לתביעת הביטוח.",
+              }
+          : normalizedPath === "שמאי-נזק-שער-חשמלי"
+            ? {
+                question: "מי אחראי לנזק לשער חניה חשמלי ומה עושים מיד?",
+                answer: "האחריות תלויה בגורם הנזק ובבעלות על השער, למשל נהג שפגע, ועד בית, בעל נכס או גורם תחזוקה. לאחר שמונעים שימוש בשער לא בטיחותי, מתעדים את הזירה, פרטי האירוע וכל רכיבי השער שנפגעו ושומרים פוליסות, סרטוני מצלמות והצעות מחיר לפני תיקון.",
               }
         : null;
     if (serviceFaq) {
