@@ -284,7 +284,7 @@ const RAFAEL_PROFILE_URL =
 
 export function augmentExpertSeo(
   rec: SeoRecord | null,
-  options: { reviewed?: boolean } = {},
+  options: { reviewed?: boolean; path?: string } = {},
 ): SeoRecord | null {
   if (!rec?.schema) return rec;
   try {
@@ -341,6 +341,26 @@ export function augmentExpertSeo(
           "https://haotzarsheli.mof.gov.il/Subject/Pages/Choosing-Apartment-Insurance.aspx",
           "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice-2022-9-2/he/claim-solution-2022-9-2-pdf.pdf",
         ];
+      }
+    }
+    if (options.path?.replace(/^\/+|\/+$/g, "") === "שאלות-תשובות") {
+      const faqPage = graph.find((item) => item["@type"] === "FAQPage");
+      if (faqPage) {
+        const entities = Array.isArray(faqPage.mainEntity)
+          ? (faqPage.mainEntity as Array<Record<string, unknown>>)
+          : [];
+        const question = "מי אחראי לנזק בצנרת משותפת בבניין?";
+        if (!entities.some((entity) => entity.name === question)) {
+          entities.unshift({
+            "@type": "Question",
+            name: question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "האחריות נקבעת לפי מיקום הצינור, את מי הוא משרת ומה גרם לנזק. צנרת המשרתת את כלל בעלי הדירות או חלקם עשויה להיחשב רכוש משותף, בעוד צינור המשרת דירה אחת בלבד יהיה בדרך כלל באחריות בעל הדירה. יש לבדוק את תשריט הצנרת, התקנון, ממצאי האיתור ותנאי הפוליסה לפני קביעת האחריות והכיסוי.",
+            },
+          });
+          faqPage.mainEntity = entities;
+        }
       }
     }
     return { ...rec, schema: JSON.stringify(schema) };

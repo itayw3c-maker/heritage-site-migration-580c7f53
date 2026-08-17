@@ -160,6 +160,18 @@ function buildExpertPanel(record: SingleRecord, slug?: string): string {
   </aside>`;
 }
 
+function buildSharedPipeAnswer(record: SingleRecord): string {
+  if (record.type !== "static" || !/שאלות תשובות/.test(record.title ?? "")) return "";
+  return `<section class="rr-video-summary rr-direct-answer" aria-label="תשובה מהירה על ביטוח צנרת משותפת">
+    <h2>מי אחראי לנזק בצנרת משותפת בבניין?</h2>
+    <p><strong>התשובה הקצרה:</strong> האחריות נקבעת לפי מיקום הצינור, את מי הוא משרת ומה גרם לנזק. צנרת המשרתת את כלל בעלי הדירות או חלקם עשויה להיחשב רכוש משותף; צינור המשרת דירה אחת בלבד יהיה בדרך כלל באחריות בעל הדירה.</p>
+    <h3>מה בודקים לפני שקובעים אחריות?</h3>
+    <p>בודקים את תשריט הצנרת, התקנון, ממצאי איתור המקור, היקף הנזק ותנאי פוליסת המבנה או כתב השירות. חיבור בין צינור פרטי לצינור משותף מחייב בדיקה מקצועית ואינו מוכרע רק לפי מיקום סימן הרטיבות.</p>
+    <h3>מתי כדאי להזמין שמאי רכוש פרטי?</h3>
+    <p>כאשר קיימת מחלוקת על מקור הנזק, אחריות הבית המשותף, היקף השיקום או הצעת הפיצוי. לפני תיקון נרחב מומלץ לתעד את הממצאים, לשמור דוחות, תמונות, הצעות מחיר והתכתבויות עם חברת הביטוח או ועד הבית.</p>
+  </section>`;
+}
+
 // WordPress migration left <br /> tags inside <style> blocks of article
 // content_html. Rendered raw during SSR they break the CSS entirely, so strip
 // <br> only inside <style>...</style>. Pure string transform, fail-safe.
@@ -219,9 +231,11 @@ export function SingleTemplate({
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;")
           .trim();
-        if (heading) return `<h1 class="rr-sr-only">${heading}</h1>` + base + buildExpertPanel(record, slug);
+        if (heading) {
+          return `<h1 class="rr-sr-only">${heading}</h1>` + base + buildSharedPipeAnswer(record) + buildExpertPanel(record, slug);
+        }
       }
-      return base + buildExpertPanel(record, slug);
+      return base + buildSharedPipeAnswer(record) + buildExpertPanel(record, slug);
     }
     const tpl = TEMPLATES[record.type];
     const rendered = tpl ? stripBrInStyle(fill(tpl, record, related.w1)) : "";
