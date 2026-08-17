@@ -96,6 +96,11 @@ const SEO_OVERRIDES: Record<string, SeoOverride> = {
     description:
       "האם ביטוח דירה מכסה שריפה, מה ההבדל בין מבנה לתכולה ומה בודקים כשאין ביטוח? הסבר על בטיחות, אחריות צד שלישי, תיעוד ושמאות.",
   },
+  "movie/unoccupied-apartment-insurance-coverage": {
+    title: "ביטוח דירה לא מאוכלסת: מה קורה אחרי 60 יום? | רפאל",
+    description:
+      "האם ביטוח דירה מכסה דירה לא מאוכלסת מעל 60 יום? מה בודקים בפוליסה, מתי מודיעים למבטחת ואילו תנאים ומסמכים כדאי להסדיר מראש.",
+  },
   "נזילה-מהשכן-מעליי-מה-לעשות-כששכן-מסרב-ל": {
     title: "שכן מסרב לתקן נזילה: תיעוד ודרכי פעולה | רפאל",
     description:
@@ -204,6 +209,7 @@ const EXPERT_REVIEW_PATHS = new Set([
   "ערכי-כינון-ערכי-שיפוי-הסבר-מלא",
   "תביעת-נזקי-הצפה",
   "movie/fire-damage-without-insurance-can-you-get-compensation",
+  "movie/unoccupied-apartment-insurance-coverage",
   "נזילה-מהשכן-מעליי-מה-לעשות-כששכן-מסרב-ל",
   "jobs",
   "שמאי-רכוש-מחיר-כל-מה-שצריך-לדעת-על-אופן",
