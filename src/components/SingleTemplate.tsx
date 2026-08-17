@@ -99,14 +99,25 @@ function buildFeaturedImage(url: string | undefined, alt: string): string {
   return `<img alt="${escAttr(alt)}" class="attachment-large size-large" src="${escAttr(url)}" loading="lazy" />`;
 }
 
-function buildMediaSummary(record: SingleRecord): string {
+function buildMediaSummary(record: SingleRecord, slug?: string): string {
   const isShort = record.type === "shorts";
   const title = escAttr(record.title ?? (isShort ? "המידע המקצועי" : "הסרטון המקצועי"));
   const description = escAttr(record.meta_description ?? "");
+  const path = (slug ?? "").replace(/^\/+|\/+$/g, "");
+  const keyPoints = path === "movie/mapping-moisture-after-plumbing-damage"
+    ? "מיפוי לחות בוחן את פיזור הרטיבות ולא רק את נקודת הנזילה. התיעוד מסייע להגדיר אילו אזורים דורשים ייבוש או שיקום ולבסס את היקף תביעת הביטוח."
+    : path === "movie/fire-damage-no-building-insurance-cost"
+      ? "נזק שריפה עלול לכלול מבנה, תכולה, עשן, פיח ומי כיבוי. ללא ביטוח מבנה העלויות עלולות לחול על בעל הנכס, ולכן חשוב לתעד ולכמת את מלוא היקף השיקום."
+      : path === "movie/weather-damage-coverage-storm-insurance-claims"
+        ? "הכיסוי תלוי בגורם הנזק ובהגדרות הפוליסה. יש להבחין בין סערה, שיטפון, חדירת גשם וכשל תחזוקתי ולתעד את מצב הנכס ואת נסיבות האירוע."
+        : path === "movie/capillary-moisture-after-plumbing-damage"
+          ? "קילופי צבע וטיח סמוך לרצפה עשויים להעיד על לחות כלואה ועלייה קפילרית, אך נדרשות מדידות ובדיקת מקור כדי להבחין בין צנרת, איטום ולחות קרקע."
+          : "";
   return `<section class="rr-video-summary" aria-label="מידע נוסף על ${title}">
     <h2>${isShort ? "הנקודות החשובות בקצרה" : "על מה מדבר הסרטון?"}</h2>
     ${description ? `<p>${description}</p>` : ""}
     <p>המידע בעמוד מסייע לבעלי נכסים להבין את שלבי התיעוד, הערכת הנזק וההתנהלות מול חברת הביטוח. כל אירוע נזק מחייב בדיקה מקצועית בהתאם לנסיבות, לפוליסה ולמצב הנכס.</p>
+    ${keyPoints ? `<h3>עיקרי הסרטון</h3><p>${keyPoints}</p>` : ""}
     <p><a href="/category/%D7%9E%D7%99%D7%93%D7%A2-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99/">למאמרים המקצועיים</a> · <a href="/about/">אודות רפאל שמאות רכוש</a> · <a href="/shorts/">לסרטונים נוספים</a></p>
   </section>`;
 }
@@ -155,6 +166,7 @@ function buildExpertPanel(record: SingleRecord, slug?: string): string {
     <h2>נכתב ונבדק מקצועית</h2>
     <p><strong>רפאל ריבוח</strong> — שמאי רכוש, סוקר סיכונים ומאתר ליקויי בנייה מורשה, המתמחה בהערכת נזקי מים, אש ורכוש ובליווי תביעות ביטוח.</p>
     <p>המידע נועד להסביר עקרונות מקצועיים כלליים. ההערכה בכל מקרה נקבעת לאחר בדיקת הנכס, המסמכים, היקף הנזק ותנאי הפוליסה.</p>
+    <p><strong>תאריך בדיקה מקצועית:</strong> <time datetime="2026-08-17">17 באוגוסט 2026</time></p>
     <p><strong>מקורות רשמיים לעיון נוסף:</strong> <a href="https://haotzarsheli.mof.gov.il/Subject/Pages/Choosing-Apartment-Insurance.aspx" rel="external">מדריך משרד האוצר לביטוח דירה</a> · <a href="https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice-2022-9-2/he/claim-solution-2022-9-2-pdf.pdf" rel="external">חוזר רשות שוק ההון לבירור ויישוב תביעות</a></p>
     <p><a href="/about/%D7%94%D7%A9%D7%9E%D7%90%D7%99-%D7%A8%D7%A4%D7%90%D7%9C-%D7%A8%D7%99%D7%91%D7%95%D7%97-%D7%9E%D7%99%D7%99%D7%A1%D7%93-%D7%95%D7%91%D7%A2%D7%9C%D7%99%D7%9D/">לפרופיל המקצועי של רפאל ריבוח</a> · <a href="/about/">אודות המשרד</a></p>
   </aside>`;
@@ -292,7 +304,7 @@ export function SingleTemplate({
     const tpl = TEMPLATES[record.type];
     const rendered = tpl ? stripBrInStyle(fill(tpl, record, related.w1)) : "";
     if (record.type === "movie" || record.type === "shorts") {
-      return rendered + buildMediaSummary(record);
+      return rendered + buildMediaSummary(record, slug) + buildExpertPanel(record, slug);
     }
     if (record.type === "success") return rendered + buildSuccessSummary(record);
     if (record.type === "post") {
