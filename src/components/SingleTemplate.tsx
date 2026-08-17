@@ -5,6 +5,7 @@ import movieTpl from "@/generated/templates/movie.html?raw";
 import successTpl from "@/generated/templates/success.html?raw";
 import serviceTpl from "@/generated/templates/service.html?raw";
 import { enhanceElementor } from "@/lib/elementor-enhance";
+import { improveMigratedHtml } from "@/lib/migrated-html";
 import {
   buildRelated,
   escAttr,
@@ -81,7 +82,7 @@ function fill(tpl: string, rec: SingleRecord, relatedHtml1: string): string {
   const videoSettings = (rec.video_settings ?? "{}").replace(/"/g, "&quot;");
   const featuredImage =
     rec.type === "success" ? buildFeaturedImage(rec.featured_image_url, rec.title ?? "") : "";
-  const content = improveContentHtml(rec.content_html ?? "", rec.title ?? "");
+  const content = improveMigratedHtml(rec.content_html ?? "", rec.title ?? "");
   return tpl
     .split("__HOLE_TITLE__").join(rec.title ?? "")
     .split("__HOLE_CONTENT__").join(content)
@@ -95,21 +96,6 @@ function fill(tpl: string, rec: SingleRecord, relatedHtml1: string): string {
 function buildFeaturedImage(url: string | undefined, alt: string): string {
   if (!url) return "";
   return `<img alt="${escAttr(alt)}" class="attachment-large size-large" src="${escAttr(url)}" loading="lazy" />`;
-}
-
-function improveContentHtml(html: string, pageTitle: string): string {
-  const fallbackAlt = escAttr(`תמונה מתוך ${pageTitle}`);
-  return html
-    .replace(/<a\b([^>]*\bhref=["'](?:\/|https?:\/\/(?:www\.)?rrshamaut\.co\.il)[^>]*?)>/gi, (tag) =>
-      tag.replace(/\s+target=["']_blank["']/i, ""),
-    )
-    .replace(/<img\b([^>]*)>/gi, (tag, attrs: string) => {
-      if (/\balt=["'][^"']+["']/i.test(attrs)) return tag;
-      if (/\balt=["']["']/i.test(attrs)) {
-        return tag.replace(/\balt=["']["']/i, `alt="${fallbackAlt}"`);
-      }
-      return tag.replace(/^<img\b/i, `<img alt="${fallbackAlt}"`);
-    });
 }
 
 function buildMediaSummary(record: SingleRecord): string {
@@ -180,7 +166,10 @@ export function SingleTemplate({
 
   const html = useMemo(() => {
     if (record.type === "static") {
-      const base = stripBrInStyle(record.main_html ?? "");
+      const base = improveMigratedHtml(
+        stripBrInStyle(record.main_html ?? ""),
+        record.title ?? "העמוד",
+      );
       // SEO: static Elementor pages (about, team, jobs) use styled <h2>/<div>
       // headings and ship no <h1>. Guarantee exactly one keyword-bearing H1 by
       // prepending a screen-reader-only H1 from the page title when none exists.

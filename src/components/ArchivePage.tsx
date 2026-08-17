@@ -3,6 +3,7 @@ import categoryWrap from "@/generated/archives/category.html?raw";
 import shortsWrap from "@/generated/archives/shorts.html?raw";
 import successWrap from "@/generated/archives/success.html?raw";
 import { enhanceElementor } from "@/lib/elementor-enhance";
+import { improveMigratedHtml } from "@/lib/migrated-html";
 
 export type ArchiveKind = "category" | "shorts" | "success";
 
@@ -88,7 +89,7 @@ function categoryCard(p: IndexPost): string {
   const thumb = p.thumbnail
     ? `<a class="elementor-post__thumbnail__link" href="${escAttr(href)}" tabindex="-1"><div class="elementor-post__thumbnail"><img src="${escAttr(p.thumbnail)}" alt="${escAttr(p.title)}" loading="lazy" /></div></a>`
     : "";
-  return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry ${catCls}" role="listitem">
+  return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry ${catCls}">
     <div class="elementor-post__card">
       ${thumb}
       <div class="elementor-post__text">
@@ -111,7 +112,7 @@ function categoryRelated(p: IndexPost): string {
   const thumb = p.thumbnail
     ? `<a class="elementor-post__thumbnail__link" href="${escAttr(href)}" tabindex="-1"><div class="elementor-post__thumbnail"><img src="${escAttr(p.thumbnail)}" alt="${escAttr(p.title)}" loading="lazy" /></div></a>`
     : "";
-  return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry" role="listitem">
+  return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry">
 ${thumb}
 <div class="elementor-post__text">
 <div class="elementor-post__title"><a href="${escAttr(href)}">${p.title}</a></div>
@@ -280,7 +281,7 @@ export function ArchivePage({
       const relatedPool = posts.filter((x) => !slice.some((s) => s.slug === x.slug));
       relatedHtml = relatedPool.slice(0, 4).map(categoryRelated).join("\n");
     }
-    return WRAPPERS[kind]
+    return improveMigratedHtml(WRAPPERS[kind], TITLES[kind])
       .split("__HOLE_ITEMS__").join(itemsHtml)
       .split("__HOLE_PAGINATION__").join(pagHtml)
       .split("__HOLE_RELATED_1__").join(relatedHtml);

@@ -4,11 +4,12 @@ import mainHtml from "@/generated/main.html?raw";
 import { getSeoRecord } from "@/lib/seo.functions";
 import { buildSeoHead } from "@/lib/seo-head";
 import { mountLiveGoogleReviews } from "@/lib/live-google-reviews";
+import { improveMigratedHtml } from "@/lib/migrated-html";
 
 // Lighthouse identifies this background as the homepage LCP element. Keeping
 // the URL only behind an Elementor CSS variable delays discovery even with a
 // preload hint, so expose the identical image directly in the SSR HTML.
-const optimizedMainHtml = mainHtml.replace(
+const optimizedMainHtml = improveMigratedHtml(mainHtml, "דף הבית של רפאל שמאות רכוש").replace(
   'data-id="dabb116"',
   'data-id="dabb116" style="background-image:url(\'/wp-content/uploads/2025/12/bg_main.webp\')"',
 );
