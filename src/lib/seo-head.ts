@@ -613,6 +613,11 @@ export function augmentExpertSeo(
         "https://www.rrshamaut.co.il/structural-vs-contents-damage/",
         "https://www.rrshamaut.co.il/תביעת-ביטוח-נזקי-צנרת-מדריך-מקיף-לתהלי/",
       ],
+      "movie/underfloor-drying-pros-cons": [
+        "https://www.rrshamaut.co.il/movie/moisture-test-standard-insurance-responsibility/",
+        "https://www.rrshamaut.co.il/movie/insurance-must-perform-underfloor-drying/",
+        "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/",
+      ],
       "שמאי-נזקי-מים-המדריך-המלא": [
         "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/",
         "https://www.rrshamaut.co.il/movie/mapping-moisture-after-plumbing-damage/",
@@ -715,6 +720,11 @@ export function augmentExpertSeo(
         ? {
             question: "מה עושים מיד כשמים חודרים למעלית?",
             answer: "מונעים שימוש במעלית, מרחיקים אנשים ומודיעים לנציגות הבניין ולחברת שירות המעליות. אין להיכנס לבור, לחדר מכונות או לאזור חשמלי ואין להפעיל את המעלית מחדש. טכנאי או בודק מוסמך קובע בטיחות ותקינות; לאחר שהזירה בטוחה שמאי רכוש מתעד ומכמת את הנזק. הכיסוי תלוי במקור, בבעלות ובפוליסות ואינו מובטח.",
+          }
+      : normalizedPath === "movie/underfloor-drying-pros-cons"
+        ? {
+            question: "מתי נדרש ייבוש תת רצפתי ומה היתרונות והחסרונות?",
+            answer: "ייבוש תת רצפתי נשקל לאחר עצירת מקור המים וכאשר מדידות מצביעות על לחות כלואה מתחת לריצוף. הוא עשוי לצמצם פירוק, אך דורש נקודות גישה, זמן, רעש ובקרה ואינו מתאים לכל תשתית או נזק. קבלן ייבוש מתכנן ומבצע, גורם בדיקה מודד ושמאי רכוש מתעד חלופות ועלויות. הכיסוי תלוי בפוליסה ובראיות ואינו מובטח.",
           }
       : normalizedPath === "הערכת-שמאות-לריהוט-עתיק"
       ? {
