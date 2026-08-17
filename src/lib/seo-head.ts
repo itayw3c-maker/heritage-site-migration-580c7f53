@@ -562,6 +562,32 @@ export function augmentExpertSeo(
         },
       });
     }
+    if (
+      normalizedPath === "movie/fire-damage-without-insurance-can-you-get-compensation" &&
+      !graph.some((item) => item["@type"] === "VideoObject")
+    ) {
+      const pageUrl = "https://www.rrshamaut.co.il/movie/fire-damage-without-insurance-can-you-get-compensation/";
+      const videoId = "3MLYRtgaxjE";
+      graph.unshift({
+        "@type": "VideoObject",
+        "@id": `${pageUrl}#video`,
+        name: "ביטוח דירה ושריפה – כיסוי ומה עושים ללא ביטוח",
+        description:
+          "הסבר על כיסוי נזקי שריפה בביטוח מבנה ותכולה ועל בדיקת אחריות ואפשרויות פעולה כאשר אין ביטוח דירה.",
+        thumbnailUrl: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+        embedUrl: `https://www.youtube.com/embed/${videoId}`,
+        contentUrl: `https://www.youtube.com/watch?v=${videoId}`,
+        inLanguage: "he-IL",
+        isFamilyFriendly: true,
+        creator: { "@id": RAFAEL_PERSON_ID },
+        publisher: { "@id": "https://www.rrshamaut.co.il/#organization" },
+        mainEntityOfPage: { "@id": pageUrl },
+        potentialAction: {
+          "@type": "WatchAction",
+          target: `https://www.youtube.com/watch?v=${videoId}`,
+        },
+      });
+    }
     if (normalizedPath === "נזקי-מים-הצפה-ורטיבות") {
       const pageUrl = "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/";
       if (!graph.some((item) => item["@type"] === "Service" && item.url === pageUrl)) {
@@ -684,6 +710,16 @@ export function augmentExpertSeo(
         "https://www.rrshamaut.co.il/נזק-מים-במעלית/",
         "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/",
         "https://www.rrshamaut.co.il/תביעת-ביטוח-נזקי-צנרת-מדריך-מקיף-לתהלי/",
+      ],
+      "movie/fire-damage-without-insurance-can-you-get-compensation": [
+        "https://www.rrshamaut.co.il/נזקי-אש-ופיח/",
+        "https://www.rrshamaut.co.il/שמאי-נזקי-שריפה-מה-נכון-לעשות-כאשר-נגרם/",
+        "https://www.rrshamaut.co.il/movie/fire-damage-no-building-insurance-cost/",
+      ],
+      "נזילה-מהשכן-מעליי-מה-לעשות-כששכן-מסרב-ל": [
+        "https://www.gov.il/he/service/condominiums-supervisor-claims",
+        "https://www.rrshamaut.co.il/נזקי-מים-מהשכן-רטיבות-בתקרה-מדריך-מקיף/",
+        "https://www.rrshamaut.co.il/shorts/leak-from-upstairs-neighbor-refuses-to-fix/",
       ],
       "נזקי-מים-מהשכן-רטיבות-בתקרה-מדריך-מקיף": [
         "https://www.rrshamaut.co.il/נזילה-מהשכן-מלמעלה/",
@@ -812,6 +848,16 @@ export function augmentExpertSeo(
         ? {
             question: "מה עושים מיד אחרי הצפת מים בבניין?",
             answer: "מרחיקים אנשים ממים, חשמל, מעלית ואזורים לא בטוחים; אין להיכנס למים, לגעת בלוח או להפעיל מעלית. עוצרים את המקור רק ללא סיכון ומזמינים בעלי מקצוע מוסמכים לבטיחות ולאיתור. מודיעים לנציגות ולמבטחים ומתעדים את השטחים המשותפים והדירות לפני פינוי ושיקום. האחריות נקבעת לפי מקור המים והבעלות על המערכת; הכיסוי והפיצוי תלויים בממצאים, בדין ובפוליסות ואינם מובטחים.",
+          }
+      : normalizedPath === "movie/fire-damage-without-insurance-can-you-get-compensation"
+        ? {
+            question: "האם ביטוח דירה מכסה שריפה ומה עושים כשאין ביטוח?",
+            answer: "ביטוח דירה עשוי לכסות שריפה אם כיסוי המבנה או התכולה הרלוונטי היה בתוקף והאירוע אינו מוחרג. בודקים כל חלק בנפרד, מתעדים אש, עשן, פיח ומי כיבוי ולא נכנסים לפני אישור בטיחות. כשאין ביטוח אין מקור תשלום אוטומטי; אפשר לבדוק אחריות וביטוח צד שלישי או מסלול ייעודי לפי הנסיבות. הכיסוי, האחריות והפיצוי תלויים בפוליסה, בעובדות ובראיות ואינם מובטחים.",
+          }
+      : normalizedPath === "נזילה-מהשכן-מעליי-מה-לעשות-כששכן-מסרב-ל"
+        ? {
+            question: "מה עושים כשהשכן מסרב לתקן נזילה?",
+            answer: "מתעדים ופונים לשכן בכתב, מזמינים גורם מתאים לאיתור המקור ומדווחים למבטחת; אם ייתכן שמדובר ברכוש משותף מעדכנים גם את הנציגות. סימן הרטיבות לבדו אינו מוכיח אחריות. במקרה דחוף או מתמשך פונים לעורך דין לבדיקת סעד והערכאה המוסמכת, לרבות אפשרות להליך בפני המפקח על רישום המקרקעין בסכסוכים מתאימים. שמאות אינה תחליף לייעוץ משפטי והתוצאה אינה מובטחת.",
           }
       : normalizedPath === "נזקי-מים-מהשכן-רטיבות-בתקרה-מדריך-מקיף"
         ? {
