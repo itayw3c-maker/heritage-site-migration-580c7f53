@@ -162,20 +162,35 @@ export function augmentVideoSeo(
     const page = graph.find((item) => (item as { "@type"?: unknown })?.["@type"] === "WebPage") as
       | { "@id"?: string; datePublished?: string; dateModified?: string }
       | undefined;
+    const topic = `${record.title ?? ""} ${record.meta_description ?? ""}`;
+    const keywords = /שריפ|אש|פיח/.test(topic)
+      ? ["נזקי אש", "נזקי שריפה", "פיח", "שמאות רכוש", "תביעת ביטוח"]
+      : /סער|שיטפו|גשם|מזג אוויר|ברד/.test(topic)
+        ? ["נזקי טבע", "סערה", "שיטפון", "שמאות רכוש", "ביטוח דירה"]
+        : /מים|רטיב|נזיל|צנרת|לחות|קפילר|הצפ/.test(topic)
+          ? ["נזקי מים", "רטיבות", "צנרת", "שמאות רכוש", "תביעת ביטוח"]
+          : ["שמאות רכוש", "הערכת נזקים", "תביעת ביטוח"];
+    const thumbnailVariant = id === "asntYYdHl_U" ? "hqdefault" : "maxresdefault";
     graph.unshift({
       "@type": "VideoObject",
       "@id": `${rec.canonical ?? page?.["@id"] ?? ""}#video`,
       name: record.title || rec.og?.og_title,
       description: record.meta_description || rec.og?.og_description,
-      thumbnailUrl: `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`,
+      thumbnailUrl: `https://i.ytimg.com/vi/${id}/${thumbnailVariant}.jpg`,
       uploadDate: page?.datePublished,
       dateModified: page?.dateModified,
       embedUrl: `https://www.youtube.com/embed/${id}`,
       contentUrl: `https://www.youtube.com/watch?v=${id}`,
       inLanguage: "he-IL",
       isFamilyFriendly: true,
+      keywords,
+      creator: { "@id": "https://www.rrshamaut.co.il/#/schema/person/fe58479381961be2031bd74a5eec70d7" },
       publisher: { "@id": "https://www.rrshamaut.co.il/#organization" },
       mainEntityOfPage: { "@id": rec.canonical ?? page?.["@id"] },
+      potentialAction: {
+        "@type": "WatchAction",
+        target: `https://www.youtube.com/watch?v=${id}`,
+      },
     });
     return { ...rec, schema: JSON.stringify(schema) };
   } catch {
