@@ -598,6 +598,11 @@ export function augmentExpertSeo(
         "https://www.rrshamaut.co.il/שמאות-רכוש-לפריטי-אומנות-והערכות-שווי/",
         "https://www.rrshamaut.co.il/חווד-קבילה-משפטית/",
       ],
+      "damage-to-electrical-systems": [
+        "https://www.rrshamaut.co.il/burnt-air-conditioner/",
+        "https://www.rrshamaut.co.il/structural-vs-contents-damage/",
+        "https://www.rrshamaut.co.il/ייעוץ-וליווי-תביעות-ביטוח/",
+      ],
       "שמאי-נזקי-מים-המדריך-המלא": [
         "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/",
         "https://www.rrshamaut.co.il/movie/mapping-moisture-after-plumbing-damage/",
@@ -686,7 +691,12 @@ export function augmentExpertSeo(
         }
       }
     }
-    const serviceFaq = normalizedPath === "הערכת-שמאות-לריהוט-עתיק"
+    const serviceFaq = normalizedPath === "damage-to-electrical-systems"
+      ? {
+          question: "מי בודק נזקי חשמל ומה כוללת חוות הדעת השמאית?",
+          answer: "חשמלאי מוסמך או מהנדס חשמל בודק בטיחות, מקור כשל ותקינות; שמאי רכוש מתעד ומכמת נזק ללוחות, חיווט, מערכות, מכשירים וציוד ומעריך תיקון או החלפה. במקרה של סכנת התחשמלות אין לגעת בציוד. חוות הדעת אינה מחליפה אישור בטיחות ואינה מבטיחה כיסוי או פיצוי.",
+        }
+      : normalizedPath === "הערכת-שמאות-לריהוט-עתיק"
       ? {
           question: "איך שמאי מעריך ריהוט עתיק ומה צריך להכין?",
           answer: "השמאי בוחן יצרן או סדנה, תקופה משוערת, חומרים, מידות, טכניקה, סימונים, מצב, תיקונים, נדירות ומקור מתועד ומשווה למקורות שוק רלוונטיים. מכינים צילומים, מידות, סימנים ומסמכי בעלות. ההערכה אינה בהכרח אימות אותנטיות ואינה מבטיחה מחיר מכירה או קבלה משפטית.",
