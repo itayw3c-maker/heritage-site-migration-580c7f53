@@ -102,6 +102,53 @@ export function buildSeoHead(rec: SeoRecord | null | undefined): HeadFragment {
   return { meta, links, scripts };
 }
 
+export function augmentHomepagePrivateSeo(rec: SeoRecord | null): SeoRecord | null {
+  const reviewed = augmentExpertSeo(rec, { reviewed: true, path: "" });
+  if (!reviewed?.schema) return reviewed;
+  try {
+    const schema = JSON.parse(reviewed.schema) as { "@graph"?: Array<Record<string, unknown>> };
+    const graph = Array.isArray(schema["@graph"]) ? schema["@graph"] : [];
+    const webPage = graph.find((item) => {
+      const type = item["@type"];
+      return type === "WebPage" || (Array.isArray(type) && type.includes("WebPage"));
+    });
+    if (webPage) {
+      webPage.relatedLink = [
+        "https://www.rrshamaut.co.il/private-appraiser/",
+        "https://www.rrshamaut.co.il/public-vs-company-adjuster/",
+        "https://www.rrshamaut.co.il/ייעוץ-וליווי-תביעות-ביטוח/",
+      ];
+    }
+    let faqPage = graph.find((item) => item["@type"] === "FAQPage");
+    if (!faqPage) {
+      faqPage = {
+        "@type": "FAQPage",
+        "@id": "https://www.rrshamaut.co.il/#/schema/faq",
+        mainEntity: [],
+      };
+      graph.push(faqPage);
+    }
+    const entities = Array.isArray(faqPage.mainEntity)
+      ? (faqPage.mainEntity as Array<Record<string, unknown>>)
+      : [];
+    const question = "מתי צריך שמאי פרטי ומה ההבדל בינו לבין שמאי חברת הביטוח?";
+    if (!entities.some((entity) => entity.name === question)) {
+      entities.unshift({
+        "@type": "Question",
+        name: question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "שמאי פרטי מתאים כאשר נדרש תיעוד עצמאי של נזק, הערכת עלויות או חוות דעת מטעם בעל הנכס או המבוטח, במיוחד לפני תיקון משמעותי או כשקיימת מחלוקת על היקף הנזק. שמאי חברת הביטוח פועל במסגרת המינוי שקיבל ממנה, בעוד השמאי הפרטי נשכר בידי הלקוח. ההכרעה והכיסוי נקבעים לפי הראיות, הפוליסה והנסיבות.",
+        },
+      });
+      faqPage.mainEntity = entities;
+    }
+    return { ...reviewed, schema: JSON.stringify(schema) };
+  } catch {
+    return reviewed;
+  }
+}
+
 export function seoFileKey(path: string): string {
   const key = (path || "").replace(/^\/+|\/+$/g, "");
   return key ? encodeURIComponent(key) : "__home__";
