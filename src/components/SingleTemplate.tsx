@@ -172,6 +172,36 @@ function buildSharedPipeAnswer(record: SingleRecord): string {
   </section>`;
 }
 
+function buildServiceDirectAnswer(record: SingleRecord, slug?: string): string {
+  const path = (slug ?? "").replace(/^\/+|\/+$/g, "");
+  const answer = path === "נזקי-מים-הצפה-ורטיבות"
+    ? {
+        label: "תשובה מהירה על שמאות נזקי מים",
+        question: "מה עושה שמאי נזקי מים?",
+        text: "שמאי נזקי מים מתעד את מקור הנזק והיקפו, בודק אילו חלקי מבנה ותכולה נפגעו, מעריך את עלויות הייבוש והשיקום ומכין חוות דעת מנומקת לצורך תביעת הביטוח.",
+        evidence: "לפני תיקונים נרחבים שומרים תמונות וסרטונים, דוח איתור נזילה, מדידות לחות, חשבוניות, הצעות מחיר, רשימת תכולה והתכתבויות עם חברת הביטוח. סימן הרטיבות לבדו אינו תמיד מצביע על מקור הכשל.",
+        timing: "כדאי להזמין שמאי מוקדם ככל האפשר, לאחר עצירת סכנה מיידית ולפני פינוי, ייבוש או שיקום שמשנים את מצב הנכס. במקרה חירום פועלים תחילה למניעת נזק נוסף ומתעדים כל פעולה.",
+      }
+    : path === "נזקי-אש-ופיח"
+      ? {
+          label: "תשובה מהירה על שמאות נזקי אש",
+          question: "מה עושה שמאי נזקי אש ופיח?",
+          text: "שמאי נזקי אש ופיח מתעד נזקי שריפה, עשן, פיח ומי כיבוי למבנה ולתכולה, מעריך את עלויות הניקוי, הפינוי והשיקום ומכין חוות דעת מנומקת לצורך תביעת הביטוח.",
+          evidence: "שומרים תצלומים וסרטונים של הזירה, דוח כבאות, רשימת תכולה, חשבוניות, הצעות מחיר והתכתבויות. אין לפנות פריטים או להתחיל שיקום נרחב לפני תיעוד, אלא אם נדרש טיפול מיידי מטעמי בטיחות.",
+          timing: "כדאי להזמין שמאי לאחר שהזירה בטוחה לכניסה ולפני פינוי ותיקון משמעותיים. השמאי בוחן גם נזק סמוי מעשן, פיח, חום ומי כיבוי שאינו ניכר בצילום כללי.",
+        }
+      : null;
+  if (!answer) return "";
+  return `<section class="rr-video-summary rr-direct-answer" aria-label="${answer.label}">
+    <h2>${answer.question}</h2>
+    <p><strong>התשובה הקצרה:</strong> ${answer.text}</p>
+    <h3>איזה תיעוד צריך להכין?</h3>
+    <p>${answer.evidence}</p>
+    <h3>מתי מזמינים שמאי רכוש?</h3>
+    <p>${answer.timing}</p>
+  </section>`;
+}
+
 // WordPress migration left <br /> tags inside <style> blocks of article
 // content_html. Rendered raw during SSR they break the CSS entirely, so strip
 // <br> only inside <style>...</style>. Pure string transform, fail-safe.
@@ -232,10 +262,10 @@ export function SingleTemplate({
           .replace(/>/g, "&gt;")
           .trim();
         if (heading) {
-          return `<h1 class="rr-sr-only">${heading}</h1>` + base + buildSharedPipeAnswer(record) + buildExpertPanel(record, slug);
+          return `<h1 class="rr-sr-only">${heading}</h1>` + base + buildSharedPipeAnswer(record) + buildServiceDirectAnswer(record, slug) + buildExpertPanel(record, slug);
         }
       }
-      return base + buildSharedPipeAnswer(record) + buildExpertPanel(record, slug);
+      return base + buildSharedPipeAnswer(record) + buildServiceDirectAnswer(record, slug) + buildExpertPanel(record, slug);
     }
     const tpl = TEMPLATES[record.type];
     const rendered = tpl ? stripBrInStyle(fill(tpl, record, related.w1)) : "";
@@ -244,7 +274,7 @@ export function SingleTemplate({
     }
     if (record.type === "success") return rendered + buildSuccessSummary(record);
     if (record.type === "post") return rendered + buildTopicHubCallout(record, slug);
-    return rendered + buildExpertPanel(record, slug);
+    return rendered + buildServiceDirectAnswer(record, slug) + buildExpertPanel(record, slug);
   }, [record, related.w1, slug]);
 
   useEffect(() => {
