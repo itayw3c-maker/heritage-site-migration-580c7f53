@@ -196,14 +196,14 @@ function buildExpertPanel(record: SingleRecord, slug?: string): string {
 
 function buildSharedPipeAnswer(record: SingleRecord): string {
   if (record.type !== "static" || !/שאלות תשובות/.test(record.title ?? "")) return "";
-  return `<section class="rr-video-summary rr-direct-answer" aria-label="תשובה מהירה על ביטוח צנרת משותפת">
-    <h2>מי אחראי לנזק בצנרת משותפת בבניין?</h2>
-    <p><strong>התשובה הקצרה:</strong> האחריות נקבעת לפי מיקום הצינור, את מי הוא משרת ומה גרם לנזק. צנרת המשרתת את כלל בעלי הדירות או חלקם עשויה להיחשב רכוש משותף; צינור המשרת דירה אחת בלבד יהיה בדרך כלל באחריות בעל הדירה.</p>
+  return `<section class="rr-video-summary rr-direct-answer" aria-label="תשובה מהירה על ביטוח דירה ונזקי צנרת">
+    <h2>האם ביטוח דירה מכסה נזקי צנרת?</h2>
+    <p><strong>התשובה הקצרה:</strong> ביטוח דירה עשוי לכסות נזק שנגרם מהימלטות מים או נוזלים מצנרת, אם הכיסוי הרלוונטי היה בתוקף והאירוע עומד בתנאי הפוליסה. בודקים בנפרד את תיקון מקור הכשל, נזקי המבנה והתכולה, בחירת שרברב, השתתפות עצמית והחרגות; אין כיסוי או תשלום אוטומטיים.</p>
+    <h3>מה עושים מיד ומה צריך לתעד?</h3>
+    <p>עוצרים סכנה והחמרה, מצלמים לפני פתיחה או תיקון ושומרים פוליסה ורשימה, דוח איתור, פרטי השרברב, מדידות לחות, חשבוניות, הצעות מחיר והתכתבויות. תיקון הצינור אינו מודד לבדו רטיבות כלואה או את מלוא עלויות הייבוש והשיקום.</p>
     <h3>מה בודקים לפני שקובעים אחריות?</h3>
-    <p>בודקים את תשריט הצנרת, התקנון, ממצאי איתור המקור, היקף הנזק ותנאי פוליסת המבנה או כתב השירות. חיבור בין צינור פרטי לצינור משותף מחייב בדיקה מקצועית ואינו מוכרע רק לפי מיקום סימן הרטיבות.</p>
-    <h3>מתי כדאי להזמין שמאי רכוש פרטי?</h3>
-    <p>כאשר קיימת מחלוקת על מקור הנזק, אחריות הבית המשותף, היקף השיקום או הצעת הפיצוי. לפני תיקון נרחב מומלץ לתעד את הממצאים, לשמור דוחות, תמונות, הצעות מחיר והתכתבויות עם חברת הביטוח או ועד הבית.</p>
-    <p><strong>מידע משלים:</strong> <a href="/שמאי-נזקי-צנרת/">מדריך שמאי לנזקי צנרת</a> · <a href="/shorts/video-leak-4-inch-shared-building-pipe-responsibility-house-committee/">סרטון: אחריות על צינור משותף</a> · <a href="/נזקי-מים-הצפה-ורטיבות/">שירות שמאי נזקי מים</a></p>
+    <p>האחריות נקבעת לפי מקור הנזק, מיקום הצינור ואת מי הוא משרת. בודקים תשריט צנרת, תקנון, ממצאי איתור, פוליסה וכתב שירות; סימן הרטיבות או מיקום החיבור אינם מכריעים לבדם אם מדובר בצינור פרטי או משותף. הכיסוי, האחריות וסכום התשלום תלויים בממצאים, בפוליסה ובראיות ואינם מובטחים.</p>
+    <p><strong>מידע משלים:</strong> <a href="/תביעת-ביטוח-נזקי-צנרת-מדריך-מקיף-לתהלי/">מדריך ביטוח דירה ונזקי צנרת</a> · <a href="/שמאי-נזקי-צנרת/">שמאי נזקי צנרת</a> · <a href="/נזקי-מים-הצפה-ורטיבות/">שירות שמאי נזקי מים</a></p>
   </section>`;
 }
 
@@ -577,10 +577,15 @@ export function SingleTemplate({
         stripBrInStyle(record.main_html ?? ""),
         record.title ?? "העמוד",
       );
+      const sharedPipeAnswer = buildSharedPipeAnswer(record);
+      const answerMarker = '<div class="rr-faq-nav"';
+      const enhancedBase = sharedPipeAnswer && base.includes(answerMarker)
+        ? base.replace(answerMarker, `${sharedPipeAnswer}${answerMarker}`)
+        : base + sharedPipeAnswer;
       // SEO: static Elementor pages (about, team, jobs) use styled <h2>/<div>
       // headings and ship no <h1>. Guarantee exactly one keyword-bearing H1 by
       // prepending a screen-reader-only H1 from the page title when none exists.
-      if (base && !/<h1[\s>]/i.test(base)) {
+      if (enhancedBase && !/<h1[\s>]/i.test(enhancedBase)) {
         const heading = (record.title ?? "")
           .replace(/<[^>]+>/g, "")
           .replace(/&/g, "&amp;")
@@ -588,10 +593,10 @@ export function SingleTemplate({
           .replace(/>/g, "&gt;")
           .trim();
         if (heading) {
-          return `<h1 class="rr-sr-only">${heading}</h1>` + base + buildSharedPipeAnswer(record) + buildServiceDirectAnswer(record, slug) + buildExpertPanel(record, slug);
+          return `<h1 class="rr-sr-only">${heading}</h1>` + enhancedBase + buildServiceDirectAnswer(record, slug) + buildExpertPanel(record, slug);
         }
       }
-      return base + buildSharedPipeAnswer(record) + buildServiceDirectAnswer(record, slug) + buildExpertPanel(record, slug);
+      return enhancedBase + buildServiceDirectAnswer(record, slug) + buildExpertPanel(record, slug);
     }
     const tpl = TEMPLATES[record.type];
     const rendered = tpl ? stripBrInStyle(fill(tpl, record, related.w1)) : "";
