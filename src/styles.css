@@ -1130,6 +1130,21 @@ button.elementor-button:focus-visible {
   color: #5f4900 !important;
 }
 
+/* Homepage team cards use plain anchors styled as gold buttons rather than
+   Elementor button classes, so harden their contrast explicitly. */
+.elementor-57 a[aria-label^="קראו עוד על"] {
+  background-color: #806400 !important;
+  border-color: #806400 !important;
+  color: #ffffff !important;
+}
+
+/* The floating green callback badge must retain white text; the generic
+   phone-link rule above is intended for light backgrounds. */
+.elementor-element-881c8eb .fix_smartphone_href,
+.elementor-element-881c8eb .fix_smartphone {
+  color: #ffffff !important;
+}
+
 .crs-btn {
   position: absolute;
   top: 50%;
