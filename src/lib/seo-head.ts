@@ -258,7 +258,24 @@ export function augmentSuccessSeo(
     featured_image_url?: string;
   },
 ): SeoRecord | null {
-  const augmented = augmentShortSeo(rec, record);
+  const seeded = rec && !rec.schema
+    ? {
+        ...rec,
+        schema: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [{
+            "@type": "WebPage",
+            "@id": rec.canonical,
+            url: rec.canonical,
+            name: record.title || rec.og?.og_title,
+            description: record.meta_description || rec.og?.og_description,
+            inLanguage: "he-IL",
+            isPartOf: { "@id": "https://www.rrshamaut.co.il/#website" },
+          }],
+        }),
+      }
+    : rec;
+  const augmented = augmentShortSeo(seeded, record);
   if (!augmented?.schema) return augmented;
   try {
     const schema = JSON.parse(augmented.schema) as { "@graph"?: unknown[] };
