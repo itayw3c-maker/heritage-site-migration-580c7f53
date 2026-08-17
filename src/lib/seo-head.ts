@@ -484,6 +484,23 @@ export function augmentExpertSeo(
       }
     }
     const normalizedPath = options.path?.replace(/^\/+|\/+$/g, "");
+    if (normalizedPath === "נזקי-מים-הצפה-ורטיבות") {
+      const pageUrl = "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/";
+      if (!graph.some((item) => item["@type"] === "Service" && item.url === pageUrl)) {
+        graph.push({
+          "@type": "Service",
+          "@id": `${pageUrl}#/schema/service`,
+          name: "שמאות נזקי מים, הצפה ורטיבות",
+          description:
+            "תיעוד והערכת נזקי מים למבנה ולתכולה, כימות עלויות ייבוש ושיקום והכנת חוות דעת לתביעת ביטוח.",
+          serviceType: "שמאות רכוש לנזקי מים",
+          url: pageUrl,
+          provider: { "@id": "https://www.rrshamaut.co.il/#organization" },
+          areaServed: { "@type": "Country", name: "ישראל" },
+          mainEntityOfPage: { "@id": pageUrl },
+        });
+      }
+    }
     const relatedLinks: Record<string, string[]> = {
       "הבדל-בין-שמאי-רכוש-פרטי-לשמאי-רכוש-מטעם": [
         "https://www.rrshamaut.co.il/private-appraiser/",
