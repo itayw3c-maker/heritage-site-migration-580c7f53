@@ -281,6 +281,7 @@ export function correctArticleWordCount(
 const RAFAEL_PERSON_ID = "https://www.rrshamaut.co.il/#/schema/person/fe58479381961be2031bd74a5eec70d7";
 const RAFAEL_PROFILE_URL =
   "https://www.rrshamaut.co.il/about/השמאי-רפאל-ריבוח-מייסד-ובעלים/";
+const EXPERT_REVIEW_DATE = "2026-08-17";
 
 export function augmentExpertSeo(
   rec: SeoRecord | null,
@@ -337,10 +338,17 @@ export function augmentExpertSeo(
         (types.includes("Article") || types.includes("BlogPosting") || types.includes("WebPage"))
       ) {
         item.reviewedBy = { "@id": RAFAEL_PERSON_ID };
+        item.lastReviewed = EXPERT_REVIEW_DATE;
+        item.dateModified = EXPERT_REVIEW_DATE;
         item.citation = [
           "https://haotzarsheli.mof.gov.il/Subject/Pages/Choosing-Apartment-Insurance.aspx",
           "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice-2022-9-2/he/claim-solution-2022-9-2-pdf.pdf",
         ];
+      }
+      if (options.reviewed && types.includes("VideoObject")) {
+        item.creator = { "@id": RAFAEL_PERSON_ID };
+        item.reviewedBy = { "@id": RAFAEL_PERSON_ID };
+        item.dateModified = EXPERT_REVIEW_DATE;
       }
     }
     const normalizedPath = options.path?.replace(/^\/+|\/+$/g, "");

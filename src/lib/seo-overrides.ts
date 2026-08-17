@@ -52,6 +52,10 @@ const EXPERT_REVIEW_PATHS = new Set([
   "נזקי-אש-ופיח",
   "נזקי-טבע-שיטפונות-וסערה",
   "נזקי-מים-עליה-קפילארית-כיצד-לפעול",
+  "movie/mapping-moisture-after-plumbing-damage",
+  "movie/fire-damage-no-building-insurance-cost",
+  "movie/weather-damage-coverage-storm-insurance-claims",
+  "movie/capillary-moisture-after-plumbing-damage",
   "שאלות-תשובות",
 ]);
 
