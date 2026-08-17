@@ -782,6 +782,7 @@ export function augmentExpertSeo(
         "https://www.rrshamaut.co.il/success/62000-nis-compensation-water-damage-claim/",
       ],
       "נזקי-אש-ופיח": [
+        "https://www.rrshamaut.co.il/שמאי-נזקי-שריפה-מה-נכון-לעשות-כאשר-נגרם/",
         "https://www.rrshamaut.co.il/איך-שמאי-נזקי-אש-יכול-למקסם-את-הפיצויים/",
         "https://www.rrshamaut.co.il/movie/fire-damage-no-building-insurance-cost/",
         "https://www.rrshamaut.co.il/success/תשלום-בגין-נזקי-שריפה-ע״ס-125000/",
@@ -795,6 +796,11 @@ export function augmentExpertSeo(
         "https://www.rrshamaut.co.il/נזקי-אש-ופיח/",
         "https://www.rrshamaut.co.il/movie/fire-damage-no-building-insurance-cost/",
         "https://www.rrshamaut.co.il/success/תשלום-בגין-נזקי-שריפה-ע״ס-125000/",
+      ],
+      "שמאי-נזקי-אש-הערכת-נזקי-אש-שריפות-ופיח": [
+        "https://www.rrshamaut.co.il/שמאי-נזקי-שריפה-מה-נכון-לעשות-כאשר-נגרם/",
+        "https://www.rrshamaut.co.il/נזקי-אש-ופיח/",
+        "https://www.rrshamaut.co.il/כל-מה-שחשוב-לדעת-על-דוח-שמאות-רכוש/",
       ],
       "שמאי-נזק-שער-חשמלי": [
         "https://www.rrshamaut.co.il/שמאי-נזקי-התנגשות/",
@@ -998,6 +1004,11 @@ export function augmentExpertSeo(
             ? {
                 question: "מתי מזמינים שמאי נזקי שריפה ומה הוא בודק?",
                 answer: "מזמינים שמאי נזקי שריפה לאחר שהזירה בטוחה לכניסה ולפני פינוי או שיקום נרחב. השמאי מתעד ומכמת נזקי מבנה, תכולה, עשן, פיח, חום ומי כיבוי ומכין חוות דעת מנומקת לתביעת הביטוח.",
+              }
+          : normalizedPath === "שמאי-נזקי-אש-הערכת-נזקי-אש-שריפות-ופיח"
+            ? {
+                question: "מה כולל דוח הערכת נזקי אש לאחר שריפה?",
+                answer: "הדוח מתאר ומכמת בנפרד נזקי מבנה, תכולה, אש, חום, עשן, פיח ומי כיבוי, מציג תמונות ומסמכים ומנמק חלופות ניקוי, תיקון או החלפה ועלויות. בעלי מקצוע מתאימים קובעים בטיחות וסיבת כשל בתחומם. הדוח תומך בתביעה אך אינו מחייב את המבטחת או הערכאה ואינו מבטיח כיסוי או תשלום.",
               }
           : normalizedPath === "שמאי-נזק-שער-חשמלי"
             ? {
