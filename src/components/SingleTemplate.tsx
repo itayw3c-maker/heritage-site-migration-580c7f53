@@ -498,7 +498,7 @@ export function SingleTemplate({
     const tpl = TEMPLATES[record.type];
     const rendered = tpl ? stripBrInStyle(fill(tpl, record, related.w1)) : "";
     if (record.type === "movie" || record.type === "shorts") {
-      return rendered + buildMediaSummary(record, slug) + buildExpertPanel(record, slug);
+      return rendered + buildMediaSummary(record, slug) + buildServiceDirectAnswer(record, slug) + buildExpertPanel(record, slug);
     }
     if (record.type === "success") return rendered + buildSuccessSummary(record);
     if (record.type === "post") {
