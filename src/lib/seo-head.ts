@@ -344,6 +344,35 @@ export function augmentExpertSeo(
       }
     }
     const normalizedPath = options.path?.replace(/^\/+|\/+$/g, "");
+    const relatedLinks: Record<string, string[]> = {
+      "נזקי-מים-הצפה-ורטיבות": [
+        "https://www.rrshamaut.co.il/נזקי-מים-עליה-קפילארית-כיצד-לפעול/",
+        "https://www.rrshamaut.co.il/movie/mapping-moisture-after-plumbing-damage/",
+        "https://www.rrshamaut.co.il/success/62000-nis-compensation-water-damage-claim/",
+      ],
+      "נזקי-אש-ופיח": [
+        "https://www.rrshamaut.co.il/איך-שמאי-נזקי-אש-יכול-למקסם-את-הפיצויים/",
+        "https://www.rrshamaut.co.il/movie/fire-damage-no-building-insurance-cost/",
+        "https://www.rrshamaut.co.il/success/תשלום-בגין-נזקי-שריפה-ע״ס-125000/",
+      ],
+      "נזקי-מים-עליה-קפילארית-כיצד-לפעול": [
+        "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/",
+        "https://www.rrshamaut.co.il/movie/capillary-moisture-after-plumbing-damage/",
+        "https://www.rrshamaut.co.il/shorts/video-moisture-content-test-standards-institute-capillary-rise/",
+      ],
+      "נזקי-טבע-שיטפונות-וסערה": [
+        "https://www.rrshamaut.co.il/natural-disasters-and-storms-in-war/",
+        "https://www.rrshamaut.co.il/movie/weather-damage-coverage-storm-insurance-claims/",
+        "https://www.rrshamaut.co.il/שמאי-רכוש-לנזקי-שיטפון/",
+      ],
+    };
+    if (normalizedPath && relatedLinks[normalizedPath]) {
+      const webPage = graph.find((item) => {
+        const type = item["@type"];
+        return type === "WebPage" || (Array.isArray(type) && type.includes("WebPage"));
+      });
+      if (webPage) webPage.relatedLink = relatedLinks[normalizedPath];
+    }
     if (normalizedPath === "שאלות-תשובות") {
       const faqPage = graph.find((item) => item["@type"] === "FAQPage");
       if (faqPage) {
