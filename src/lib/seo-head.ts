@@ -119,6 +119,20 @@ export function augmentHomepagePrivateSeo(rec: SeoRecord | null): SeoRecord | nu
         "https://www.rrshamaut.co.il/ייעוץ-וליווי-תביעות-ביטוח/",
       ];
     }
+    if (!graph.some((item) => item["@type"] === "Service" && item.url === "https://www.rrshamaut.co.il/")) {
+      graph.push({
+        "@type": "Service",
+        "@id": "https://www.rrshamaut.co.il/#/schema/property-damage-service",
+        name: "שמאות רכוש והערכת נזקים",
+        description:
+          "בדיקה, תיעוד וכימות של נזקי רכוש למבנה, לתכולה ולמערכות והכנת חוות דעת מקצועית לתביעות ביטוח ולדרישות פיצוי.",
+        serviceType: "הערכת נזקי רכוש",
+        url: "https://www.rrshamaut.co.il/",
+        provider: { "@id": "https://www.rrshamaut.co.il/#organization" },
+        areaServed: { "@type": "Country", name: "ישראל" },
+        mainEntityOfPage: { "@id": "https://www.rrshamaut.co.il/" },
+      });
+    }
     let faqPage = graph.find((item) => item["@type"] === "FAQPage");
     if (!faqPage) {
       faqPage = {
@@ -139,6 +153,18 @@ export function augmentHomepagePrivateSeo(rec: SeoRecord | null): SeoRecord | nu
         acceptedAnswer: {
           "@type": "Answer",
           text: "שמאי פרטי מתאים כאשר נדרש תיעוד עצמאי של נזק, הערכת עלויות או חוות דעת מטעם בעל הנכס או המבוטח, במיוחד לפני תיקון משמעותי או כשקיימת מחלוקת על היקף הנזק. שמאי חברת הביטוח פועל במסגרת המינוי שקיבל ממנה, בעוד השמאי הפרטי נשכר בידי הלקוח. ההכרעה והכיסוי נקבעים לפי הראיות, הפוליסה והנסיבות.",
+        },
+      });
+      faqPage.mainEntity = entities;
+    }
+    const damageQuestion = "מה עושה שמאי נזקים?";
+    if (!entities.some((entity) => entity.name === damageQuestion)) {
+      entities.unshift({
+        "@type": "Question",
+        name: damageQuestion,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "שמאי נזקים בודק את מקור האירוע והיקפו, מפריד בין נזקי מבנה, תכולה ומערכות, מתעד ממצאים, בוחן מסמכים והצעות מחיר ומעריך את עלות השבת המצב לקדמותו. חוות הדעת יכולה לשמש בתביעת ביטוח, בדרישת פיצוי או במחלוקת על היקף הנזק.",
         },
       });
       faqPage.mainEntity = entities;
