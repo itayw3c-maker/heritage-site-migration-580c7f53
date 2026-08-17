@@ -15,6 +15,7 @@ function escAttr(value: string): string {
 export function improveMigratedHtml(html: string, pageTitle: string): string {
   const fallbackAlt = escAttr(`תמונה מתוך ${pageTitle}`);
   return html
+    .replace(/(<div\b[^>]*?)\s+role=["']list["']([^>]*>)/gi, "$1$2")
     .replace(/(<article\b[^>]*?)\s+role=["']listitem["']([^>]*>)/gi, "$1$2")
     .replace(/<a\b([^>]*\bhref=["'](?:\/|https?:\/\/(?:www\.)?rrshamaut\.co\.il)[^>]*?)>/gi, (tag) =>
       tag.replace(/\s+target=["']_blank["']/i, ""),
