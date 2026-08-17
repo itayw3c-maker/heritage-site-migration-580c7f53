@@ -41,3 +41,13 @@ const SEO_OVERRIDES: Record<string, SeoOverride> = {
 export function getSeoOverride(path?: string): SeoOverride | undefined {
   return path ? SEO_OVERRIDES[path.replace(/^\/+|\/+$/g, "")] : undefined;
 }
+
+const EXPERT_REVIEW_PATHS = new Set([
+  "נזקי-מים-הצפה-ורטיבות",
+  "נזקי-אש-ופיח",
+  "שאלות-תשובות",
+]);
+
+export function isExpertReviewedPath(path?: string): boolean {
+  return path ? EXPERT_REVIEW_PATHS.has(path.replace(/^\/+|\/+$/g, "")) : false;
+}

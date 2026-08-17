@@ -6,7 +6,7 @@ import successTpl from "@/generated/templates/success.html?raw";
 import serviceTpl from "@/generated/templates/service.html?raw";
 import { enhanceElementor } from "@/lib/elementor-enhance";
 import { improveMigratedHtml } from "@/lib/migrated-html";
-import { getSeoOverride } from "@/lib/seo-overrides";
+import { getSeoOverride, isExpertReviewedPath } from "@/lib/seo-overrides";
 import {
   buildRelated,
   escAttr,
@@ -145,6 +145,16 @@ function buildTopicHubCallout(record: SingleRecord, slug?: string): string {
   </aside>`;
 }
 
+function buildExpertPanel(slug?: string): string {
+  if (!isExpertReviewedPath(slug)) return "";
+  return `<aside class="rr-video-summary rr-expert-review" aria-label="בדיקה מקצועית ומחבר התוכן">
+    <h2>נכתב ונבדק מקצועית</h2>
+    <p><strong>רפאל ריבוח</strong> — שמאי רכוש, סוקר סיכונים ומאתר ליקויי בנייה מורשה, המתמחה בהערכת נזקי מים, אש ורכוש ובליווי תביעות ביטוח.</p>
+    <p>המידע נועד להסביר עקרונות מקצועיים כלליים. ההערכה בכל מקרה נקבעת לאחר בדיקת הנכס, המסמכים, היקף הנזק ותנאי הפוליסה.</p>
+    <p><a href="/about/%D7%94%D7%A9%D7%9E%D7%90%D7%99-%D7%A8%D7%A4%D7%90%D7%9C-%D7%A8%D7%99%D7%91%D7%95%D7%97-%D7%9E%D7%99%D7%99%D7%A1%D7%93-%D7%95%D7%91%D7%A2%D7%9C%D7%99%D7%9D/">לפרופיל המקצועי של רפאל ריבוח</a> · <a href="/about/">אודות המשרד</a></p>
+  </aside>`;
+}
+
 // WordPress migration left <br /> tags inside <style> blocks of article
 // content_html. Rendered raw during SSR they break the CSS entirely, so strip
 // <br> only inside <style>...</style>. Pure string transform, fail-safe.
@@ -204,9 +214,9 @@ export function SingleTemplate({
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;")
           .trim();
-        if (heading) return `<h1 class="rr-sr-only">${heading}</h1>` + base;
+        if (heading) return `<h1 class="rr-sr-only">${heading}</h1>` + base + buildExpertPanel(slug);
       }
-      return base;
+      return base + buildExpertPanel(slug);
     }
     const tpl = TEMPLATES[record.type];
     const rendered = tpl ? stripBrInStyle(fill(tpl, record, related.w1)) : "";
@@ -215,7 +225,7 @@ export function SingleTemplate({
     }
     if (record.type === "success") return rendered + buildSuccessSummary(record);
     if (record.type === "post") return rendered + buildTopicHubCallout(record, slug);
-    return rendered;
+    return rendered + buildExpertPanel(slug);
   }, [record, related.w1, slug]);
 
   useEffect(() => {

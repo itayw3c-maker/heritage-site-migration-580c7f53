@@ -277,3 +277,70 @@ export function correctArticleWordCount(
     return rec;
   }
 }
+
+const RAFAEL_PERSON_ID = "https://www.rrshamaut.co.il/#/schema/person/fe58479381961be2031bd74a5eec70d7";
+const RAFAEL_PROFILE_URL =
+  "https://www.rrshamaut.co.il/about/השמאי-רפאל-ריבוח-מייסד-ובעלים/";
+
+export function augmentExpertSeo(
+  rec: SeoRecord | null,
+  options: { reviewed?: boolean } = {},
+): SeoRecord | null {
+  if (!rec?.schema) return rec;
+  try {
+    const schema = JSON.parse(rec.schema) as { "@graph"?: Array<Record<string, unknown>> };
+    const graph = Array.isArray(schema["@graph"]) ? schema["@graph"] : [];
+    let person = graph.find((item) => {
+      const type = item["@type"];
+      return type === "Person" && (item.name === "רפאל ריבוח" || item["@id"] === RAFAEL_PERSON_ID);
+    });
+    if (!person) {
+      person = { "@type": "Person", "@id": RAFAEL_PERSON_ID, name: "רפאל ריבוח" };
+      graph.push(person);
+    }
+    person["@id"] = RAFAEL_PERSON_ID;
+    person.name = "רפאל ריבוח";
+    person.url = RAFAEL_PROFILE_URL;
+    person.jobTitle = "שמאי רכוש וסוקר סיכונים";
+    person.description =
+      "שמאי רכוש, סוקר סיכונים ומאתר ליקויי בנייה מורשה, המתמחה בהערכת נזקי מים, אש ורכוש ובליווי תביעות ביטוח.";
+    person.image = {
+      "@type": "ImageObject",
+      url: "https://www.rrshamaut.co.il/wp-content/uploads/2024/08/רפאל-שמאות-רכוש.webp",
+    };
+    person.worksFor = { "@id": "https://www.rrshamaut.co.il/#organization" };
+    person.knowsAbout = [
+      "שמאות רכוש",
+      "הערכת נזקי מים ורטיבות",
+      "הערכת נזקי אש ופיח",
+      "ליווי תביעות ביטוח",
+      "סקרי סיכונים",
+      "איתור ליקויי בנייה",
+    ];
+    person.sameAs = [
+      RAFAEL_PROFILE_URL,
+      "https://www.facebook.com/rrshamaut/",
+      "https://www.instagram.com/rrshamaut/",
+      "https://www.youtube.com/@rephael.shamaut-rr",
+      "https://www.tiktok.com/@rephaelshamaut",
+    ];
+
+    for (const item of graph) {
+      const type = item["@type"];
+      const types = Array.isArray(type) ? type : [type];
+      if (types.includes("Organization")) item.founder = { "@id": RAFAEL_PERSON_ID };
+      if (types.includes("Article") || types.includes("BlogPosting")) {
+        item.author = { "@id": RAFAEL_PERSON_ID };
+      }
+      if (
+        options.reviewed &&
+        (types.includes("Article") || types.includes("BlogPosting") || types.includes("WebPage"))
+      ) {
+        item.reviewedBy = { "@id": RAFAEL_PERSON_ID };
+      }
+    }
+    return { ...rec, schema: JSON.stringify(schema) };
+  } catch {
+    return rec;
+  }
+}
