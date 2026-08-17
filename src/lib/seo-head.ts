@@ -485,6 +485,11 @@ export function augmentExpertSeo(
     }
     const normalizedPath = options.path?.replace(/^\/+|\/+$/g, "");
     const relatedLinks: Record<string, string[]> = {
+      "שמאי-נזקי-מים-המדריך-המלא": [
+        "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/",
+        "https://www.rrshamaut.co.il/movie/mapping-moisture-after-plumbing-damage/",
+        "https://www.rrshamaut.co.il/success/62000-nis-compensation-water-damage-claim/",
+      ],
       "נזקי-מים-הצפה-ורטיבות": [
         "https://www.rrshamaut.co.il/נזקי-מים-עליה-קפילארית-כיצד-לפעול/",
         "https://www.rrshamaut.co.il/movie/mapping-moisture-after-plumbing-damage/",
@@ -568,7 +573,12 @@ export function augmentExpertSeo(
         }
       }
     }
-    const serviceFaq = normalizedPath === "נזקי-מים-הצפה-ורטיבות"
+    const serviceFaq = normalizedPath === "שמאי-נזקי-מים-המדריך-המלא"
+      ? {
+          question: "איך מטפלים בנזקי מים בלי לפגוע בתביעה?",
+          answer: "עוצרים תחילה את מקור המים ומרחיקים סכנה, מתעדים את מקור האירוע ואת כל הנזק לפני פינוי או תיקון, ושומרים דוחות, מדידות, חשבוניות והצעות מחיר. לאחר מכן ממפים את הרטיבות, מייבשים באופן מבוקר ומעריכים את השיקום. פעולות חירום מבצעים מיד ומתעדים; בדיקה שמאית רצוי לבצע לפני שינוי משמעותי במצב הנכס.",
+        }
+      : normalizedPath === "נזקי-מים-הצפה-ורטיבות"
       ? {
           question: "מה עושה שמאי נזקי מים?",
           answer: "שמאי נזקי מים מתעד את מקור הנזק והיקפו, בודק אילו חלקי מבנה ותכולה נפגעו, מעריך את עלויות הייבוש והשיקום ומכין חוות דעת מנומקת לצורך תביעת הביטוח. את הבדיקה רצוי לבצע לפני תיקונים נרחבים, תוך שמירת תמונות, דוחות איתור, חשבוניות ותכתובות.",
