@@ -66,7 +66,7 @@ export const Route = createFileRoute("/$")({
             ? augmentSuccessSeo(pageSeo, content.record)
             : pageSeo;
     return {
-      seo: augmentExpertSeo(typedSeo, { reviewed: isExpertReviewedPath(path) }),
+      seo: augmentExpertSeo(typedSeo, { reviewed: isExpertReviewedPath(path), path }),
       record: content.record,
       related: content.related,
     };
