@@ -343,7 +343,8 @@ export function augmentExpertSeo(
         ];
       }
     }
-    if (options.path?.replace(/^\/+|\/+$/g, "") === "שאלות-תשובות") {
+    const normalizedPath = options.path?.replace(/^\/+|\/+$/g, "");
+    if (normalizedPath === "שאלות-תשובות") {
       const faqPage = graph.find((item) => item["@type"] === "FAQPage");
       if (faqPage) {
         const entities = Array.isArray(faqPage.mainEntity)
@@ -361,6 +362,39 @@ export function augmentExpertSeo(
           });
           faqPage.mainEntity = entities;
         }
+      }
+    }
+    const serviceFaq = normalizedPath === "נזקי-מים-הצפה-ורטיבות"
+      ? {
+          question: "מה עושה שמאי נזקי מים?",
+          answer: "שמאי נזקי מים מתעד את מקור הנזק והיקפו, בודק אילו חלקי מבנה ותכולה נפגעו, מעריך את עלויות הייבוש והשיקום ומכין חוות דעת מנומקת לצורך תביעת הביטוח. את הבדיקה רצוי לבצע לפני תיקונים נרחבים, תוך שמירת תמונות, דוחות איתור, חשבוניות ותכתובות.",
+        }
+      : normalizedPath === "נזקי-אש-ופיח"
+        ? {
+            question: "מה עושה שמאי נזקי אש ופיח?",
+            answer: "שמאי נזקי אש ופיח בודק ומתעד נזקי שריפה, עשן, פיח ומי כיבוי למבנה ולתכולה, מעריך עלויות ניקוי, פינוי ושיקום ומכין חוות דעת לתביעת הביטוח. לפני פינוי או תיקון משמעותי חשוב לתעד את הזירה ולשמור דוחות כבאות, רשימות תכולה, חשבוניות והתכתבויות.",
+          }
+        : null;
+    if (serviceFaq) {
+      let faqPage = graph.find((item) => item["@type"] === "FAQPage");
+      if (!faqPage) {
+        faqPage = {
+          "@type": "FAQPage",
+          "@id": `https://www.rrshamaut.co.il/${normalizedPath}/#/schema/faq`,
+          mainEntity: [],
+        };
+        graph.push(faqPage);
+      }
+      const entities = Array.isArray(faqPage.mainEntity)
+        ? (faqPage.mainEntity as Array<Record<string, unknown>>)
+        : [];
+      if (!entities.some((entity) => entity.name === serviceFaq.question)) {
+        entities.unshift({
+          "@type": "Question",
+          name: serviceFaq.question,
+          acceptedAnswer: { "@type": "Answer", text: serviceFaq.answer },
+        });
+        faqPage.mainEntity = entities;
       }
     }
     return { ...rec, schema: JSON.stringify(schema) };
