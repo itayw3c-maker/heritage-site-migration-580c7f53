@@ -644,6 +644,11 @@ export function augmentExpertSeo(
         "https://www.rrshamaut.co.il/movie/insurance-must-perform-underfloor-drying/",
         "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/",
       ],
+      "movie/moisture-test-standard-insurance-responsibility": [
+        "https://www.rrshamaut.co.il/movie/underfloor-drying-pros-cons/",
+        "https://www.rrshamaut.co.il/movie/moisture-test-drilling-in-grout-not-tile/",
+        "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/",
+      ],
       "נזקי-מים-מהשכן-רטיבות-בתקרה-מדריך-מקיף": [
         "https://www.rrshamaut.co.il/נזילה-מהשכן-מלמעלה/",
         "https://www.rrshamaut.co.il/נזילה-מהשכן-מעליי-מה-לעשות-כששכן-מסרב-ל/",
@@ -756,6 +761,11 @@ export function augmentExpertSeo(
         ? {
             question: "מתי נדרש ייבוש תת רצפתי ומה היתרונות והחסרונות?",
             answer: "ייבוש תת רצפתי נשקל לאחר עצירת מקור המים וכאשר מדידות מצביעות על לחות כלואה מתחת לריצוף. הוא עשוי לצמצם פירוק, אך דורש נקודות גישה, זמן, רעש ובקרה ואינו מתאים לכל תשתית או נזק. קבלן ייבוש מתכנן ומבצע, גורם בדיקה מודד ושמאי רכוש מתעד חלופות ועלויות. הכיסוי תלוי בפוליסה ובראיות ואינו מובטח.",
+          }
+      : normalizedPath === "movie/moisture-test-standard-insurance-responsibility"
+        ? {
+            question: "איך מבצעים בדיקת לחות מתחת לריצוף ומי אחראי?",
+            answer: "לא מסתמכים רק על כתם או מדידה על פני האריח. לאחר עצירת המקור ממפים את האזור, ובמידת הצורך דוגמים חומר מילוי מתחת לריצוף במיקומים מייצגים ומעבירים לבדיקה מתאימה. הדוח צריך לתעד מיקום, עומק, שיטה, תוצאה, יחידה וערכי ייחוס. גורם בדיקה או מעבדה מודדים, קבלן ייבוש מטפל ושמאי רכוש מתעד צורך ועלויות. האחריות והכיסוי תלויים במקור, בפוליסה ובראיות ואינם מובטחים.",
           }
       : normalizedPath === "נזקי-מים-מהשכן-רטיבות-בתקרה-מדריך-מקיף"
         ? {
