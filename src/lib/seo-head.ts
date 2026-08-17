@@ -238,6 +238,8 @@ export function augmentVideoSeo(
     const topic = `${record.title ?? ""} ${record.meta_description ?? ""}`;
     const keywords = /שריפ|אש|פיח/.test(topic)
       ? ["נזקי אש", "נזקי שריפה", "פיח", "שמאות רכוש", "תביעת ביטוח"]
+      : /לא מאוכלסת|לא תפוסה|אינה תפוסה/.test(topic)
+        ? ["ביטוח דירה לא מאוכלסת", "דירה לא תפוסה", "60 ימים", "ביטוח דירה", "תנאי פוליסה"]
       : /סער|שיטפו|גשם|מזג אוויר|ברד/.test(topic)
         ? ["נזקי טבע", "סערה", "שיטפון", "שמאות רכוש", "ביטוח דירה"]
         : /מים|רטיב|נזיל|צנרת|לחות|קפילר|הצפ/.test(topic)
@@ -716,6 +718,12 @@ export function augmentExpertSeo(
         "https://www.rrshamaut.co.il/שמאי-נזקי-שריפה-מה-נכון-לעשות-כאשר-נגרם/",
         "https://www.rrshamaut.co.il/movie/fire-damage-no-building-insurance-cost/",
       ],
+      "movie/unoccupied-apartment-insurance-coverage": [
+        "https://haotzarsheli.mof.gov.il/Subject/Pages/Choosing-Apartment-Insurance.aspx",
+        "https://www.gov.il/BlobFolder/policy/policy-paper-2023-012/he/instructions_to_the_institutional_2_pdf.pdf",
+        "https://www.rrshamaut.co.il/shorts/standard-home-insurance-policy-israel/",
+        "https://www.rrshamaut.co.il/ייעוץ-וליווי-תביעות-ביטוח/",
+      ],
       "נזילה-מהשכן-מעליי-מה-לעשות-כששכן-מסרב-ל": [
         "https://www.gov.il/he/service/condominiums-supervisor-claims",
         "https://www.rrshamaut.co.il/נזקי-מים-מהשכן-רטיבות-בתקרה-מדריך-מקיף/",
@@ -863,6 +871,11 @@ export function augmentExpertSeo(
         ? {
             question: "האם ביטוח דירה מכסה שריפה ומה עושים כשאין ביטוח?",
             answer: "ביטוח דירה עשוי לכסות שריפה אם כיסוי המבנה או התכולה הרלוונטי היה בתוקף והאירוע אינו מוחרג. בודקים כל חלק בנפרד, מתעדים אש, עשן, פיח ומי כיבוי ולא נכנסים לפני אישור בטיחות. כשאין ביטוח אין מקור תשלום אוטומטי; אפשר לבדוק אחריות וביטוח צד שלישי או מסלול ייעודי לפי הנסיבות. הכיסוי, האחריות והפיצוי תלויים בפוליסה, בעובדות ובראיות ואינם מובטחים.",
+          }
+      : normalizedPath === "movie/unoccupied-apartment-insurance-coverage"
+        ? {
+            question: "האם ביטוח דירה מכסה דירה לא מאוכלסת מעל 60 ימים?",
+            answer: "לא מניחים שהכיסוי ממשיך אוטומטית. דירה שאינה תפוסה מעל התקופה שנקבעה בפוליסה — לעיתים 60 ימים רצופים — עשויה להיות כפופה לתנאים או להרחבה מיוחדת. מודיעים למבטחת מראש, בודקים בנפרד מבנה, תכולה, פריצה, מים וצד שלישי ומקבלים את התנאים בכתב. הכיסוי והתשלום תלויים בפוליסה, באישור, בעובדות ובראיות ואינם מובטחים.",
           }
       : normalizedPath === "נזילה-מהשכן-מעליי-מה-לעשות-כששכן-מסרב-ל"
         ? {
