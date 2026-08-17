@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import mainHtml from "@/generated/main.html?raw";
 import { getSeoRecord } from "@/lib/seo.functions";
-import { buildSeoHead } from "@/lib/seo-head";
+import { augmentHomepagePrivateSeo, buildSeoHead } from "@/lib/seo-head";
 import { mountLiveGoogleReviews } from "@/lib/live-google-reviews";
 import { improveMigratedHtml } from "@/lib/migrated-html";
 
@@ -103,8 +103,20 @@ const optimizedMainHtml = optimizeHomepageCardImages(improveMigratedHtml(mainHtm
     "/wp-content/uploads/2026/03/נזקי-עבודות-קבלן-300x170.webp",
   ));
 
+const privateAppraiserAnswer = `<section class="rr-video-summary rr-direct-answer" aria-label="תשובה מהירה על שמאי פרטי">
+  <h2>מתי צריך שמאי פרטי ומה ההבדל בינו לבין שמאי חברת הביטוח?</h2>
+  <p><strong>התשובה הקצרה:</strong> שמאי פרטי מתאים כאשר נדרש תיעוד עצמאי של נזק, הערכת עלויות או חוות דעת מטעם בעל הנכס או המבוטח, במיוחד לפני תיקון משמעותי או כשקיימת מחלוקת על היקף הנזק.</p>
+  <h3>מה בודק שמאי רכוש פרטי?</h3>
+  <p>השמאי בודק את מקור הנזק והיקפו, מפריד בין מבנה לתכולה, מתעד ממצאים, בוחן מסמכים והצעות מחיר ומעריך את עלות השבת המצב לקדמותו. המסקנות נקבעות לפי בדיקת הנכס, הראיות ותנאי הפוליסה.</p>
+  <h3>מה ההבדל משמאי חברת הביטוח?</h3>
+  <p>שמאי חברת הביטוח פועל במסגרת המינוי שקיבל ממנה. שמאי פרטי נשכר בידי בעל הנכס או המבוטח כדי להכין הערכה וחוות דעת עצמאית מטעמו; עצם הזמנתו אינה מבטיחה פיצוי, והכיסוי מוכרע לפי הפוליסה והנסיבות.</p>
+  <p><strong>מידע משלים:</strong> <a href="/private-appraiser/">מדריך שמאי פרטי</a> · <a href="/public-vs-company-adjuster/">שמאי פרטי מול שמאי חברת הביטוח</a> · <a href="/ייעוץ-וליווי-תביעות-ביטוח/">ליווי תביעות ביטוח</a></p>
+</section>`;
+
 export const Route = createFileRoute("/")({
-  loader: async () => ({ seo: await getSeoRecord({ data: { path: "" } }) }),
+  loader: async () => ({
+    seo: augmentHomepagePrivateSeo(await getSeoRecord({ data: { path: "" } })),
+  }),
   head: ({ loaderData }) => {
     const base = buildSeoHead(loaderData?.seo);
     return {
@@ -147,5 +159,5 @@ function Index() {
     };
   }, []);
 
-  return <div dangerouslySetInnerHTML={{ __html: optimizedMainHtml }} />;
+  return <div dangerouslySetInnerHTML={{ __html: optimizedMainHtml + privateAppraiserAnswer }} />;
 }
