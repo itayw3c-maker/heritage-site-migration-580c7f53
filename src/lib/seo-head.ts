@@ -527,7 +527,42 @@ export function augmentExpertSeo(
         });
       }
     }
+    if (normalizedPath === "שמאי-רכוש-בצפון-כל-מה-שצריך-לדעת-על-נזק") {
+      const pageUrl = "https://www.rrshamaut.co.il/שמאי-רכוש-בצפון-כל-מה-שצריך-לדעת-על-נזק/";
+      if (!graph.some((item) => item["@type"] === "Service" && item.url === pageUrl)) {
+        graph.push({
+          "@type": "Service",
+          "@id": `${pageUrl}#/schema/service`,
+          name: "שמאות רכוש בצפון",
+          description:
+            "בדיקה, תיעוד וכימות של נזקי מים, אש ורכוש למבנה, לתכולה ולמערכות בצפון הארץ.",
+          serviceType: "שמאות רכוש והערכת נזקים",
+          url: pageUrl,
+          provider: { "@id": "https://www.rrshamaut.co.il/#organization" },
+          areaServed: { "@type": "AdministrativeArea", name: "צפון ישראל" },
+          availableChannel: {
+            "@type": "ServiceChannel",
+            serviceLocation: {
+              "@type": "Place",
+              name: "רפאל שמאות רכוש — סניף צפון",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "השושנים 1",
+                addressLocality: "פוריה–נווה עובד",
+                addressCountry: "IL",
+              },
+            },
+          },
+          mainEntityOfPage: { "@id": pageUrl },
+        });
+      }
+    }
     const relatedLinks: Record<string, string[]> = {
+      "שמאי-רכוש-בצפון-כל-מה-שצריך-לדעת-על-נזק": [
+        "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/",
+        "https://www.rrshamaut.co.il/נזקי-אש-ופיח/",
+        "https://www.rrshamaut.co.il/ייעוץ-וליווי-תביעות-ביטוח/",
+      ],
       "הבדל-בין-שמאי-רכוש-פרטי-לשמאי-רכוש-מטעם": [
         "https://www.rrshamaut.co.il/private-appraiser/",
         "https://www.rrshamaut.co.il/public-vs-company-adjuster/",
@@ -626,7 +661,12 @@ export function augmentExpertSeo(
         }
       }
     }
-    const serviceFaq = normalizedPath === "הבדל-בין-שמאי-רכוש-פרטי-לשמאי-רכוש-מטעם"
+    const serviceFaq = normalizedPath === "שמאי-רכוש-בצפון-כל-מה-שצריך-לדעת-על-נזק"
+      ? {
+          question: "מתי מזמינים שמאי רכוש בצפון ומה כולל השירות?",
+          answer: "מזמינים שמאי רכוש בצפון לאחר נזק למבנה, לתכולה או למערכות כאשר נדרש תיעוד עצמאי וכימות עלויות השיקום. השירות כולל בדיקת הנכס והמסמכים והכנת חוות דעת לפי הממצאים. סניף הצפון נמצא ברחוב השושנים 1, פוריה–נווה עובד; מומלץ לפנות לאחר הרחקת סכנה ולפני פינוי או שיקום משמעותיים.",
+        }
+      : normalizedPath === "הבדל-בין-שמאי-רכוש-פרטי-לשמאי-רכוש-מטעם"
       ? {
           question: "מה ההבדל בין שמאי פרטי לשמאי חברת הביטוח?",
           answer: "שמאי חברת הביטוח ממונה במסגרת הטיפול של המבטחת ובודק את האירוע עבורה. שמאי פרטי נשכר בידי בעל הנכס או המבוטח ומכין הערכה עצמאית מטעמו. חוות דעת פרטית יכולה לשמש להשוואה ולביסוס מחלוקת, אך אינה מחייבת אוטומטית את המבטחת ואינה מבטיחה פיצוי; הכיסוי נקבע לפי הפוליסה והראיות.",
