@@ -263,7 +263,11 @@ export function augmentSuccessSeo(
   try {
     const schema = JSON.parse(augmented.schema) as { "@graph"?: unknown[] };
     const graph = Array.isArray(schema["@graph"]) ? schema["@graph"] : [];
-    const article = graph.find((item) => (item as { "@type"?: unknown })?.["@type"] === "Article") as
+    const article = graph.find((item) => {
+      const type = (item as { "@type"?: unknown })?.["@type"];
+      return type === "Article" || type === "BlogPosting" ||
+        (Array.isArray(type) && type.some((value) => value === "Article" || value === "BlogPosting"));
+    }) as
       | {
           articleSection?: string;
           image?: { "@type": string; url: string };
