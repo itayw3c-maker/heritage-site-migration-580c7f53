@@ -61,6 +61,12 @@ const DESCRIPTIONS: Record<ArchiveKind, string> = {
     "סיפורי הצלחה של לקוחות רפאל שמאות רכוש בטיפול בתביעות ביטוח והערכות נזקים.",
 };
 
+const ARCHIVE_HEADINGS: Record<ArchiveKind, string> = {
+  category: "מאמרים ומידע מקצועי בנושא שמאות רכוש",
+  shorts: "סרטונים קצרים והסברים מקצועיים",
+  success: "סיפורי הצלחה בתביעות ביטוח ושמאות רכוש",
+};
+
 function setMetaDescription(content: string) {
   let el = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
   if (!el) {
@@ -297,10 +303,19 @@ export function ArchivePage({
   }, [kind, html, page]);
 
   if (err) {
-    return <div style={{ padding: "4rem 1rem", textAlign: "center" }}>שגיאה בטעינת הארכיון</div>;
+    return (
+      <div style={{ padding: "4rem 1rem", textAlign: "center" }}>
+        <h1>{ARCHIVE_HEADINGS[kind]}</h1>
+        <p role="alert">שגיאה בטעינת הארכיון</p>
+      </div>
+    );
   }
   if (!index) {
-    return <div style={{ minHeight: "60vh" }} />;
+    return (
+      <div style={{ minHeight: "60vh" }} aria-busy="true">
+        <h1 className="rr-sr-only">{ARCHIVE_HEADINGS[kind]}</h1>
+      </div>
+    );
   }
   return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }
