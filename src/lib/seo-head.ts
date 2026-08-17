@@ -217,15 +217,28 @@ export function augmentShortSeo(
       .replace(/&[a-z#0-9]+;/gi, " ")
       .replace(/\s+/g, " ")
       .trim();
+    const topic = `${record.title ?? ""} ${record.meta_description ?? ""} ${text}`;
+    const about = /שריפ|אש|פיח/.test(topic)
+      ? ["נזקי אש", "ביטוח דירה", "שמאות רכוש"]
+      : /סער|שיטפו|גשם|מזג אוויר|ברד|רעידת אדמה/.test(topic)
+        ? ["נזקי טבע", "ביטוח רכוש", "שמאות רכוש"]
+        : /מים|רטיב|נזיל|צנרת|לחות|קפילר|הצפ/.test(topic)
+          ? ["נזקי מים", "צנרת ורטיבות", "שמאות רכוש"]
+          : ["שמאות רכוש", "תביעות ביטוח", "הערכת נזקים"];
     graph.unshift({
       "@type": "Article",
       "@id": `${rec.canonical ?? page?.["@id"] ?? ""}#article`,
       headline: record.title || rec.og?.og_title,
       description: record.meta_description || rec.og?.og_description,
+      abstract: record.meta_description || rec.og?.og_description,
+      articleBody: text || undefined,
       datePublished: page?.datePublished,
       dateModified: page?.dateModified,
       inLanguage: "he-IL",
       wordCount: text ? text.split(/\s+/).length : undefined,
+      about,
+      keywords: about,
+      isAccessibleForFree: true,
       author: { "@id": "https://www.rrshamaut.co.il/#organization" },
       publisher: { "@id": "https://www.rrshamaut.co.il/#organization" },
       mainEntityOfPage: { "@id": rec.canonical ?? page?.["@id"] },
