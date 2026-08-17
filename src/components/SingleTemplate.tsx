@@ -6,6 +6,7 @@ import successTpl from "@/generated/templates/success.html?raw";
 import serviceTpl from "@/generated/templates/service.html?raw";
 import { enhanceElementor } from "@/lib/elementor-enhance";
 import { improveMigratedHtml } from "@/lib/migrated-html";
+import { getSeoOverride } from "@/lib/seo-overrides";
 import {
   buildRelated,
   escAttr,
@@ -121,6 +122,29 @@ function buildSuccessSummary(record: SingleRecord): string {
   </section>`;
 }
 
+function buildTopicHubCallout(record: SingleRecord, slug?: string): string {
+  const topic = `${slug ?? ""} ${record.title ?? ""}`;
+  const hub = /נזקי-אש|נזק-אש|שריפ|פיח/.test(topic)
+    ? {
+        href: "/%D7%A0%D7%96%D7%A7%D7%99-%D7%90%D7%A9-%D7%95%D7%A4%D7%99%D7%97/",
+        label: "שמאי נזקי אש, שריפה ופיח",
+        text: "להערכת נזקי שריפה, עשן ופיח ולליווי מקצועי מול חברת הביטוח, עברו לעמוד השירות המרכזי.",
+      }
+    : /נזקי-מים|נזק-מים|נזיל|רטיבות|צנרת|הצפ|קפילר/.test(topic)
+      ? {
+          href: "/%D7%A0%D7%96%D7%A7%D7%99-%D7%9E%D7%99%D7%9D-%D7%94%D7%A6%D7%A4%D7%94-%D7%95%D7%A8%D7%98%D7%99%D7%91%D7%95%D7%AA/",
+          label: "שמאי נזקי מים, הצפה ורטיבות",
+          text: "להערכת נזקי מים, תיעוד רטיבות וליווי תביעת הביטוח, עברו לעמוד השירות המרכזי.",
+        }
+      : null;
+  if (!hub) return "";
+  return `<aside class="rr-video-summary rr-topic-hub" aria-label="עמוד השירות המרכזי">
+    <h2>המשך לעמוד השירות המרכזי</h2>
+    <p>${hub.text}</p>
+    <p><a href="${hub.href}">${hub.label}</a> · <a href="/%D7%A6%D7%95%D7%A8-%D7%A7%D7%A9%D7%A8/">ייעוץ ראשוני</a></p>
+  </aside>`;
+}
+
 // WordPress migration left <br /> tags inside <style> blocks of article
 // content_html. Rendered raw during SSR they break the CSS entirely, so strip
 // <br> only inside <style>...</style>. Pure string transform, fail-safe.
@@ -190,27 +214,32 @@ export function SingleTemplate({
       return rendered + buildMediaSummary(record);
     }
     if (record.type === "success") return rendered + buildSuccessSummary(record);
+    if (record.type === "post") return rendered + buildTopicHubCallout(record, slug);
     return rendered;
-  }, [record, related.w1]);
+  }, [record, related.w1, slug]);
 
   useEffect(() => {
+    const seoOverride = getSeoOverride(slug);
     if (record.type === "static") {
-      document.title = record.title ?? "";
+      document.title = seoOverride?.title ?? record.meta_title ?? record.title ?? "";
       if (record.body_class) document.body.className = record.body_class;
       else document.body.className = bodyClassFor(record.type, record.id);
     } else {
-      if (record.meta_title) document.title = record.meta_title;
+      if (seoOverride?.title ?? record.meta_title) {
+        document.title = seoOverride?.title ?? record.meta_title ?? "";
+      }
       document.body.className = bodyClassFor(record.type, record.id);
     }
 
-    if (record.meta_description) {
+    const description = seoOverride?.description ?? record.meta_description;
+    if (description) {
       let metaEl = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
       if (!metaEl) {
         metaEl = document.createElement("meta");
         metaEl.name = "description";
         document.head.appendChild(metaEl);
       }
-      metaEl.content = record.meta_description;
+      metaEl.content = description;
     }
 
     let styleEl: HTMLStyleElement | null = null;
