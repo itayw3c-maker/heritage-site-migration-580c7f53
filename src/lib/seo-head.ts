@@ -448,6 +448,16 @@ export function augmentExpertSeo(
         "https://www.rrshamaut.co.il/movie/fire-damage-no-building-insurance-cost/",
         "https://www.rrshamaut.co.il/success/תשלום-בגין-נזקי-שריפה-ע״ס-125000/",
       ],
+      "earthquake-damage-compensation": [
+        "https://www.rrshamaut.co.il/נזקי-טבע-שיטפונות-וסערה/",
+        "https://www.rrshamaut.co.il/shorts/earthquake-damage-insurance-coverage/",
+        "https://www.rrshamaut.co.il/structural-vs-contents-damage/",
+      ],
+      "שמאי-נזקי-שריפה-מה-נכון-לעשות-כאשר-נגרם": [
+        "https://www.rrshamaut.co.il/נזקי-אש-ופיח/",
+        "https://www.rrshamaut.co.il/movie/fire-damage-no-building-insurance-cost/",
+        "https://www.rrshamaut.co.il/success/תשלום-בגין-נזקי-שריפה-ע״ס-125000/",
+      ],
       "נזקי-מים-עליה-קפילארית-כיצד-לפעול": [
         "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/",
         "https://www.rrshamaut.co.il/movie/capillary-moisture-after-plumbing-damage/",
@@ -505,6 +515,16 @@ export function augmentExpertSeo(
             ? {
                 question: "מה עושים מיד אחרי נזקי שיטפון או סערה?",
                 answer: "לאחר שמוודאים שהכניסה לנכס בטוחה, מתעדים את הנזק לפני פינוי ותיקון, מונעים החמרה סבירה, מדווחים לחברת הביטוח ושומרים קבלות ודוחות. שמאי רכוש בודק נזקי מבנה ותכולה, מפריד בין גורמי הנזק ומעריך את עלויות הייבוש, התיקון והשיקום בהתאם לתנאי הפוליסה.",
+              }
+          : normalizedPath === "earthquake-damage-compensation"
+            ? {
+                question: "מה עושים אחרי שנגרמו נזקי רעידת אדמה לנכס?",
+                answer: "לאחר שמוודאים שהמבנה בטוח לכניסה, מתעדים נזקי מבנה ותכולה לפני פינוי או תיקון, מדווחים לחברת הביטוח ושומרים דוחות, תמונות, חשבוניות והצעות מחיר. שמאי רכוש מכמת את הנזק ובוחן את הכיסוי, סכומי הביטוח וההשתתפות העצמית לפי הפוליסה.",
+              }
+          : normalizedPath === "שמאי-נזקי-שריפה-מה-נכון-לעשות-כאשר-נגרם"
+            ? {
+                question: "מתי מזמינים שמאי נזקי שריפה ומה הוא בודק?",
+                answer: "מזמינים שמאי נזקי שריפה לאחר שהזירה בטוחה לכניסה ולפני פינוי או שיקום נרחב. השמאי מתעד ומכמת נזקי מבנה, תכולה, עשן, פיח, חום ומי כיבוי ומכין חוות דעת מנומקת לתביעת הביטוח.",
               }
         : null;
     if (serviceFaq) {
