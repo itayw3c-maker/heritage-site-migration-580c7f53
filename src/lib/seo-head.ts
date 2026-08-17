@@ -264,12 +264,48 @@ export function augmentSuccessSeo(
     const schema = JSON.parse(augmented.schema) as { "@graph"?: unknown[] };
     const graph = Array.isArray(schema["@graph"]) ? schema["@graph"] : [];
     const article = graph.find((item) => (item as { "@type"?: unknown })?.["@type"] === "Article") as
-      | { articleSection?: string; image?: { "@type": string; url: string } }
+      | {
+          articleSection?: string;
+          image?: { "@type": string; url: string };
+          abstract?: string;
+          articleBody?: string;
+          wordCount?: number;
+          about?: string[];
+          keywords?: string[];
+          isAccessibleForFree?: boolean;
+        }
       | undefined;
     if (!article) return augmented;
     article.articleSection = "סיפורי הצלחה בתביעות ביטוח ושמאות רכוש";
-    if (record.featured_image_url) {
-      article.image = { "@type": "ImageObject", url: record.featured_image_url };
+    const contentText = (record.content_html ?? "")
+      .replace(/<script[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style[\s\S]*?<\/style>/gi, " ")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&[a-z#0-9]+;/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    const disclaimer =
+      "התוצאה מתייחסת למקרה המסוים ולנסיבותיו. גובה הפיצוי והטיפול בכל תביעה נקבעים לפי היקף הנזק, תנאי הפוליסה, התיעוד והבדיקה המקצועית.";
+    const articleBody = [contentText, record.meta_description, disclaimer].filter(Boolean).join(" ");
+    const topic = `${record.title ?? ""} ${record.meta_description ?? ""} ${contentText}`;
+    const about = /שריפ|אש|פיח/.test(topic)
+      ? ["נזקי אש", "תביעת ביטוח", "שמאות רכוש"]
+      : /מים|רטיב|נזיל|צנרת|לחות|קפילר|הצפ/.test(topic)
+        ? ["נזקי מים", "תביעת ביטוח", "שמאות רכוש"]
+        : ["נזקי רכוש", "תביעת ביטוח", "שמאות רכוש"];
+    article.abstract = record.meta_description;
+    article.articleBody = articleBody;
+    article.wordCount = articleBody ? articleBody.split(/\s+/).length : undefined;
+    article.about = about;
+    article.keywords = about;
+    article.isAccessibleForFree = true;
+    const contentImage = record.content_html?.match(/<img\b[^>]*\bsrc=["']([^"']+)["']/i)?.[1];
+    const imageUrl = record.featured_image_url || contentImage;
+    if (imageUrl) {
+      const absoluteImageUrl = imageUrl.startsWith("/")
+        ? `https://www.rrshamaut.co.il${imageUrl}`
+        : imageUrl;
+      article.image = { "@type": "ImageObject", url: absoluteImageUrl };
     }
     return { ...augmented, schema: JSON.stringify(schema) };
   } catch {
