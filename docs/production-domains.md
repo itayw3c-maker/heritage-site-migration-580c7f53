@@ -18,7 +18,7 @@ Both web records must point directly to Lovable and remain **DNS only** in Cloud
 | A | `@` | `185.158.133.1` | DNS only |
 | A | `www` | `185.158.133.1` | DNS only |
 
-The apex record was reconnected through Lovable/Entri on 2026-08-17. Lovable warned that activation may take up to 48 hours. During propagation, the apex may continue returning the previous `421 Misdirected Request`; `www` remains the canonical and live host.
+The apex record was reconnected through Lovable/Entri on 2026-08-17. Activation completed the same day. The apex now returns `302 Found` to the matching canonical `www` URL while preserving the path and query string; `www` returns `200 OK`.
 
 ## Cloudflare limitation
 
@@ -38,6 +38,6 @@ curl -I https://www.rrshamaut.co.il/wp-content/uploads/<versioned-asset>
 
 Expected result:
 
-- apex: `200`, or a single permanent redirect to the matching `www` URL;
+- apex: one redirect to the matching `www` URL, preserving path and query;
 - `www`: `200`;
 - assets: `200`; count long-lived caching only when a suitable `Cache-Control` header is present.
