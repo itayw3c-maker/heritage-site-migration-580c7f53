@@ -2,11 +2,12 @@ import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SingleTemplate, type SingleRecord } from "@/components/SingleTemplate";
 import { getSeoRecord } from "@/lib/seo.functions";
-import { getSeoOverride } from "@/lib/seo-overrides";
+import { getSeoOverride, isExpertReviewedPath } from "@/lib/seo-overrides";
 import {
   augmentShortSeo,
   augmentSuccessSeo,
   augmentVideoSeo,
+  augmentExpertSeo,
   buildSeoHead,
   correctArticleWordCount,
   overrideSeoIdentity,
@@ -56,15 +57,16 @@ export const Route = createFileRoute("/$")({
       title: seoOverride?.title,
       description: seoOverride?.description,
     });
+    const typedSeo =
+      content.record?.type === "movie"
+        ? augmentVideoSeo(pageSeo, content.record)
+        : content.record?.type === "shorts"
+          ? augmentShortSeo(pageSeo, content.record)
+          : content.record?.type === "success"
+            ? augmentSuccessSeo(pageSeo, content.record)
+            : pageSeo;
     return {
-      seo:
-        content.record?.type === "movie"
-          ? augmentVideoSeo(pageSeo, content.record)
-          : content.record?.type === "shorts"
-            ? augmentShortSeo(pageSeo, content.record)
-            : content.record?.type === "success"
-              ? augmentSuccessSeo(pageSeo, content.record)
-            : pageSeo,
+      seo: augmentExpertSeo(typedSeo, { reviewed: isExpertReviewedPath(path) }),
       record: content.record,
       related: content.related,
     };
