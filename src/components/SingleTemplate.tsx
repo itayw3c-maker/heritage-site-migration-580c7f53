@@ -84,7 +84,7 @@ function fill(tpl: string, rec: SingleRecord, relatedHtml1: string): string {
   const featuredImage =
     rec.type === "success" ? buildFeaturedImage(rec.featured_image_url, rec.title ?? "") : "";
   const content = improveMigratedHtml(rec.content_html ?? "", rec.title ?? "");
-  return tpl
+  const rendered = tpl
     .split("__HOLE_TITLE__").join(rec.title ?? "")
     .split("__HOLE_CONTENT__").join(content)
     .split("__HOLE_BREADCRUMB__").join(rec.breadcrumb_html ?? "")
@@ -92,6 +92,7 @@ function fill(tpl: string, rec: SingleRecord, relatedHtml1: string): string {
     .split("__HOLE_VIDEO_SETTINGS__").join(videoSettings)
     .split("__HOLE_RELATED_1__").join(relatedHtml1)
     .split("__HOLE_FEATURED_IMAGE__").join(featuredImage);
+  return improveMigratedHtml(rendered, rec.title ?? "העמוד");
 }
 
 function buildFeaturedImage(url: string | undefined, alt: string): string {
