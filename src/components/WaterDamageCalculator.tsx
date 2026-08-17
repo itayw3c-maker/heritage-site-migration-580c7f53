@@ -172,12 +172,13 @@ export function WaterDamageCalculator() {
   return (
     <div dir="rtl" className="mx-auto w-full max-w-3xl px-4 py-8" id="wdc-top">
       {/* The site theme applies an UNLAYERED reset to every bare <button>/<a>:
-          pink (#CC3366) text + 1px pink border at rest, and a pink background
-          on hover/focus. Because unlayered CSS beats Tailwind's @layer
-          utilities regardless of specificity, our controls can't style their
-          own color/background/border via utility classes — so we drive them
-          from this unlayered, #wdc-top-scoped stylesheet via marker classes
-          (.wdc-opt/.wdc-cta/.wdc-wa/.wdc-outline/.wdc-ghost). */}
+          pink (#CC3366) text + 1px pink border at rest, a pink background on
+          hover/focus, and white-space:nowrap (which made card descriptions
+          overflow instead of wrapping). Because unlayered CSS beats Tailwind's
+          @layer utilities regardless of specificity, our controls can't style
+          their own color/background/border/white-space via utility classes —
+          so we drive them from this unlayered, #wdc-top-scoped stylesheet via
+          marker classes (.wdc-opt/.wdc-cta/.wdc-wa/.wdc-outline/.wdc-ghost). */}
       <style>{`
         /* Neutral reset for every control: theme's 1px pink border + pink text
            + transparent bg are cancelled. Categories below re-apply our design.
@@ -190,6 +191,7 @@ export function WaterDamageCalculator() {
           background-color: transparent;
           border: 0 solid transparent;
           text-decoration: none;
+          white-space: normal;
         }
         #wdc-top button:hover, #wdc-top button:focus,
         #wdc-top a:hover, #wdc-top a:focus { color: inherit; background-color: transparent; }
