@@ -17,6 +17,26 @@ const homepageCardImages = [
     height: 473,
   },
   { alt: "נזקי שוכרים", src: "/assets/home-cards/tenant-damage-355.webp", width: 355, height: 266 },
+  { alt: "שמאי רכוש באשדוד", src: "/assets/home-cards/ashdod-appraiser-535.webp", width: 535, height: 315 },
+  {
+    alt: "הערכת שווי רכוש",
+    src: "/assets/home-cards/property-valuation-362.webp",
+    width: 362,
+    height: 315,
+  },
+  {
+    alt: "נזקי עבודות קבלן",
+    src: "/assets/home-cards/contractor-damage-556.webp",
+    width: 556,
+    height: 315,
+  },
+  { alt: "ארז אריה מהנדס ושמאי", src: "/assets/home-cards/erez-aria-300.webp", width: 300, height: 300 },
+  {
+    alt: "נזקי מים הצפה ורטיבות",
+    src: "/assets/home-cards/water-damage-420.webp",
+    width: 420,
+    height: 315,
+  },
 ] as const;
 
 function optimizeHomepageCardImages(html: string): string {
