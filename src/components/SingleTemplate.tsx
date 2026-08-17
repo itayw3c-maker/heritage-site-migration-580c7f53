@@ -128,6 +128,7 @@ function buildMediaSummary(record: SingleRecord, slug?: string): string {
     <p>המידע בעמוד מסייע לבעלי נכסים להבין את שלבי התיעוד, הערכת הנזק וההתנהלות מול חברת הביטוח. כל אירוע נזק מחייב בדיקה מקצועית בהתאם לנסיבות, לפוליסה ולמצב הנכס.</p>
     ${keyPoints ? `<h3>עיקרי הסרטון</h3><p>${keyPoints}</p>` : ""}
     ${topicContext ? `<h3>הקשר מקצועי</h3><p>${topicContext}</p>` : ""}
+    <p><strong>מאת:</strong> <a href="/about/%D7%94%D7%A9%D7%9E%D7%90%D7%99-%D7%A8%D7%A4%D7%90%D7%9C-%D7%A8%D7%99%D7%91%D7%95%D7%97-%D7%9E%D7%99%D7%99%D7%A1%D7%93-%D7%95%D7%91%D7%A2%D7%9C%D7%99%D7%9D/">רפאל ריבוח, שמאי רכוש וסוקר סיכונים</a></p>
     <p><a href="/category/%D7%9E%D7%99%D7%93%D7%A2-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99/">למאמרים המקצועיים</a> · <a href="/about/">אודות רפאל שמאות רכוש</a> · <a href="/shorts/">לסרטונים נוספים</a></p>
   </section>`;
 }
