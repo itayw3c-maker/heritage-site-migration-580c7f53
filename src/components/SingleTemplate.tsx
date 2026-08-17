@@ -145,8 +145,12 @@ function buildTopicHubCallout(record: SingleRecord, slug?: string): string {
   </aside>`;
 }
 
-function buildExpertPanel(slug?: string): string {
-  if (!isExpertReviewedPath(slug)) return "";
+function buildExpertPanel(record: SingleRecord, slug?: string): string {
+  const title = record.title ?? "";
+  const priorityStaticPage =
+    record.type === "static" &&
+    (/שמאי נזקי מים הצפה ורטיבות/.test(title) || /שאלות תשובות/.test(title));
+  if (!isExpertReviewedPath(slug) && !priorityStaticPage) return "";
   return `<aside class="rr-video-summary rr-expert-review" aria-label="בדיקה מקצועית ומחבר התוכן">
     <h2>נכתב ונבדק מקצועית</h2>
     <p><strong>רפאל ריבוח</strong> — שמאי רכוש, סוקר סיכונים ומאתר ליקויי בנייה מורשה, המתמחה בהערכת נזקי מים, אש ורכוש ובליווי תביעות ביטוח.</p>
@@ -214,9 +218,9 @@ export function SingleTemplate({
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;")
           .trim();
-        if (heading) return `<h1 class="rr-sr-only">${heading}</h1>` + base + buildExpertPanel(slug);
+        if (heading) return `<h1 class="rr-sr-only">${heading}</h1>` + base + buildExpertPanel(record, slug);
       }
-      return base + buildExpertPanel(slug);
+      return base + buildExpertPanel(record, slug);
     }
     const tpl = TEMPLATES[record.type];
     const rendered = tpl ? stripBrInStyle(fill(tpl, record, related.w1)) : "";
@@ -225,7 +229,7 @@ export function SingleTemplate({
     }
     if (record.type === "success") return rendered + buildSuccessSummary(record);
     if (record.type === "post") return rendered + buildTopicHubCallout(record, slug);
-    return rendered + buildExpertPanel(slug);
+    return rendered + buildExpertPanel(record, slug);
   }, [record, related.w1, slug]);
 
   useEffect(() => {
