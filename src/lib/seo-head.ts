@@ -536,6 +536,32 @@ export function augmentExpertSeo(
         },
       });
     }
+    if (
+      normalizedPath === "movie/moisture-test-standard-insurance-responsibility" &&
+      !graph.some((item) => item["@type"] === "VideoObject")
+    ) {
+      const pageUrl = "https://www.rrshamaut.co.il/movie/moisture-test-standard-insurance-responsibility/";
+      const videoId = "J9cy9XTCUeQ";
+      graph.unshift({
+        "@type": "VideoObject",
+        "@id": `${pageUrl}#video`,
+        name: "בדיקת לחות מתחת לריצוף – שיטה, תקן ואחריות",
+        description:
+          "הסבר מקצועי על מיפוי, דיגום ובדיקת לחות מתחת לריצוף ועל חלוקת התפקידים בתביעת נזקי מים.",
+        thumbnailUrl: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+        embedUrl: `https://www.youtube.com/embed/${videoId}`,
+        contentUrl: `https://www.youtube.com/watch?v=${videoId}`,
+        inLanguage: "he-IL",
+        isFamilyFriendly: true,
+        creator: { "@id": RAFAEL_PERSON_ID },
+        publisher: { "@id": "https://www.rrshamaut.co.il/#organization" },
+        mainEntityOfPage: { "@id": pageUrl },
+        potentialAction: {
+          "@type": "WatchAction",
+          target: `https://www.youtube.com/watch?v=${videoId}`,
+        },
+      });
+    }
     if (normalizedPath === "נזקי-מים-הצפה-ורטיבות") {
       const pageUrl = "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/";
       if (!graph.some((item) => item["@type"] === "Service" && item.url === pageUrl)) {
