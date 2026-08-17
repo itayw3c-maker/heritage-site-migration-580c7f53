@@ -337,6 +337,10 @@ export function augmentExpertSeo(
         (types.includes("Article") || types.includes("BlogPosting") || types.includes("WebPage"))
       ) {
         item.reviewedBy = { "@id": RAFAEL_PERSON_ID };
+        item.citation = [
+          "https://haotzarsheli.mof.gov.il/Subject/Pages/Choosing-Apartment-Insurance.aspx",
+          "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice-2022-9-2/he/claim-solution-2022-9-2-pdf.pdf",
+        ];
       }
     }
     return { ...rec, schema: JSON.stringify(schema) };

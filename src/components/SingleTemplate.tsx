@@ -155,6 +155,7 @@ function buildExpertPanel(record: SingleRecord, slug?: string): string {
     <h2>נכתב ונבדק מקצועית</h2>
     <p><strong>רפאל ריבוח</strong> — שמאי רכוש, סוקר סיכונים ומאתר ליקויי בנייה מורשה, המתמחה בהערכת נזקי מים, אש ורכוש ובליווי תביעות ביטוח.</p>
     <p>המידע נועד להסביר עקרונות מקצועיים כלליים. ההערכה בכל מקרה נקבעת לאחר בדיקת הנכס, המסמכים, היקף הנזק ותנאי הפוליסה.</p>
+    <p><strong>מקורות רשמיים לעיון נוסף:</strong> <a href="https://haotzarsheli.mof.gov.il/Subject/Pages/Choosing-Apartment-Insurance.aspx" rel="external">מדריך משרד האוצר לביטוח דירה</a> · <a href="https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice-2022-9-2/he/claim-solution-2022-9-2-pdf.pdf" rel="external">חוזר רשות שוק ההון לבירור ויישוב תביעות</a></p>
     <p><a href="/about/%D7%94%D7%A9%D7%9E%D7%90%D7%99-%D7%A8%D7%A4%D7%90%D7%9C-%D7%A8%D7%99%D7%91%D7%95%D7%97-%D7%9E%D7%99%D7%99%D7%A1%D7%93-%D7%95%D7%91%D7%A2%D7%9C%D7%99%D7%9D/">לפרופיל המקצועי של רפאל ריבוח</a> · <a href="/about/">אודות המשרד</a></p>
   </aside>`;
 }
