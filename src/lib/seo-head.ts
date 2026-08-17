@@ -485,6 +485,11 @@ export function augmentExpertSeo(
     }
     const normalizedPath = options.path?.replace(/^\/+|\/+$/g, "");
     const relatedLinks: Record<string, string[]> = {
+      "הבדל-בין-שמאי-רכוש-פרטי-לשמאי-רכוש-מטעם": [
+        "https://www.rrshamaut.co.il/private-appraiser/",
+        "https://www.rrshamaut.co.il/public-vs-company-adjuster/",
+        "https://www.rrshamaut.co.il/ייעוץ-וליווי-תביעות-ביטוח/",
+      ],
       "שמאי-נזקי-בניה-כל-מה-שצריך-לדעת": [
         "https://www.rrshamaut.co.il/structural-vs-contents-damage/",
         "https://www.rrshamaut.co.il/damage-assessments-loss-adjusting/",
@@ -578,7 +583,12 @@ export function augmentExpertSeo(
         }
       }
     }
-    const serviceFaq = normalizedPath === "שמאי-נזקי-בניה-כל-מה-שצריך-לדעת"
+    const serviceFaq = normalizedPath === "הבדל-בין-שמאי-רכוש-פרטי-לשמאי-רכוש-מטעם"
+      ? {
+          question: "מה ההבדל בין שמאי פרטי לשמאי חברת הביטוח?",
+          answer: "שמאי חברת הביטוח ממונה במסגרת הטיפול של המבטחת ובודק את האירוע עבורה. שמאי פרטי נשכר בידי בעל הנכס או המבוטח ומכין הערכה עצמאית מטעמו. חוות דעת פרטית יכולה לשמש להשוואה ולביסוס מחלוקת, אך אינה מחייבת אוטומטית את המבטחת ואינה מבטיחה פיצוי; הכיסוי נקבע לפי הפוליסה והראיות.",
+        }
+      : normalizedPath === "שמאי-נזקי-בניה-כל-מה-שצריך-לדעת"
       ? {
           question: "מה בודק שמאי נזקי מבנה ומתי מזמינים אותו?",
           answer: "שמאי נזקי מבנה מתעד ומכמת פגיעה בשלד, במעטפת, בגמר ובמערכות הקבועות, מפריד בין נזק חדש, ליקוי קודם ונזק לתכולה ומכין חוות דעת לצורך תביעה. מזמינים אותו לאחר הרחקת סכנה ולפני פירוק או תיקון משמעותיים; חשש בטיחותי מחייב תחילה בדיקה הנדסית או הנחיית רשות מוסמכת.",
