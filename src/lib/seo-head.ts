@@ -510,6 +510,32 @@ export function augmentExpertSeo(
       }
     }
     const normalizedPath = options.path?.replace(/^\/+|\/+$/g, "");
+    if (
+      normalizedPath === "movie/underfloor-drying-pros-cons" &&
+      !graph.some((item) => item["@type"] === "VideoObject")
+    ) {
+      const pageUrl = "https://www.rrshamaut.co.il/movie/underfloor-drying-pros-cons/";
+      const videoId = "M4FWMcK6tio";
+      graph.unshift({
+        "@type": "VideoObject",
+        "@id": `${pageUrl}#video`,
+        name: "ייבוש תת רצפתי – יתרונות וחסרונות שחשוב להכיר",
+        description:
+          "הסבר מקצועי על התאמה, מדידות, יתרונות, מגבלות ובקרה בתהליך ייבוש תת רצפתי לאחר נזקי מים.",
+        thumbnailUrl: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+        embedUrl: `https://www.youtube.com/embed/${videoId}`,
+        contentUrl: `https://www.youtube.com/watch?v=${videoId}`,
+        inLanguage: "he-IL",
+        isFamilyFriendly: true,
+        creator: { "@id": RAFAEL_PERSON_ID },
+        publisher: { "@id": "https://www.rrshamaut.co.il/#organization" },
+        mainEntityOfPage: { "@id": pageUrl },
+        potentialAction: {
+          "@type": "WatchAction",
+          target: `https://www.youtube.com/watch?v=${videoId}`,
+        },
+      });
+    }
     if (normalizedPath === "נזקי-מים-הצפה-ורטיבות") {
       const pageUrl = "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/";
       if (!graph.some((item) => item["@type"] === "Service" && item.url === pageUrl)) {
