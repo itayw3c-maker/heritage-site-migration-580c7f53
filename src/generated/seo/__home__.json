@@ -10,8 +10,8 @@
   "og": {
     "og_locale": "he_IL",
     "og_type": "article",
-    "og_title": "שמאי רכוש ושמאות רכוש - רפאל ריבוח | הערכת נזקים מקצועית מול חברות הביטוח",
-    "og_description": "שמאי רכוש ושמאות רכוש - רפאל ריבוח. מומחה להערכת נזקים, ייצוג מבוטחים מול חברות הביטוח וחוות דעת לביה\"מ לקבלת פיצוי הוגן.",
+    "og_title": "שמאי רכוש פרטי ושמאות נזקים | רפאל שמאות רכוש",
+    "og_description": "רפאל ריבוח, שמאי רכוש פרטי, מעריך נזקי מים, אש ורכוש ומייצג מבוטחים מול חברות הביטוח. ייעוץ ראשוני ללא התחייבות וזמינות ארצית.",
     "og_url": "https://www.rrshamaut.co.il/",
     "og_site_name": "רפאל שמאות רכוש | RR",
     "article_modified_time": "2026-07-09T07:03:07+00:00"
@@ -35,7 +35,7 @@
         "@type": "WebPage",
         "@id": "https://www.rrshamaut.co.il/",
         "url": "https://www.rrshamaut.co.il/",
-        "name": "שמאי רכוש ושמאות רכוש - רפאל ריבוח | הערכת נזקים מקצועית מול חברות הביטוח",
+        "name": "שמאי רכוש פרטי ושמאות נזקים | רפאל שמאות רכוש",
         "isPartOf": {
           "@id": "https://www.rrshamaut.co.il/#website"
         },
@@ -48,7 +48,7 @@
         "thumbnailUrl": "https://www.rrshamaut.co.il/wp-content/uploads/2024/04/אייקון-לוגו-ללא-רקע-1.png",
         "datePublished": "2026-01-15T04:51:20+00:00",
         "dateModified": "2026-07-09T07:03:07+00:00",
-        "description": "שמאי רכוש ושמאות רכוש - רפאל ריבוח. מומחה להערכת נזקים, ייצוג מבוטחים מול חברות הביטוח וחוות דעת לביה\"מ לקבלת פיצוי הוגן.",
+        "description": "רפאל ריבוח, שמאי רכוש פרטי, מעריך נזקי מים, אש ורכוש ומייצג מבוטחים מול חברות הביטוח. ייעוץ ראשוני ללא התחייבות וזמינות ארצית.",
         "breadcrumb": {
           "@id": "https://www.rrshamaut.co.il/#breadcrumb"
         },
@@ -115,10 +115,55 @@
         "inLanguage": "he-IL"
       },
       {
-        "@type": "Organization",
+        "@type": [
+          "Organization",
+          "ProfessionalService"
+        ],
         "@id": "https://www.rrshamaut.co.il/#organization",
         "name": "רפאל שמאות רכוש",
         "url": "https://www.rrshamaut.co.il/",
+        "telephone": "+972-77-805-1266",
+        "priceRange": "₪₪",
+        "areaServed": {
+          "@type": "Country",
+          "name": "ישראל"
+        },
+        "address": [
+          {
+            "@type": "PostalAddress",
+            "streetAddress": "הבנאים 5, אזור התעשייה",
+            "addressLocality": "אשדוד",
+            "addressCountry": "IL"
+          },
+          {
+            "@type": "PostalAddress",
+            "streetAddress": "השושנים 1",
+            "addressLocality": "פוריה - נווה עובד",
+            "addressCountry": "IL"
+          }
+        ],
+        "founder": {
+          "@type": "Person",
+          "@id": "https://www.rrshamaut.co.il/#rafael-rivuah",
+          "name": "רפאל ריבוח",
+          "jobTitle": "שמאי רכוש",
+          "url": "https://www.rrshamaut.co.il/about/%D7%94%D7%A9%D7%9E%D7%90%D7%99-%D7%A8%D7%A4%D7%90%D7%9C-%D7%A8%D7%99%D7%91%D7%95%D7%97-%D7%9E%D7%99%D7%99%D7%A1%D7%93-%D7%95%D7%91%D7%A2%D7%9C%D7%99%D7%9D/",
+          "knowsAbout": [
+            "שמאות רכוש",
+            "הערכת נזקי מים",
+            "הערכת נזקי אש ופיח",
+            "הערכת שווי רכוש",
+            "תביעות ביטוח רכוש"
+          ]
+        },
+        "knowsAbout": [
+          "שמאות רכוש",
+          "נזקי מים ורטיבות",
+          "נזקי אש ופיח",
+          "נזקי טבע והצפות",
+          "הערכת שווי רכוש",
+          "חוות דעת שמאית לבית משפט"
+        ],
         "logo": {
           "@type": "ImageObject",
           "inLanguage": "he-IL",

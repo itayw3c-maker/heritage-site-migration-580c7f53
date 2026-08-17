@@ -109,7 +109,7 @@ export function seoFileKey(path: string): string {
 
 export function overrideSeoIdentity(
   rec: SeoRecord | null,
-  overrides: { canonical?: string; title?: string },
+  overrides: { canonical?: string; title?: string; description?: string },
 ): SeoRecord | null {
   if (!rec) return rec;
   const next: SeoRecord = {
@@ -118,6 +118,7 @@ export function overrideSeoIdentity(
     og: rec.og ? { ...rec.og } : rec.og,
   };
   if (next.og && overrides.title) next.og.og_title = overrides.title;
+  if (next.og && overrides.description) next.og.og_description = overrides.description;
   if (next.og && overrides.canonical) next.og.og_url = overrides.canonical;
   if (!rec.schema) return next;
   try {
@@ -126,10 +127,13 @@ export function overrideSeoIdentity(
       serialized = serialized.split(rec.canonical).join(overrides.canonical);
     }
     const schema = JSON.parse(serialized) as { "@graph"?: unknown[] };
-    if (overrides.title && Array.isArray(schema["@graph"])) {
+    if ((overrides.title || overrides.description) && Array.isArray(schema["@graph"])) {
       for (const item of schema["@graph"]) {
         if ((item as { "@type"?: unknown })?.["@type"] === "WebPage") {
-          (item as { name?: string }).name = overrides.title;
+          if (overrides.title) (item as { name?: string }).name = overrides.title;
+          if (overrides.description) {
+            (item as { description?: string }).description = overrides.description;
+          }
         }
       }
     }

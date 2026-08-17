@@ -49,17 +49,40 @@ export const Route = createFileRoute("/$")({
       throw notFound();
     }
     let pageSeo = correctArticleWordCount(content.dbSeo ?? seo, content.record ?? {});
-    const titleOverrides: Record<string, string> = {
-      "signs-of-water-damage": "סימנים מוקדמים לנזקי מים בבית ובעסק | רפאל שמאות רכוש",
-      "נזילת-מים-מהשכן-למעלה-כל-מה-שצריך-לדעת":
-        "נזילת מים מהשכן למעלה: הוכחת נזק ותביעה | רפאל שמאות רכוש",
-      "insurance-claims-lawyer": "עורך דין ושמאי בליווי תביעות ביטוח | רפאל שמאות רכוש",
-      "נזקי-מים-ועליות-קפילריות-הבנה-מעמיקה":
-        "נזקי מים ועלייה קפילרית: זיהוי וטיפול | רפאל שמאות רכוש",
+    const seoOverrides: Record<string, { title: string; description?: string }> = {
+      "signs-of-water-damage": {
+        title: "סימנים מוקדמים לנזקי מים בבית ובעסק | רפאל שמאות רכוש",
+      },
+      "נזילת-מים-מהשכן-למעלה-כל-מה-שצריך-לדעת": {
+        title: "נזילת מים מהשכן למעלה: הוכחת נזק ותביעה | רפאל שמאות רכוש",
+      },
+      "insurance-claims-lawyer": {
+        title: "עורך דין ושמאי בליווי תביעות ביטוח | רפאל שמאות רכוש",
+      },
+      "נזקי-מים-ועליות-קפילריות-הבנה-מעמיקה": {
+        title: "נזקי מים ועלייה קפילרית: זיהוי וטיפול | רפאל שמאות רכוש",
+      },
+      "נזקי-מים-הצפה-ורטיבות": {
+        title: "שמאי נזקי מים ורטיבות | רפאל שמאות רכוש",
+        description:
+          "שמאי נזקי מים פרטי להערכת נזילות, הצפות ורטיבות, תיעוד הנזק וליווי מול חברת הביטוח. ייעוץ ראשוני ללא התחייבות וזמינות ארצית.",
+      },
+      "נזקי-מים-עליה-קפילארית-כיצד-לפעול": {
+        title: "עלייה קפילרית: זיהוי, אחריות ופיצוי | רפאל שמאות רכוש",
+        description:
+          "איך מזהים עלייה קפילרית, מי אחראי לנזק ואילו מסמכים דרושים לתביעה? מדריך שמאי מעשי לתיעוד, הערכת הנזק ומיצוי הזכויות.",
+      },
+      "נזקי-אש-ופיח": {
+        title: "שמאי נזקי אש, שריפה ופיח | רפאל שמאות רכוש",
+        description:
+          "שמאי נזקי אש פרטי לתיעוד נזקי שריפה, עשן ופיח, הערכת עלויות השיקום וליווי תביעת הביטוח עד לקבלת פיצוי הוגן.",
+      },
     };
+    const seoOverride = seoOverrides[path];
     pageSeo = overrideSeoIdentity(pageSeo, {
       canonical: path === kobiPath ? `https://www.rrshamaut.co.il/${encodeURI(kobiPath)}/` : undefined,
-      title: titleOverrides[path],
+      title: seoOverride?.title,
+      description: seoOverride?.description,
     });
     return {
       seo:
