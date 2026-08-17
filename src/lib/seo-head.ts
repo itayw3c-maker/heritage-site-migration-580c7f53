@@ -485,6 +485,11 @@ export function augmentExpertSeo(
     }
     const normalizedPath = options.path?.replace(/^\/+|\/+$/g, "");
     const relatedLinks: Record<string, string[]> = {
+      "שמאי-נזקי-בניה-כל-מה-שצריך-לדעת": [
+        "https://www.rrshamaut.co.il/structural-vs-contents-damage/",
+        "https://www.rrshamaut.co.il/damage-assessments-loss-adjusting/",
+        "https://www.rrshamaut.co.il/ייעוץ-וליווי-תביעות-ביטוח/",
+      ],
       "שמאי-נזקי-מים-המדריך-המלא": [
         "https://www.rrshamaut.co.il/נזקי-מים-הצפה-ורטיבות/",
         "https://www.rrshamaut.co.il/movie/mapping-moisture-after-plumbing-damage/",
@@ -573,7 +578,12 @@ export function augmentExpertSeo(
         }
       }
     }
-    const serviceFaq = normalizedPath === "שמאי-נזקי-מים-המדריך-המלא"
+    const serviceFaq = normalizedPath === "שמאי-נזקי-בניה-כל-מה-שצריך-לדעת"
+      ? {
+          question: "מה בודק שמאי נזקי מבנה ומתי מזמינים אותו?",
+          answer: "שמאי נזקי מבנה מתעד ומכמת פגיעה בשלד, במעטפת, בגמר ובמערכות הקבועות, מפריד בין נזק חדש, ליקוי קודם ונזק לתכולה ומכין חוות דעת לצורך תביעה. מזמינים אותו לאחר הרחקת סכנה ולפני פירוק או תיקון משמעותיים; חשש בטיחותי מחייב תחילה בדיקה הנדסית או הנחיית רשות מוסמכת.",
+        }
+      : normalizedPath === "שמאי-נזקי-מים-המדריך-המלא"
       ? {
           question: "איך מטפלים בנזקי מים בלי לפגוע בתביעה?",
           answer: "עוצרים תחילה את מקור המים ומרחיקים סכנה, מתעדים את מקור האירוע ואת כל הנזק לפני פינוי או תיקון, ושומרים דוחות, מדידות, חשבוניות והצעות מחיר. לאחר מכן ממפים את הרטיבות, מייבשים באופן מבוקר ומעריכים את השיקום. פעולות חירום מבצעים מיד ומתעדים; בדיקה שמאית רצוי לבצע לפני שינוי משמעותי במצב הנכס.",
