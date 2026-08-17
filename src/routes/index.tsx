@@ -9,10 +9,50 @@ import { improveMigratedHtml } from "@/lib/migrated-html";
 // Lighthouse identifies this background as the homepage LCP element. Keeping
 // the URL only behind an Elementor CSS variable delays discovery even with a
 // preload hint, so expose the identical image directly in the SSR HTML.
-const optimizedMainHtml = improveMigratedHtml(mainHtml, "דף הבית של רפאל שמאות רכוש").replace(
-  'data-id="dabb116"',
-  'data-id="dabb116" style="background-image:url(\'/wp-content/uploads/2025/12/bg_main.webp\')"',
-);
+const optimizedMainHtml = improveMigratedHtml(mainHtml, "דף הבית של רפאל שמאות רכוש")
+  .replace(
+    'data-id="dabb116"',
+    'data-id="dabb116" style="background-image:url(\'/wp-content/uploads/2025/12/bg_main.webp\')"',
+  )
+  // These below-the-fold cards used oversized legacy JPEGs. The equivalent
+  // WebP files preserve their dimensions and appearance while cutting the
+  // transferred image bytes, especially for the 1280×900 fire-damage card.
+  .replaceAll(
+    "/wp-content/uploads/elementor/thumbs/נזקי-אש-1-rmdcgmgj73nf9ua44y4v598m26881is5uyrn4b2ey0.jpg",
+    "/wp-content/uploads/elementor/thumbs/נזקי-אש-1-rmdcgmgj73nf9ua44y4v598m26881is5uyrn4b2ey0.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/04/תמונת-המחשה-לנזקי-טבע-ושטפונות_600x800.jpg",
+    "/wp-content/uploads/2026/04/תמונת-המחשה-לנזקי-טבע-ושטפונות_600x800.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/04/תמונת-המחשה-לנזקי-טבע-ושטפונות_600x800-225x300.jpg",
+    "/wp-content/uploads/2026/04/תמונת-המחשה-לנזקי-טבע-ושטפונות_600x800-225x300.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/04/שמאי-נזקי-התנגשות-2.jpg",
+    "/wp-content/uploads/2026/04/שמאי-נזקי-התנגשות-2.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/04/שמאי-נזקי-התנגשות-2-768x354.jpg",
+    "/wp-content/uploads/2026/04/שמאי-נזקי-התנגשות-2-768x354.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/04/שמאי-נזקי-התנגשות-2-300x138.jpg",
+    "/wp-content/uploads/2026/04/שמאי-נזקי-התנגשות-2-300x138.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/03/נזקי-עבודות-קבלן.jpg",
+    "/wp-content/uploads/2026/03/נזקי-עבודות-קבלן.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/03/נזקי-עבודות-קבלן-768x435.jpg",
+    "/wp-content/uploads/2026/03/נזקי-עבודות-קבלן-768x435.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/03/נזקי-עבודות-קבלן-300x170.jpg",
+    "/wp-content/uploads/2026/03/נזקי-עבודות-קבלן-300x170.webp",
+  );
 
 export const Route = createFileRoute("/")({
   loader: async () => ({ seo: await getSeoRecord({ data: { path: "" } }) }),
