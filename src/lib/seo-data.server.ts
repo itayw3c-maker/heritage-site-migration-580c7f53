@@ -12,6 +12,12 @@ type RawSeoRecord = {
 type SeoJsonModule = { default: RawSeoRecord } | RawSeoRecord;
 type SeoImporter = () => Promise<SeoJsonModule>;
 
+const DEFAULT_SOCIAL_IMAGE = {
+  url: "https://www.rrshamaut.co.il/og-cover.png",
+  width: 1200,
+  height: 630,
+};
+
 const seoFiles = import.meta.glob<SeoJsonModule>("@/generated/seo/*.json", {
   eager: false,
 });
@@ -56,7 +62,9 @@ function normalizeSeoRecord(raw: RawSeoRecord): SeoRecord {
     canonical: raw.canonical,
     robots: raw.robots,
     og: raw.og,
-    og_image: raw.og_image?.url ? raw.og_image : getFallbackOgImage(raw.schema),
+    og_image: raw.og_image?.url
+      ? raw.og_image
+      : (getFallbackOgImage(raw.schema) ?? DEFAULT_SOCIAL_IMAGE),
     twitter: raw.twitter,
     schema: raw.schema ? JSON.stringify(raw.schema) : null,
   };

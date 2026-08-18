@@ -7,7 +7,11 @@ const SITE = "https://www.rrshamaut.co.il";
 const CONTENT_DIR = "public/content";
 const OUT = "public/sitemap.xml";
 const SLUGS_OUT = "src/generated/content-slugs.json";
-const EXCLUDE_SLUGS = new Set(["thank-you"]);
+const EXCLUDE_SLUGS = new Set([
+  "thank-you",
+  "about/השמאי-רפאל-ריבוח-מייסד-ובעלים-2",
+]);
+const VIRTUAL_SLUGS = ["about/עורך-דין-קובי-ליבוביץ"];
 
 function walk(dir) {
   const out = [];
@@ -52,6 +56,9 @@ for (const file of walk(CONTENT_DIR)) {
   if (EXCLUDE_SLUGS.has(slug)) continue;
   const lastmod = modMap.get(slug) || now;
   urls.push({ loc: `${SITE}/${encodeSlug(slug)}/`, lastmod });
+}
+for (const slug of VIRTUAL_SLUGS) {
+  urls.push({ loc: `${SITE}/${encodeSlug(slug)}/`, lastmod: now });
 }
 writeFileSync(SLUGS_OUT, JSON.stringify(allSlugs.sort()));
 console.log(`Wrote ${SLUGS_OUT} with ${allSlugs.length} slugs`);

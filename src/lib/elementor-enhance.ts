@@ -432,6 +432,8 @@ function revealAnimations(root: ParentNode) {
 }
 
 export function enhanceElementor(root: ParentNode = document) {
+  improveAccessibility(root);
+  enhanceLeadFormAccessibility(root);
   hydrateLazyMedia(root);
   injectVideos(root);
   hydrateRllYoutube(root);
@@ -452,6 +454,67 @@ export function enhanceElementor(root: ParentNode = document) {
   enhancePhoneInputs(root);
   hydrateGalleries(root);
   setupNestedTabs(root);
+}
+
+let generatedLeadFieldId = 0;
+
+function enhanceLeadFormAccessibility(root: ParentNode) {
+  root.querySelectorAll<HTMLFormElement>(".elementor-form").forEach((form) => {
+    if (!form.getAttribute("aria-label") || form.getAttribute("aria-label") === "טופס חדש") {
+      form.setAttribute("aria-label", "טופס בקשת ייעוץ");
+    }
+    form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
+      "input:not([type='hidden']), textarea, select",
+    ).forEach((field) => {
+      if (!field.id) field.id = `rr-lead-field-${++generatedLeadFieldId}`;
+      if (field.required) field.setAttribute("aria-required", "true");
+      const hasLabel = Array.from(form.querySelectorAll<HTMLLabelElement>("label"))
+        .some((label) => label.htmlFor === field.id || label.contains(field));
+      if (!hasLabel && !field.getAttribute("aria-label")) {
+        const placeholder = field instanceof HTMLSelectElement
+          ? field.options[0]?.textContent?.trim()
+          : field.getAttribute("placeholder")?.trim();
+        field.setAttribute("aria-label", placeholder || "שדה בטופס יצירת קשר");
+      }
+      const key = classifyField(field);
+      if (key === "name") field.setAttribute("autocomplete", "name");
+      if (key === "email") field.setAttribute("autocomplete", "email");
+      if (key === "phone") field.setAttribute("autocomplete", "tel");
+    });
+  });
+}
+
+function improveAccessibility(root: ParentNode) {
+  root.querySelectorAll<HTMLElement>(".elementor-swiper-button-prev").forEach((button) => {
+    if (!button.getAttribute("aria-label")) button.setAttribute("aria-label", "הקודם");
+  });
+  root.querySelectorAll<HTMLElement>(".elementor-swiper-button-next").forEach((button) => {
+    if (!button.getAttribute("aria-label")) button.setAttribute("aria-label", "הבא");
+  });
+
+  // Elementor exports carousel containers as ARIA lists even though their
+  // direct children are wrappers rather than listitems. A named region models
+  // the interaction accurately and avoids a malformed accessibility tree.
+  root.querySelectorAll<HTMLElement>(".swiper[role='list']").forEach((swiper) => {
+    swiper.setAttribute("role", "region");
+    if (!swiper.getAttribute("aria-label")) swiper.setAttribute("aria-label", "קרוסלת תוכן");
+  });
+
+  root.querySelectorAll<HTMLAnchorElement>("a:not([aria-label])").forEach((link) => {
+    const href = link.getAttribute("href") ?? "";
+    const visibleName = `${link.textContent ?? ""} ${Array.from(link.querySelectorAll("img"))
+      .map((img) => img.getAttribute("alt") ?? "")
+      .join(" ")}`.trim();
+    if (visibleName) return;
+    let label = "";
+    if (href.includes("elementor-action") && href.includes("off_canvas")) label = "פתיחת תפריט";
+    else if (/instagram\.com/i.test(href)) label = "רפאל שמאות רכוש באינסטגרם";
+    else if (/youtube\.com/i.test(href)) label = "רפאל שמאות רכוש ביוטיוב";
+    else if (/tiktok\.com/i.test(href)) label = "רפאל שמאות רכוש בטיקטוק";
+    else if (/facebook\.com/i.test(href)) label = "רפאל שמאות רכוש בפייסבוק";
+    else if (/whatsapp\.com|wa\.me/i.test(href)) label = "יצירת קשר בוואטסאפ";
+    if (label) link.setAttribute("aria-label", label);
+  });
 }
 
 function setupNestedTabs(root: ParentNode) {
@@ -1008,14 +1071,23 @@ function showFormMessage(
   const div = document.createElement("div");
   div.className = `elementor-message elementor-message-${kind} rr-injected`;
   div.setAttribute("role", kind === "danger" ? "alert" : "status");
+  div.setAttribute("aria-live", kind === "danger" ? "assertive" : "polite");
+  div.setAttribute("tabindex", "-1");
   div.textContent = text;
   form.insertBefore(div, form.firstChild);
 }
 
 function markInvalid(el: Element, invalid: boolean) {
-  if (invalid) el.classList.add("rr-field-error");
-  else el.classList.remove("rr-field-error");
+  if (invalid) {
+    el.classList.add("rr-field-error");
+    el.setAttribute("aria-invalid", "true");
+  } else {
+    el.classList.remove("rr-field-error");
+    el.removeAttribute("aria-invalid");
+  }
 }
+
+const pendingLeadForms = new WeakSet<HTMLFormElement>();
 
 /**
  * Sends a validated lead through the full pipeline: Supabase `leads` insert,
@@ -1096,6 +1168,7 @@ export async function sendLeadPayload(payload: FormPayload): Promise<void> {
 }
 
 async function submitLead(form: HTMLFormElement) {
+  if (pendingLeadForms.has(form)) return;
   const fields = form.querySelectorAll<
     HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
   >("input, textarea, select");
@@ -1169,6 +1242,8 @@ async function submitLead(form: HTMLFormElement) {
 
   if (errors.length) {
     showFormMessage(form, "danger", errors.join(" • "));
+    const firstInvalid = form.querySelector<HTMLElement>("[aria-invalid='true']");
+    firstInvalid?.focus();
     return;
   }
 
@@ -1176,10 +1251,19 @@ async function submitLead(form: HTMLFormElement) {
     'button[type="submit"], input[type="submit"]',
   );
   const prevDisabled = submitBtn?.disabled;
-  if (submitBtn) submitBtn.disabled = true;
+  const prevButtonHtml = submitBtn?.innerHTML;
+  pendingLeadForms.add(form);
+  form.setAttribute("aria-busy", "true");
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.setAttribute("aria-disabled", "true");
+    submitBtn.textContent = "שולח...";
+  }
 
   try {
     await sendLeadPayload(payload);
+    const { trackEvent } = await import("@/lib/analytics");
+    trackEvent("generate_lead", { form_name: payload.form_name });
     window.location.href = "/thank-you/";
   } catch (err) {
     console.error("lead submit failed", err);
@@ -1188,7 +1272,14 @@ async function submitLead(form: HTMLFormElement) {
       "danger",
       "אירעה שגיאה בשליחת הטופס. אנא נסו שוב או צרו קשר טלפונית.",
     );
-    if (submitBtn) submitBtn.disabled = prevDisabled ?? false;
+    form.querySelector<HTMLElement>(".elementor-message-danger")?.focus();
+    pendingLeadForms.delete(form);
+    form.removeAttribute("aria-busy");
+    if (submitBtn) {
+      submitBtn.disabled = prevDisabled ?? false;
+      submitBtn.removeAttribute("aria-disabled");
+      if (prevButtonHtml !== undefined) submitBtn.innerHTML = prevButtonHtml;
+    }
   }
 }
 

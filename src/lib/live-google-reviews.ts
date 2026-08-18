@@ -1,29 +1,29 @@
-// Client-side live reviews hydrator: replaces the trustindex widget on the
-// home page with 5 fresh reviews from /api/public/google-reviews, and updates
-// the floating rpi badge total. Silent no-op on error (fallback = original).
+// Client-side Google reviews carousel that replaces the Trustindex widget.
+// Built from real DOM nodes (never innerHTML + <script>, which never executes)
+// and mounted via a MutationObserver so it also fires when Trustindex's CDN
+// renders late and would otherwise overwrite us.
 
-type Review = {
-  author_name: string;
-  rating: number;
-  text: string;
-  relative_time: string;
-  time: number;
-  profile_photo_url: string;
-};
+import { SEED_REVIEWS, SEED_RATING, SEED_TOTAL, type Review } from "./google-reviews-seed";
+
 type Payload = {
   rating: number;
   total: number;
   reviews: Review[];
-  error?: string;
 };
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+const GAP = 24;
+const GOOGLE_ICON = "https://cdn.trustindex.io/assets/platform/Google/icon.svg";
+const GOOGLE_LOGO = "https://cdn.trustindex.io/assets/platform/Google/logo.svg";
+
+function el<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  className?: string,
+  text?: string,
+): HTMLElementTagNameMap[K] {
+  const n = document.createElement(tag);
+  if (className) n.className = className;
+  if (text != null) n.textContent = text;
+  return n;
 }
 
 function initials(name: string): string {
@@ -36,56 +36,176 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
-function starsHtml(rating: number): string {
+function starsRow(rating: number, cls: string): HTMLElement {
+  const wrap = el("span", cls);
   const full = Math.round(rating);
-  let out = '<span class="lgr-stars" aria-label="' + rating + '">';
   for (let i = 0; i < 5; i++) {
-    out += `<span class="lgr-star${i < full ? " lgr-star-on" : ""}">★</span>`;
+    wrap.appendChild(el("span", i < full ? "crs-star on" : "crs-star", "★"));
   }
-  out += "</span>";
-  return out;
+  return wrap;
 }
 
-function reviewCard(r: Review): string {
-  const img = r.profile_photo_url
-    ? `<img class="lgr-avatar" src="${escapeHtml(r.profile_photo_url)}" alt="${escapeHtml(r.author_name)}" loading="lazy" referrerpolicy="no-referrer" />`
-    : `<div class="lgr-avatar lgr-avatar-fallback">${escapeHtml(initials(r.author_name))}</div>`;
-  return `
-    <article class="lgr-card">
-      <header class="lgr-head">
-        ${img}
-        <div class="lgr-who">
-          <div class="lgr-name">${escapeHtml(r.author_name)}</div>
-          <div class="lgr-date">${escapeHtml(r.relative_time)}</div>
-        </div>
-        <img class="lgr-source" src="https://cdn.trustindex.io/assets/platform/Google/icon.svg" alt="Google" width="20" height="20" />
-      </header>
-      ${starsHtml(r.rating)}
-      <p class="lgr-text">${escapeHtml(r.text)}</p>
-    </article>`;
+function initialsAvatar(r: Review): HTMLElement {
+  return el("div", "crs-avatar crs-avatar-fallback", initials(r.author_name));
 }
 
-function widgetHtml(data: Payload): string {
-  const cards = data.reviews.map(reviewCard).join("");
-  return `
-    <section class="lgr-widget" dir="rtl">
-      <header class="lgr-header">
-        <img class="lgr-logo" src="https://cdn.trustindex.io/assets/platform/Google/logo.svg" alt="Google" width="120" height="20" />
-        <div class="lgr-summary">
-          <strong class="lgr-rating-num">${data.rating.toFixed(1)}</strong>
-          ${starsHtml(data.rating)}
-          <span class="lgr-total">מבוסס על ${data.total.toLocaleString("he-IL")} ביקורות</span>
-        </div>
-      </header>
-      <div class="lgr-grid">${cards}</div>
-    </section>`;
+function avatar(r: Review): HTMLElement {
+  if (!r.profile_photo_url) return initialsAvatar(r);
+  const img = el("img", "crs-avatar");
+  img.src = r.profile_photo_url;
+  img.alt = r.author_name;
+  img.loading = "lazy";
+  img.referrerPolicy = "no-referrer";
+  img.addEventListener("error", () => img.replaceWith(initialsAvatar(r)), { once: true });
+  return img;
+}
+
+function reviewCard(r: Review): HTMLElement {
+  const slide = el("div", "crs-slide");
+  const card = el("div", "crs-card");
+
+  const head = el("div", "crs-card-head");
+  const gicon = el("img", "crs-gicon");
+  gicon.src = GOOGLE_ICON;
+  gicon.alt = "Google";
+  gicon.width = 22;
+  gicon.height = 22;
+  gicon.loading = "lazy";
+
+  const who = el("div", "crs-who");
+  who.appendChild(el("div", "crs-name", r.author_name));
+  who.appendChild(el("div", "crs-date", r.relative_time));
+
+  // RTL flex order: first child renders rightmost. Avatar right, G icon left.
+  head.appendChild(avatar(r));
+  head.appendChild(who);
+  head.appendChild(gicon);
+
+  const stars = el("div", "crs-stars");
+  const check = el("span", "crs-check");
+  check.title = "ביקורת מאומתת";
+  check.setAttribute("role", "img");
+  check.setAttribute("aria-label", "ביקורת מאומתת");
+  stars.appendChild(check);
+  stars.appendChild(starsRow(r.rating, "crs-starlist"));
+
+  const body = el("div", "crs-body");
+  const text = el("p", "crs-text", r.text);
+  body.appendChild(text);
+
+  card.appendChild(head);
+  card.appendChild(stars);
+  card.appendChild(body);
+
+  requestAnimationFrame(() => {
+    if (text.scrollHeight > text.clientHeight + 2) {
+      const more = el("button", "crs-more", "קרא עוד");
+      more.type = "button";
+      more.addEventListener("click", () => {
+        text.classList.add("crs-text-open");
+        more.remove();
+      });
+      body.appendChild(more);
+    }
+  });
+
+  slide.appendChild(card);
+  return slide;
+}
+
+function header(data: Payload): HTMLElement {
+  const head = el("div", "crs-widget-head");
+  head.appendChild(starsRow(data.rating, "crs-hstars"));
+  if (data.total > 0) {
+    head.appendChild(
+      el("div", "crs-total", `מבוסס על ${data.total.toLocaleString("he-IL")} ביקורות`),
+    );
+  }
+  const logo = el("img", "crs-glogo");
+  logo.src = GOOGLE_LOGO;
+  logo.alt = "Google";
+  logo.width = 180;
+  logo.height = 60;
+  head.appendChild(logo);
+  return head;
+}
+
+function wireCarousel(
+  track: HTMLElement,
+  prev: HTMLButtonElement,
+  next: HTMLButtonElement,
+  count: number,
+) {
+  let pos = 0;
+
+  const visible = () => {
+    const w = window.innerWidth;
+    return w <= 640 ? 1 : w <= 1024 ? 2 : 3;
+  };
+  const maxPos = () => Math.max(0, count - visible());
+
+  const render = () => {
+    const slide = track.firstElementChild as HTMLElement | null;
+    const step = slide ? slide.offsetWidth + GAP : 0;
+    track.style.transform = `translateX(${pos * step}px)`;
+    prev.disabled = pos <= 0;
+    next.disabled = pos >= maxPos();
+  };
+
+  prev.addEventListener("click", () => {
+    if (pos > 0) {
+      pos--;
+      render();
+    }
+  });
+  next.addEventListener("click", () => {
+    if (pos < maxPos()) {
+      pos++;
+      render();
+    }
+  });
+  window.addEventListener("resize", () => {
+    if (pos > maxPos()) pos = maxPos();
+    render();
+  });
+
+  requestAnimationFrame(render);
+}
+
+function buildWidget(data: Payload): HTMLElement {
+  const mount = el("div", "crs-mount");
+  mount.dir = "rtl";
+  mount.appendChild(header(data));
+
+  const outer = el("div", "crs-outer");
+  const viewport = el("div", "crs-viewport");
+  const track = el("div", "crs-track");
+  data.reviews.forEach((r) => track.appendChild(reviewCard(r)));
+  viewport.appendChild(track);
+
+  const prev = el("button", "crs-btn crs-prev", "❯");
+  prev.type = "button";
+  prev.setAttribute("aria-label", "ביקורות קודמות");
+  const next = el("button", "crs-btn crs-next", "❮");
+  next.type = "button";
+  next.setAttribute("aria-label", "ביקורות הבאות");
+
+  outer.appendChild(viewport);
+  outer.appendChild(prev);
+  outer.appendChild(next);
+  mount.appendChild(outer);
+
+  wireCarousel(track, prev, next, data.reviews.length);
+  return mount;
 }
 
 function updateRpiBadge(data: Payload) {
   const badge = document.querySelector("#rpi-6226-static .rpi-badge-cnt");
   if (!badge) return;
   const based = badge.querySelector(".rpi-based");
-  if (based) based.textContent = `מבוסס על ${data.total.toLocaleString("he-IL")} ביקורות`;
+  if (based && data.total > 0) {
+    based.textContent = `מבוסס על ${data.total.toLocaleString("he-IL")} ביקורות`;
+  }
   const stars = badge.querySelector(".rpi-stars") as HTMLElement | null;
   if (stars) {
     stars.style.setProperty("--rating", data.rating.toFixed(1));
@@ -93,49 +213,71 @@ function updateRpiBadge(data: Payload) {
   }
 }
 
-let inflight: Promise<void> | null = null;
-
-export function mountLiveGoogleReviews(root: Document | HTMLElement = document): void {
-  // Find the trustindex widget container(s) on the page
-  const targets = Array.from(
-    root.querySelectorAll<HTMLElement>(".elementor-shortcode pre.ti-widget, .elementor-shortcode > pre.ti-widget"),
+function findAnchors(root: Document | HTMLElement): HTMLElement[] {
+  const pre = Array.from(
+    root.querySelectorAll<HTMLElement>(".elementor-shortcode pre.ti-widget"),
   );
-  // Also match rendered ti-widget-container if trustindex already hydrated
-  const rendered = Array.from(
-    root.querySelectorAll<HTMLElement>(".ti-widget-container"),
-  );
-  const anchors: HTMLElement[] = [];
-  if (targets.length) anchors.push(...targets);
-  else if (rendered.length) anchors.push(...rendered);
+  if (pre.length) return pre;
+  return Array.from(root.querySelectorAll<HTMLElement>(".ti-widget-container"));
+}
 
-  if (!anchors.length && !document.getElementById("rpi-6226-static")) return;
+function mountWidget(anchors: HTMLElement[], data: Payload) {
+  anchors.forEach((a) => {
+    const shortcode = a.closest(".elementor-shortcode") as HTMLElement | null;
+    const host = shortcode ?? a;
+    host.replaceChildren(buildWidget(data));
+  });
+  updateRpiBadge(data);
+}
 
-  if (inflight) return;
-  inflight = (async () => {
+const FALLBACK: Payload = {
+  rating: SEED_RATING,
+  total: SEED_TOTAL,
+  reviews: SEED_REVIEWS,
+};
+
+let fetchPromise: Promise<Payload> | null = null;
+
+function fetchData(): Promise<Payload> {
+  if (fetchPromise) return fetchPromise;
+  fetchPromise = (async () => {
     try {
       const res = await fetch("/api/public/google-reviews");
-      if (!res.ok) return;
+      if (!res.ok) return FALLBACK;
       const data = (await res.json()) as Payload;
-      if (!data.reviews || !data.reviews.length) return;
-
-      // Replace each trustindex widget with our own
-      anchors.forEach((a) => {
-        const wrap = document.createElement("div");
-        wrap.className = "lgr-mount";
-        wrap.innerHTML = widgetHtml(data);
-        // Replace nearest .elementor-shortcode ancestor content if present
-        const shortcode = a.closest(".elementor-shortcode") as HTMLElement | null;
-        if (shortcode) {
-          shortcode.innerHTML = "";
-          shortcode.appendChild(wrap);
-        } else {
-          a.replaceWith(wrap);
-        }
-      });
-
-      updateRpiBadge(data);
+      if (!data.reviews?.length) return FALLBACK;
+      return data;
     } catch {
-      // fallback: leave existing widget intact
+      return FALLBACK;
     }
   })();
+  return fetchPromise;
+}
+
+let mounted = false;
+
+function tryMount(root: Document | HTMLElement): boolean {
+  if (mounted) return true;
+  const anchors = findAnchors(root);
+  if (!anchors.length) return false;
+  mounted = true;
+  fetchData().then((data) => {
+    const live = findAnchors(root);
+    mountWidget(live.length ? live : anchors, data);
+  });
+  return true;
+}
+
+export function mountLiveGoogleReviews(root: Document | HTMLElement = document): void {
+  if (tryMount(root)) return;
+  if (typeof MutationObserver === "undefined") return;
+
+  const target = root instanceof Document ? root.body : root;
+  if (!target) return;
+
+  const observer = new MutationObserver(() => {
+    if (tryMount(root)) observer.disconnect();
+  });
+  observer.observe(target, { childList: true, subtree: true });
+  window.setTimeout(() => observer.disconnect(), 15000);
 }

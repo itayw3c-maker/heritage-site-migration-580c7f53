@@ -2,11 +2,121 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import mainHtml from "@/generated/main.html?raw";
 import { getSeoRecord } from "@/lib/seo.functions";
-import { buildSeoHead } from "@/lib/seo-head";
+import { augmentHomepagePrivateSeo, buildSeoHead } from "@/lib/seo-head";
 import { mountLiveGoogleReviews } from "@/lib/live-google-reviews";
+import { improveMigratedHtml } from "@/lib/migrated-html";
+
+const homepageCardImages = [
+  { alt: "נזקי-אש (1)", src: "/assets/home-cards/fire-damage-448.webp", width: 448, height: 315 },
+  { alt: "הערכת עתיקות שולחן וכיסא", src: "/assets/home-cards/antiques-355.webp", width: 355, height: 631 },
+  { alt: "שמאי נזקי התנגשות", src: "/assets/home-cards/collision-448.webp", width: 448, height: 207 },
+  {
+    alt: "תמונתהמחשה לנזקי טבע ושטפונות",
+    src: "/assets/home-cards/natural-disaster-355.webp",
+    width: 355,
+    height: 473,
+  },
+  { alt: "נזקי שוכרים", src: "/assets/home-cards/tenant-damage-355.webp", width: 355, height: 266 },
+  { alt: "שמאי רכוש באשדוד", src: "/assets/home-cards/ashdod-appraiser-535.webp", width: 535, height: 315 },
+  {
+    alt: "הערכת שווי רכוש",
+    src: "/assets/home-cards/property-valuation-362.webp",
+    width: 362,
+    height: 315,
+  },
+  {
+    alt: "נזקי עבודות קבלן",
+    src: "/assets/home-cards/contractor-damage-556.webp",
+    width: 556,
+    height: 315,
+  },
+  { alt: "ארז אריה מהנדס ושמאי", src: "/assets/home-cards/erez-aria-300.webp", width: 300, height: 300 },
+  {
+    alt: "נזקי מים הצפה ורטיבות",
+    src: "/assets/home-cards/water-damage-420.webp",
+    width: 420,
+    height: 315,
+  },
+] as const;
+
+function optimizeHomepageCardImages(html: string): string {
+  return homepageCardImages.reduce((result, image) => {
+    const escapedAlt = image.alt.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const imagePattern = new RegExp(`<img\\b(?=[^>]*\\balt=["']${escapedAlt}["'])[^>]*>`, "i");
+    return result.replace(imagePattern, (tag) =>
+      tag
+        .replace(/\bsrc=["'][^"']*["']/i, `src="${image.src}"`)
+        .replace(/\bdata-lazy-src=["'][^"']*["']/i, `data-lazy-src="${image.src}"`)
+        .replace(/\s+(?:data-lazy-)?srcset=["'][^"']*["']/gi, "")
+        .replace(/\s+(?:data-lazy-)?sizes=["'][^"']*["']/gi, "")
+        .replace(/\bwidth=["'][^"']*["']/i, `width="${image.width}"`)
+        .replace(/\bheight=["'][^"']*["']/i, `height="${image.height}"`),
+    );
+  }, html);
+}
+
+// Lighthouse identifies this background as the homepage LCP element. Keeping
+// the URL only behind an Elementor CSS variable delays discovery even with a
+// preload hint, so expose the identical image directly in the SSR HTML.
+const optimizedMainHtml = optimizeHomepageCardImages(improveMigratedHtml(mainHtml, "דף הבית של רפאל שמאות רכוש")
+  .replace(
+    'data-id="dabb116"',
+    'data-id="dabb116" style="background-image:url(\'/wp-content/uploads/2025/12/bg_main.webp\')"',
+  )
+  // These below-the-fold cards used oversized legacy JPEGs. The equivalent
+  // WebP files preserve their dimensions and appearance while cutting the
+  // transferred image bytes, especially for the 1280×900 fire-damage card.
+  .replaceAll(
+    "/wp-content/uploads/elementor/thumbs/נזקי-אש-1-rmdcgmgj73nf9ua44y4v598m26881is5uyrn4b2ey0.jpg",
+    "/wp-content/uploads/elementor/thumbs/נזקי-אש-1-rmdcgmgj73nf9ua44y4v598m26881is5uyrn4b2ey0.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/04/תמונת-המחשה-לנזקי-טבע-ושטפונות_600x800.jpg",
+    "/wp-content/uploads/2026/04/תמונת-המחשה-לנזקי-טבע-ושטפונות_600x800.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/04/תמונת-המחשה-לנזקי-טבע-ושטפונות_600x800-225x300.jpg",
+    "/wp-content/uploads/2026/04/תמונת-המחשה-לנזקי-טבע-ושטפונות_600x800-225x300.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/04/שמאי-נזקי-התנגשות-2.jpg",
+    "/wp-content/uploads/2026/04/שמאי-נזקי-התנגשות-2.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/04/שמאי-נזקי-התנגשות-2-768x354.jpg",
+    "/wp-content/uploads/2026/04/שמאי-נזקי-התנגשות-2-768x354.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/04/שמאי-נזקי-התנגשות-2-300x138.jpg",
+    "/wp-content/uploads/2026/04/שמאי-נזקי-התנגשות-2-300x138.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/03/נזקי-עבודות-קבלן.jpg",
+    "/wp-content/uploads/2026/03/נזקי-עבודות-קבלן.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/03/נזקי-עבודות-קבלן-768x435.jpg",
+    "/wp-content/uploads/2026/03/נזקי-עבודות-קבלן-768x435.webp",
+  )
+  .replaceAll(
+    "/wp-content/uploads/2026/03/נזקי-עבודות-קבלן-300x170.jpg",
+    "/wp-content/uploads/2026/03/נזקי-עבודות-קבלן-300x170.webp",
+  ));
+
+const privateAppraiserAnswer = `<section class="rr-video-summary rr-direct-answer" aria-label="תשובה מהירה על שמאי פרטי">
+  <h2>מתי צריך שמאי פרטי ומה ההבדל בינו לבין שמאי חברת הביטוח?</h2>
+  <p><strong>התשובה הקצרה:</strong> שמאי פרטי מתאים כאשר נדרש תיעוד עצמאי של נזק, הערכת עלויות או חוות דעת מטעם בעל הנכס או המבוטח, במיוחד לפני תיקון משמעותי או כשקיימת מחלוקת על היקף הנזק.</p>
+  <h3>מה עושה שמאי נזקים?</h3>
+  <p>שמאי נזקים בודק את מקור האירוע והיקפו, מפריד בין נזקי מבנה, תכולה ומערכות, מתעד ממצאים, בוחן מסמכים והצעות מחיר ומעריך את עלות השבת המצב לקדמותו. חוות הדעת יכולה לשמש בתביעת ביטוח, בדרישת פיצוי או במחלוקת על היקף הנזק.</p>
+  <h3>מה ההבדל משמאי חברת הביטוח?</h3>
+  <p>שמאי חברת הביטוח פועל במסגרת המינוי שקיבל ממנה. שמאי פרטי נשכר בידי בעל הנכס או המבוטח כדי להכין הערכה וחוות דעת עצמאית מטעמו; עצם הזמנתו אינה מבטיחה פיצוי, והכיסוי מוכרע לפי הפוליסה והנסיבות.</p>
+  <p><strong>מידע משלים:</strong> <a href="/private-appraiser/">מדריך שמאי פרטי</a> · <a href="/public-vs-company-adjuster/">שמאי פרטי מול שמאי חברת הביטוח</a> · <a href="/ייעוץ-וליווי-תביעות-ביטוח/">ליווי תביעות ביטוח</a></p>
+</section>`;
 
 export const Route = createFileRoute("/")({
-  loader: async () => ({ seo: await getSeoRecord({ data: { path: "" } }) }),
+  loader: async () => ({
+    seo: augmentHomepagePrivateSeo(await getSeoRecord({ data: { path: "" } })),
+  }),
   head: ({ loaderData }) => {
     const base = buildSeoHead(loaderData?.seo);
     return {
@@ -49,5 +159,5 @@ function Index() {
     };
   }, []);
 
-  return <div dangerouslySetInnerHTML={{ __html: mainHtml }} />;
+  return <div dangerouslySetInnerHTML={{ __html: optimizedMainHtml + privateAppraiserAnswer }} />;
 }

@@ -19,6 +19,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { AccessibilityWidget } from "@/components/AccessibilityWidget";
 import { CookieBanner } from "@/components/CookieBanner";
 import { SocialRatingFloat } from "@/components/SocialRatingFloat";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { enhanceElementor } from "@/lib/elementor-enhance";
 import { hydrateFixDigital } from "@/lib/fixdigital";
 import { rememberPasswordRecovery } from "@/lib/password-recovery-flag";
@@ -123,12 +124,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "רפאל שמאות רכוש | RR - ניהול תביעות ביטוח, הערכת נזקים" },
       {
         property: "og:description",
-        content: "רפאל שמאות רכוש - שמאי רכוש פרטי לניהול תביעות ביטוח, הערכת נזקים, ייעוץ וליווי מול חברות הביטוח.",
+        content:
+          "רפאל שמאות רכוש - שמאי רכוש פרטי לניהול תביעות ביטוח, הערכת נזקים, ייעוץ וליווי מול חברות הביטוח.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "רפאל שמאות רכוש | RR - ניהול תביעות ביטוח, הערכת נזקים" },
-      { name: "twitter:description", content: "רפאל שמאות רכוש - שמאי רכוש פרטי לניהול תביעות ביטוח, הערכת נזקים, ייעוץ וליווי מול חברות הביטוח." },
+      {
+        name: "twitter:description",
+        content:
+          "רפאל שמאות רכוש - שמאי רכוש פרטי לניהול תביעות ביטוח, הערכת נזקים, ייעוץ וליווי מול חברות הביטוח.",
+      },
       { property: "og:image", content: "https://www.rrshamaut.co.il/og-cover.png" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
@@ -138,7 +144,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon.ico", sizes: "any" },
       { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png" },
       { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
-      { rel: "icon", type: "image/png", sizes: "192x192", href: "/wp-content/uploads/2024/04/Vector-2.png" },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "192x192",
+        href: "/wp-content/uploads/2024/04/Vector-2.png",
+      },
       { rel: "apple-touch-icon", href: "/wp-content/uploads/2024/04/Vector-2.png" },
       { rel: "stylesheet", href: appCss },
       {
@@ -171,7 +182,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           legalName: "רפאל שמאות רכוש - שמאי רכוש",
           url: "https://www.rrshamaut.co.il/",
           logo: "https://www.rrshamaut.co.il/wp-content/uploads/2024/04/%D7%9C%D7%95%D7%92%D7%95.png",
-          image: "https://www.rrshamaut.co.il/wp-content/uploads/2024/04/%D7%9C%D7%95%D7%92%D7%95.png",
+          image:
+            "https://www.rrshamaut.co.il/wp-content/uploads/2024/04/%D7%9C%D7%95%D7%92%D7%95.png",
           description:
             "משרד שמאי רכוש פרטי ובלתי תלוי המתמחה בהערכת נזקי רכוש וניהול תביעות ביטוח עבור לקוחות פרטיים ועסקיים, ייצוג מול חברות הביטוח.",
           telephone: "+972-77-805-1266",
@@ -265,7 +277,11 @@ function RootShell({ children }: { children: ReactNode }) {
     "else{window.addEventListener('load',function(){('requestIdleCallback'in window)?requestIdleCallback(add,{timeout:2000}):setTimeout(add,200);});}})();";
   const fixdigitalHead =
     "var fixdigital_params = { defaultphone:'', phoneSelector:'.fix_smartphone, .fix_smartphone1 , .fix_smartphone2', phoneSelectorHref:'.fix_smartphone_href, .fix_smartphone_href1 , .fix_smartphone_href2', api_type: 8, api_clientkey: '25634', api_projectid: '14114', api_projecttypeid: '4', sync:true, forms:[], cookie_expired:43200 };\n" +
-    "!function(e){if(e.fixdigital=e.fixdigital||{},!e.fixdigital.cookie){e.fixdigital.cookie=e.fixdigital.cookie||{};var i,r=e.fixdigital.cookie;r.cookie_query=\"fixdigital.queryparams\",r.cookie_hash=\"fixdigital.hashparams\",r.cookie_referer=\"fixdigital.referer\",r.cookie_original_referer=\"fixdigital.origin_referer\",r.cookie_expired=10,r.cookie_original_expired=e.fixdigital_params.cookie_expired,r.crossdomain=(i=function(e){var i=e.split(\".\");\"www\"!==i[0]&&\"m\"!==i[0]&&\"mobile\"!==i[0]||i.shift();return i.join(\".\")}(location.hostname),\".\"+location.hostname.substring(location.hostname.indexOf(i))),r.getCookie=function(e){var i=document.cookie.match(new RegExp(\"(?:^|; )\"+e.replace(/([\\.$?*|{}\\(\\)\\[\\]\\\\\\/\\+^])/g,\"\\\\$1\")+\"=([^;]*)\"));return i?decodeURIComponent(i[1]):void 0},r.deleteCookie=function(e){for(var i=r.crossdomain.split(\".\");i&&0<i.length;){var o=i.join(\".\");r.setCookie(e,\"\",{expires:-1,domain:o,path:\"/\"}),i.shift()}},r.setCookie=function(e,i,o){var r=(o=o||{}).expires;if(\"number\"==typeof r&&r){var a=new Date;a.setTime(a.getTime()+1e3*r),r=o.expires=a}r&&r.toUTCString&&(o.expires=r.toUTCString());var t=e+\"=\"+(i=encodeURIComponent(i));for(var n in o){t+=\"; \"+n;var c=o[n];!0!==c&&(t+=\"=\"+c)}document.cookie=t},void 0===r.getCookie(r.cookie_referer)&&(r.setCookie(r.cookie_query,location.search,{expires:r.cookie_expired,domain:r.crossdomain}),r.setCookie(r.cookie_hash,location.hash,{expires:r.cookie_expired,domain:r.crossdomain}),r.setCookie(r.cookie_referer,document.referrer,{expires:r.cookie_expired,domain:r.crossdomain}))}}(window);";
+    '!function(e){if(e.fixdigital=e.fixdigital||{},!e.fixdigital.cookie){e.fixdigital.cookie=e.fixdigital.cookie||{};var i,r=e.fixdigital.cookie;r.cookie_query="fixdigital.queryparams",r.cookie_hash="fixdigital.hashparams",r.cookie_referer="fixdigital.referer",r.cookie_original_referer="fixdigital.origin_referer",r.cookie_expired=10,r.cookie_original_expired=e.fixdigital_params.cookie_expired,r.crossdomain=(i=function(e){var i=e.split(".");"www"!==i[0]&&"m"!==i[0]&&"mobile"!==i[0]||i.shift();return i.join(".")}(location.hostname),"."+location.hostname.substring(location.hostname.indexOf(i))),r.getCookie=function(e){var i=document.cookie.match(new RegExp("(?:^|; )"+e.replace(/([\\.$?*|{}\\(\\)\\[\\]\\\\\\/\\+^])/g,"\\\\$1")+"=([^;]*)"));return i?decodeURIComponent(i[1]):void 0},r.deleteCookie=function(e){for(var i=r.crossdomain.split(".");i&&0<i.length;){var o=i.join(".");r.setCookie(e,"",{expires:-1,domain:o,path:"/"}),i.shift()}},r.setCookie=function(e,i,o){var r=(o=o||{}).expires;if("number"==typeof r&&r){var a=new Date;a.setTime(a.getTime()+1e3*r),r=o.expires=a}r&&r.toUTCString&&(o.expires=r.toUTCString());var t=e+"="+(i=encodeURIComponent(i));for(var n in o){t+="; "+n;var c=o[n];!0!==c&&(t+="="+c)}document.cookie=t},void 0===r.getCookie(r.cookie_referer)&&(r.setCookie(r.cookie_query,location.search,{expires:r.cookie_expired,domain:r.crossdomain}),r.setCookie(r.cookie_hash,location.hash,{expires:r.cookie_expired,domain:r.crossdomain}),r.setCookie(r.cookie_referer,document.referrer,{expires:r.cookie_expired,domain:r.crossdomain}))}}(window);';
+  const analyticsHead =
+    "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}window.gtag=gtag;" +
+    "gtag('consent','default',{analytics_storage:localStorage.getItem('sgcc-accepted')==='1'?'granted':'denied',wait_for_update:500});" +
+    "gtag('js',new Date());gtag('config','G-LEW836W718',{send_page_view:false,anonymize_ip:true});";
   return (
     <html lang="he-IL" dir="rtl">
       <head>
@@ -282,6 +298,8 @@ function RootShell({ children }: { children: ReactNode }) {
             /fonts/) replaces the blocking fonts.googleapis.com stylesheet,
             removing a third-party RTT from the critical path. */}
         <style dangerouslySetInnerHTML={{ __html: fontFaceCss }} />
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-LEW836W718" />
+        <script dangerouslySetInnerHTML={{ __html: analyticsHead }} />
         <script dangerouslySetInnerHTML={{ __html: fixdigitalHead }} />
         {/* FixDigital integrate.js — MUST load in standard order
             (params → cookie IIFE → integrate.js), synchronously, so that
@@ -321,13 +339,14 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {!isAdmin && <SiteHeader />}
-      <div id="main-content" tabIndex={-1}>
+      <main id="main-content" tabIndex={-1}>
         <Outlet />
-      </div>
+      </main>
       {!isAdmin && <SiteFooter />}
       {!isAdmin && <AccessibilityWidget />}
       {!isAdmin && <CookieBanner />}
       {!isAdmin && <SocialRatingFloat />}
+      {!isAdmin && <GoogleAnalytics />}
     </QueryClientProvider>
   );
 }

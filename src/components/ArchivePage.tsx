@@ -3,6 +3,7 @@ import categoryWrap from "@/generated/archives/category.html?raw";
 import shortsWrap from "@/generated/archives/shorts.html?raw";
 import successWrap from "@/generated/archives/success.html?raw";
 import { enhanceElementor } from "@/lib/elementor-enhance";
+import { improveMigratedHtml } from "@/lib/migrated-html";
 
 export type ArchiveKind = "category" | "shorts" | "success";
 
@@ -60,6 +61,12 @@ const DESCRIPTIONS: Record<ArchiveKind, string> = {
     "סיפורי הצלחה של לקוחות רפאל שמאות רכוש בטיפול בתביעות ביטוח והערכות נזקים.",
 };
 
+const ARCHIVE_HEADINGS: Record<ArchiveKind, string> = {
+  category: "מאמרים ומידע מקצועי בנושא שמאות רכוש",
+  shorts: "סרטונים קצרים והסברים מקצועיים",
+  success: "סיפורי הצלחה בתביעות ביטוח ושמאות רכוש",
+};
+
 function setMetaDescription(content: string) {
   let el = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
   if (!el) {
@@ -88,7 +95,7 @@ function categoryCard(p: IndexPost): string {
   const thumb = p.thumbnail
     ? `<a class="elementor-post__thumbnail__link" href="${escAttr(href)}" tabindex="-1"><div class="elementor-post__thumbnail"><img src="${escAttr(p.thumbnail)}" alt="${escAttr(p.title)}" loading="lazy" /></div></a>`
     : "";
-  return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry ${catCls}" role="listitem">
+  return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry ${catCls}">
     <div class="elementor-post__card">
       ${thumb}
       <div class="elementor-post__text">
@@ -111,7 +118,7 @@ function categoryRelated(p: IndexPost): string {
   const thumb = p.thumbnail
     ? `<a class="elementor-post__thumbnail__link" href="${escAttr(href)}" tabindex="-1"><div class="elementor-post__thumbnail"><img src="${escAttr(p.thumbnail)}" alt="${escAttr(p.title)}" loading="lazy" /></div></a>`
     : "";
-  return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry" role="listitem">
+  return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry">
 ${thumb}
 <div class="elementor-post__text">
 <div class="elementor-post__title"><a href="${escAttr(href)}">${p.title}</a></div>
@@ -280,7 +287,7 @@ export function ArchivePage({
       const relatedPool = posts.filter((x) => !slice.some((s) => s.slug === x.slug));
       relatedHtml = relatedPool.slice(0, 4).map(categoryRelated).join("\n");
     }
-    return WRAPPERS[kind]
+    return improveMigratedHtml(WRAPPERS[kind], TITLES[kind])
       .split("__HOLE_ITEMS__").join(itemsHtml)
       .split("__HOLE_PAGINATION__").join(pagHtml)
       .split("__HOLE_RELATED_1__").join(relatedHtml);
@@ -296,10 +303,19 @@ export function ArchivePage({
   }, [kind, html, page]);
 
   if (err) {
-    return <div style={{ padding: "4rem 1rem", textAlign: "center" }}>שגיאה בטעינת הארכיון</div>;
+    return (
+      <div style={{ padding: "4rem 1rem", textAlign: "center" }}>
+        <h1>{ARCHIVE_HEADINGS[kind]}</h1>
+        <p role="alert">שגיאה בטעינת הארכיון</p>
+      </div>
+    );
   }
   if (!index) {
-    return <div style={{ minHeight: "60vh" }} />;
+    return (
+      <div style={{ minHeight: "60vh" }} aria-busy="true">
+        <h1 className="rr-sr-only">{ARCHIVE_HEADINGS[kind]}</h1>
+      </div>
+    );
   }
   return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }

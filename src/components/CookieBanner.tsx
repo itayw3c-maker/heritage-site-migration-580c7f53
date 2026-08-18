@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { grantAnalyticsConsent } from "@/lib/analytics";
 
 const STORAGE_KEY = "sgcc-accepted";
 
@@ -19,6 +20,7 @@ export function CookieBanner() {
     } catch {
       /* noop */
     }
+    grantAnalyticsConsent();
     setVisible(false);
   };
 
@@ -50,7 +52,8 @@ export function CookieBanner() {
           </span>
           <div className="message-block">
             <p>
-              באתר זה נעשה שימוש בעוגיות וטכנולוגיות איסוף מידע לחוויית גלישה משופרת ומטרות סטטיסטיקה ושיווק. המשך הגלישה מהווה הסכמתך ל
+              באתר זה נעשה שימוש בעוגיות וטכנולוגיות איסוף מידע לחוויית גלישה משופרת ומטרות
+              סטטיסטיקה ושיווק. המשך הגלישה מהווה הסכמתך ל
               <a
                 target="_blank"
                 rel="noopener noreferrer"

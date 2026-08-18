@@ -1,20 +1,32 @@
 import { createFileRoute } from "@tanstack/react-router";
+import {
+  SEED_REVIEWS,
+  SEED_RATING,
+  SEED_TOTAL,
+  type Review,
+} from "@/lib/google-reviews-seed";
 
 const PLACE_ID = "ChIJRSmMi4xWVSURJZWuczwr72w";
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6h
 
-type Review = {
-  author_name: string;
-  rating: number;
-  text: string;
-  relative_time: string;
-  time: number;
-  profile_photo_url: string;
-};
 type Payload = {
   rating: number;
   total: number;
   reviews: Review[];
+};
+
+// The Places API only ever returns 5 reviews. Merge them over the full seed set
+// (scraped from the live Trustindex widget) so the carousel always shows the
+// whole wall, with fresh API copy winning for any reviewer present in both.
+function mergeWithSeed(live: Review[]): Review[] {
+  const seen = new Set(live.map((r) => r.author_name));
+  return [...live, ...SEED_REVIEWS.filter((r) => !seen.has(r.author_name))];
+}
+
+const FALLBACK: Payload = {
+  rating: SEED_RATING,
+  total: SEED_TOTAL,
+  reviews: SEED_REVIEWS,
 };
 
 let cache: { at: number; data: Payload } | null = null;
@@ -67,9 +79,9 @@ async function fetchLive(apiKey: string): Promise<Payload> {
     profile_photo_url: r.authorAttribution?.photoUri || "",
   }));
   return {
-    rating: data.rating ?? 5,
-    total: data.userRatingCount ?? 0,
-    reviews,
+    rating: data.rating ?? SEED_RATING,
+    total: data.userRatingCount ?? SEED_TOTAL,
+    reviews: mergeWithSeed(reviews),
   };
 }
 
@@ -80,9 +92,9 @@ export const Route = createFileRoute("/api/public/google-reviews")({
       GET: async () => {
         const apiKey = process.env.GOOGLE_PLACES_API_KEY;
         if (!apiKey) {
-          // No key configured — return empty payload so the client falls back
-          // to static reviews without triggering a runtime error.
-          return json({ rating: 5, total: 0, reviews: [], disabled: true });
+          // No key configured — serve the seed wall so the carousel still shows
+          // real social proof rather than triggering a runtime error.
+          return json({ ...FALLBACK, disabled: true });
         }
         const now = Date.now();
         if (cache && now - cache.at < CACHE_TTL_MS) {
@@ -93,8 +105,10 @@ export const Route = createFileRoute("/api/public/google-reviews")({
           cache = { at: now, data };
           return json({ ...data, cached: false });
         } catch (err) {
-          if (cache) return json({ ...cache.data, cached: true, stale: true });
-          return json({ rating: 5, total: 0, reviews: [], error: (err as Error).message });
+          if (cache) {
+            return json({ ...cache.data, cached: true, stale: true });
+          }
+          return json({ ...FALLBACK, error: (err as Error).message });
         }
       },
     },
