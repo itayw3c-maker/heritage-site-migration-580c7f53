@@ -1096,8 +1096,8 @@ html, body {
 }
 .crs-more:hover { color: #202124 !important; text-decoration: underline; }
 
-/* Lighthouse contrast hardening: retain the brand palette while ensuring
-   readable text on white cards and gold calls to action. */
+/* Keep supporting text readable without overriding the site's established
+   light-gold button palette. */
 .crs-date,
 .crs-more {
   color: #4f565d !important;
@@ -1107,8 +1107,8 @@ html, body {
 button.elementor-button,
 .elementor-widget-button .elementor-button,
 .elementor-element-videos-all .elementor-button {
-  background-color: #806400 !important;
-  border-color: #806400 !important;
+  background-color: #CBA436 !important;
+  border-color: #CBA436 !important;
   color: #ffffff !important;
 }
 
@@ -1116,8 +1116,8 @@ button.elementor-button,
 .elementor-button:focus-visible,
 button.elementor-button:hover,
 button.elementor-button:focus-visible {
-  background-color: #684f00 !important;
-  border-color: #684f00 !important;
+  background-color: #B8912D !important;
+  border-color: #B8912D !important;
   color: #ffffff !important;
 }
 
@@ -1130,11 +1130,10 @@ button.elementor-button:focus-visible {
   color: #5f4900 !important;
 }
 
-/* Homepage team cards use plain anchors styled as gold buttons rather than
-   Elementor button classes, so harden their contrast explicitly. */
+/* Homepage team cards use plain anchors styled as gold buttons. */
 .elementor-57 a[aria-label^="קראו עוד על"] {
-  background-color: #806400 !important;
-  border-color: #806400 !important;
+  background-color: #CBA436 !important;
+  border-color: #CBA436 !important;
   color: #ffffff !important;
 }
 
@@ -1522,13 +1521,13 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
   color: #ffffff;
 }
 .elementor-element-videos-all .elementor-button {
-  background-color: #806400 !important;
+  background-color: #CBA436 !important;
   color: #ffffff !important;
   fill: #ffffff !important;
 }
 .elementor-element-videos-all .elementor-button:hover,
 .elementor-element-videos-all .elementor-button:focus {
-  background-color: #684f00 !important;
+  background-color: #B8912D !important;
 }
 
 /* ============ FAQ page — topical grouping (/שאלות-תשובות/) ============
