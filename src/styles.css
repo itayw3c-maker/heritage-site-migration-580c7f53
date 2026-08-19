@@ -936,11 +936,27 @@ body.page-id-624 .elementor-element-6173dd1 > .elementor-container {
   gap: 20px;
 }
 
-/* Fix: overflow-x:hidden on html/body breaks position:sticky.
-   Use overflow-clip-margin/overflow:clip which prevents horizontal scroll without creating a scroll container. */
+/* Prevent horizontal overflow without turning <body> into a scroll container,
+   which would break position:sticky.
+
+   Two Safari/iOS traps this has to avoid:
+   1. Declaring `overflow-y: visible` next to a non-visible overflow-x makes the
+      visible axis compute to `auto` in Safari (Chrome special-cases clip and
+      keeps it visible). That gave <body> its own scroll container and left the
+      page unscrollable on iOS — the gallery page looked like it just ended
+      after two rows. So overflow-y is left alone entirely.
+   2. `overflow: clip` only exists from Safari 16. On older iOS the declaration
+      below is dropped, and Elementor's own `html, body { overflow-x: hidden }`
+      wins — the exact scroll-container bug we are avoiding. The @supports
+      fallback forces `visible` there instead: a page that can scroll but might
+      overflow sideways beats a page that cannot scroll at all. */
 html, body {
   overflow-x: clip !important;
-  overflow-y: visible !important;
+}
+@supports not (overflow: clip) {
+  html, body {
+    overflow-x: visible !important;
+  }
 }
 
 /* Header desktop sub-menus: fit long service items without truncating */
