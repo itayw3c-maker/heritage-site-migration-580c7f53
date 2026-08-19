@@ -21,6 +21,14 @@ export function CookieBanner() {
       /* noop */
     }
     grantAnalyticsConsent();
+    // FixDigital's cookie writer + call-tracking script are held back in <head>
+    // until this point, so start them as soon as the visitor accepts rather than
+    // making them wait for the next navigation.
+    try {
+      (window as unknown as { __fixdigitalBoot?: () => void }).__fixdigitalBoot?.();
+    } catch {
+      /* noop */
+    }
     setVisible(false);
   };
 

@@ -273,15 +273,31 @@ function RootShell({ children }: { children: ReactNode }) {
   const shellPathname = useRouterState({ select: (s) => s.location.pathname });
   const isHome = shellPathname === "/" || shellPathname === "";
   const deferHeavyCss =
-    "(function(){var h='/assets/elementor-heavy.css';" +
+    "(function(){var h='/assets/elementor-site.css';" +
     "function add(){if(document.querySelector('link[data-heavy-css]'))return;" +
     "var l=document.createElement('link');l.rel='stylesheet';l.href=h;" +
     "l.setAttribute('data-heavy-css','1');document.head.appendChild(l);}" +
     "if(document.readyState==='complete'){('requestIdleCallback'in window)?requestIdleCallback(add,{timeout:2000}):setTimeout(add,200);}" +
     "else{window.addEventListener('load',function(){('requestIdleCallback'in window)?requestIdleCallback(add,{timeout:2000}):setTimeout(add,200);});}})();";
+  // FixDigital writes first-party tracking cookies (referrer, query params) and
+  // then loads its call-tracking script. Both are gated on the same consent flag
+  // the analytics path already respects: previously the cookie IIFE ran in <head>
+  // on every visit, before the cookie banner had even mounted. The params object
+  // itself sets nothing, so it stays outside the gate; boot() preserves the
+  // required params -> cookie IIFE -> integrate.js order, and CookieBanner calls
+  // window.__fixdigitalBoot() the moment the visitor accepts.
   const fixdigitalHead =
     "var fixdigital_params = { defaultphone:'', phoneSelector:'.fix_smartphone, .fix_smartphone1 , .fix_smartphone2', phoneSelectorHref:'.fix_smartphone_href, .fix_smartphone_href1 , .fix_smartphone_href2', api_type: 8, api_clientkey: '25634', api_projectid: '14114', api_projecttypeid: '4', sync:true, forms:[], cookie_expired:43200 };\n" +
-    '!function(e){if(e.fixdigital=e.fixdigital||{},!e.fixdigital.cookie){e.fixdigital.cookie=e.fixdigital.cookie||{};var i,r=e.fixdigital.cookie;r.cookie_query="fixdigital.queryparams",r.cookie_hash="fixdigital.hashparams",r.cookie_referer="fixdigital.referer",r.cookie_original_referer="fixdigital.origin_referer",r.cookie_expired=10,r.cookie_original_expired=e.fixdigital_params.cookie_expired,r.crossdomain=(i=function(e){var i=e.split(".");"www"!==i[0]&&"m"!==i[0]&&"mobile"!==i[0]||i.shift();return i.join(".")}(location.hostname),"."+location.hostname.substring(location.hostname.indexOf(i))),r.getCookie=function(e){var i=document.cookie.match(new RegExp("(?:^|; )"+e.replace(/([\\.$?*|{}\\(\\)\\[\\]\\\\\\/\\+^])/g,"\\\\$1")+"=([^;]*)"));return i?decodeURIComponent(i[1]):void 0},r.deleteCookie=function(e){for(var i=r.crossdomain.split(".");i&&0<i.length;){var o=i.join(".");r.setCookie(e,"",{expires:-1,domain:o,path:"/"}),i.shift()}},r.setCookie=function(e,i,o){var r=(o=o||{}).expires;if("number"==typeof r&&r){var a=new Date;a.setTime(a.getTime()+1e3*r),r=o.expires=a}r&&r.toUTCString&&(o.expires=r.toUTCString());var t=e+"="+(i=encodeURIComponent(i));for(var n in o){t+="; "+n;var c=o[n];!0!==c&&(t+="="+c)}document.cookie=t},void 0===r.getCookie(r.cookie_referer)&&(r.setCookie(r.cookie_query,location.search,{expires:r.cookie_expired,domain:r.crossdomain}),r.setCookie(r.cookie_hash,location.hash,{expires:r.cookie_expired,domain:r.crossdomain}),r.setCookie(r.cookie_referer,document.referrer,{expires:r.cookie_expired,domain:r.crossdomain}))}}(window);';
+    "function __fixdigitalCookies(){" +
+    '!function(e){if(e.fixdigital=e.fixdigital||{},!e.fixdigital.cookie){e.fixdigital.cookie=e.fixdigital.cookie||{};var i,r=e.fixdigital.cookie;r.cookie_query="fixdigital.queryparams",r.cookie_hash="fixdigital.hashparams",r.cookie_referer="fixdigital.referer",r.cookie_original_referer="fixdigital.origin_referer",r.cookie_expired=10,r.cookie_original_expired=e.fixdigital_params.cookie_expired,r.crossdomain=(i=function(e){var i=e.split(".");"www"!==i[0]&&"m"!==i[0]&&"mobile"!==i[0]||i.shift();return i.join(".")}(location.hostname),"."+location.hostname.substring(location.hostname.indexOf(i))),r.getCookie=function(e){var i=document.cookie.match(new RegExp("(?:^|; )"+e.replace(/([\\.$?*|{}\\(\\)\\[\\]\\\\\\/\\+^])/g,"\\\\$1")+"=([^;]*)"));return i?decodeURIComponent(i[1]):void 0},r.deleteCookie=function(e){for(var i=r.crossdomain.split(".");i&&0<i.length;){var o=i.join(".");r.setCookie(e,"",{expires:-1,domain:o,path:"/"}),i.shift()}},r.setCookie=function(e,i,o){var r=(o=o||{}).expires;if("number"==typeof r&&r){var a=new Date;a.setTime(a.getTime()+1e3*r),r=o.expires=a}r&&r.toUTCString&&(o.expires=r.toUTCString());var t=e+"="+(i=encodeURIComponent(i));for(var n in o){t+="; "+n;var c=o[n];!0!==c&&(t+="="+c)}document.cookie=t},void 0===r.getCookie(r.cookie_referer)&&(r.setCookie(r.cookie_query,location.search,{expires:r.cookie_expired,domain:r.crossdomain}),r.setCookie(r.cookie_hash,location.hash,{expires:r.cookie_expired,domain:r.crossdomain}),r.setCookie(r.cookie_referer,document.referrer,{expires:r.cookie_expired,domain:r.crossdomain}))}}(window);' +
+    "}\n" +
+    "window.__fixdigitalBoot=function(){" +
+    "if(window.__fixdigitalBooted)return;window.__fixdigitalBooted=1;" +
+    "__fixdigitalCookies();" +
+    "var s=document.createElement('script');s.defer=true;" +
+    "s.src='https://lpc.fixdigital.co.il/external_files/scripts/clp/fixdigital_integrate.js';" +
+    "document.head.appendChild(s);};" +
+    "try{if(localStorage.getItem('sgcc-accepted')==='1')window.__fixdigitalBoot();}catch(e){}";
   const analyticsHead =
     "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}window.gtag=gtag;" +
     "gtag('consent','default',{analytics_storage:localStorage.getItem('sgcc-accepted')==='1'?'granted':'denied',wait_for_update:500});" +
@@ -296,7 +312,7 @@ function RootShell({ children }: { children: ReactNode }) {
             <script dangerouslySetInnerHTML={{ __html: deferHeavyCss }} />
           </>
         ) : (
-          <link rel="stylesheet" href="/assets/elementor-heavy.css" data-heavy-css="1" />
+          <link rel="stylesheet" href="/assets/elementor-site.css" data-heavy-css="1" />
         )}
         {/* Self-hosted fonts: inline @font-face (same-origin woff2 under
             /fonts/) replaces the blocking fonts.googleapis.com stylesheet,
@@ -304,15 +320,11 @@ function RootShell({ children }: { children: ReactNode }) {
         <style dangerouslySetInnerHTML={{ __html: fontFaceCss }} />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-LEW836W718" />
         <script dangerouslySetInnerHTML={{ __html: analyticsHead }} />
+        {/* FixDigital: params are declared here, but the cookie IIFE and
+            integrate.js only run via window.__fixdigitalBoot() once consent
+            exists. The required params → cookie IIFE → integrate.js order is
+            preserved inside boot(). */}
         <script dangerouslySetInnerHTML={{ __html: fixdigitalHead }} />
-        {/* FixDigital integrate.js — MUST load in standard order
-            (params → cookie IIFE → integrate.js), synchronously, so that
-            api_projectid / api_projecttypeid are bound before add-view
-            fires on DOMContentLoaded. Not async, not injected via effect. */}
-        <script
-          defer
-          src="https://lpc.fixdigital.co.il/external_files/scripts/clp/fixdigital_integrate.js"
-        />
       </head>
       <body className="rtl home wp-singular page-template page-template-elementor_header_footer page page-id-57 wp-custom-logo wp-embed-responsive wp-theme-hello-elementor eio-default manage-default ally-default esm-default hello-elementor-default elementor-default elementor-template-full-width elementor-kit-7 elementor-page elementor-page-57">
         {children}

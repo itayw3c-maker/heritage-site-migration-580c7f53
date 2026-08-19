@@ -71,7 +71,11 @@ async function run() {
 
   const results = await new PurgeCSS().purge({
     content: [...content, tmp],
-    css: [path.join(root, "public/assets/elementor-heavy.css")],
+    // Relative on purpose — see scripts/site-css.mjs. PurgeCSS's globber matches
+    // nothing when given an absolute path containing Hebrew characters or
+    // spaces, which this repo's directory has. It fails silently, so the guard
+    // below was quietly preserving a stale home-critical.css on every build.
+    css: ["public/assets/elementor-heavy.css"],
     safelist,
     fontFace: true,
     keyframes: false,
