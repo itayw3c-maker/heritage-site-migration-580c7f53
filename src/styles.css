@@ -1130,6 +1130,28 @@ button.elementor-button:focus-visible {
   color: #ffffff !important;
 }
 
+/* Lead-capture "השאירו פרטים" forms sit on a gold card (--e-global-color-33ec037).
+   The default gold submit button blends into that background, so give it the
+   site's navy blue instead wherever the card is gold. */
+.elementor-element-1e19f20 .elementor-button[type="submit"],
+.elementor-element-bd19157 .elementor-button[type="submit"],
+.elementor-element-52ffe1b .elementor-button[type="submit"] {
+  background-color: #056FC4 !important;
+  border-color: #056FC4 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(6, 55, 96, 0.35);
+}
+.elementor-element-1e19f20 .elementor-button[type="submit"]:hover,
+.elementor-element-1e19f20 .elementor-button[type="submit"]:focus-visible,
+.elementor-element-bd19157 .elementor-button[type="submit"]:hover,
+.elementor-element-bd19157 .elementor-button[type="submit"]:focus-visible,
+.elementor-element-52ffe1b .elementor-button[type="submit"]:hover,
+.elementor-element-52ffe1b .elementor-button[type="submit"]:focus-visible {
+  background-color: #045492 !important;
+  border-color: #045492 !important;
+  color: #ffffff !important;
+}
+
 .elementor-element-772c900 a,
 .elementor-element-1253eac a,
 .elementor-element-f5febf9 a,
