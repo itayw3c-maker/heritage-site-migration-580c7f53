@@ -73,6 +73,7 @@ export const Route = createFileRoute("/$")({
       seo: finalSeo,
       record: content.record,
       related: content.related,
+      cssHref: content.cssHref ?? null,
     };
   },
   head: ({ loaderData }) => {
@@ -84,7 +85,17 @@ export const Route = createFileRoute("/$")({
         ],
       };
     }
-    return buildSeoHead(loaderData.seo);
+    const head = buildSeoHead(loaderData.seo);
+    // Page-scoped CSS for SSR'd `static` pages. Emitting a <link> in the initial
+    // HTML means the page paints styled, instead of the old path where the body
+    // only appeared after hydrate + a second fetch + a runtime <style> insert.
+    if (loaderData.cssHref) {
+      return {
+        ...head,
+        links: [...(head.links ?? []), { rel: "stylesheet", href: loaderData.cssHref }],
+      };
+    }
+    return head;
   },
   component: PlaceholderPage,
   notFoundComponent: NotFoundRoute,

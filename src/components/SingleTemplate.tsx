@@ -634,6 +634,10 @@ export function SingleTemplate({
       metaEl.content = description;
     }
 
+    // When the page was SSR'd, its styles_css was stripped from the payload and
+    // is served as a <link> instead (see scripts/extract-static-css.mjs), so
+    // there is nothing to inject. Records still delivered the old way — a static
+    // page added since the last prebuild — keep this fallback.
     let styleEl: HTMLStyleElement | null = null;
     if (record.type === "static" && record.styles_css) {
       const styleId = `page-css-${record.id}`;
