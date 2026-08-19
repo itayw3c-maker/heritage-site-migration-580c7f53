@@ -936,27 +936,28 @@ body.page-id-624 .elementor-element-6173dd1 > .elementor-container {
   gap: 20px;
 }
 
-/* Prevent horizontal overflow without turning <body> into a scroll container,
-   which would break position:sticky.
+/* Keep the root scrollable on touch devices.
 
-   Two Safari/iOS traps this has to avoid:
-   1. Declaring `overflow-y: visible` next to a non-visible overflow-x makes the
-      visible axis compute to `auto` in Safari (Chrome special-cases clip and
-      keeps it visible). That gave <body> its own scroll container and left the
-      page unscrollable on iOS — the gallery page looked like it just ended
-      after two rows. So overflow-y is left alone entirely.
-   2. `overflow: clip` only exists from Safari 16. On older iOS the declaration
-      below is dropped, and Elementor's own `html, body { overflow-x: hidden }`
-      wins — the exact scroll-container bug we are avoiding. The @supports
-      fallback forces `visible` there instead: a page that can scroll but might
-      overflow sideways beats a page that cannot scroll at all. */
+   Elementor ships `html, body { overflow-x: hidden }`. Any non-visible overflow
+   on the root propagates to the viewport, and on mobile that kills touch
+   panning — the page cannot be dragged even though scrollHeight is far taller
+   than the viewport. It also breaks position:sticky.
+
+   Earlier attempts swapped `hidden` for `clip`, which fixed sticky but kept the
+   scrolling bug: `clip` still propagates to the viewport, so Chrome on Android
+   stayed unscrollable (an @supports fallback only rescued browsers too old to
+   know `clip`, which is why iOS started working while Galaxy did not). Note
+   that programmatic window.scrollTo still works under `clip`, so this only
+   reproduces with a real finger or by inspecting the computed value.
+
+   So the root gets `visible` and nothing clips the viewport. Checked that this
+   does not reintroduce sideways scrolling: with the rule neutralised, document
+   scrollWidth equals the viewport width on the home page, gallery, an article,
+   the category archive, צור-קשר and ההצלחות-שלנו. The home page's carousel
+   slides do extend past the fold, but Swiper clips them itself. If a specific
+   element ever overflows, clip that element — never the root. */
 html, body {
-  overflow-x: clip !important;
-}
-@supports not (overflow: clip) {
-  html, body {
-    overflow-x: visible !important;
-  }
+  overflow-x: visible !important;
 }
 
 /* Header desktop sub-menus: fit long service items without truncating */
