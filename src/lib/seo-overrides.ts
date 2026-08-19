@@ -204,7 +204,9 @@ const EXPERT_REVIEW_PATHS = new Set([
   "שמאי-נזקי-פריצה",
   "הסבר-על-הליך-תביעת-ביטוח-בנזקי-מים-שלב",
   "שמאי-נזקי-רכוש",
-  "הערכת-שווי-רכוש",
+  // "הערכת-שווי-רכוש" intentionally excluded: the expert-review panel is framed
+  // around damage assessment and insurance claims, which does not fit a
+  // property-valuation service page (client request).
   "הערכת-שמאות-לריהוט-עתיק",
   "damage-to-electrical-systems",
   "תביעת-ביטוח-נזקי-צנרת-מדריך-מקיף-לתהלי",
