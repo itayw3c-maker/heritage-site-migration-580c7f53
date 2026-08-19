@@ -1529,6 +1529,60 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
   .lvbl-faq .lvbl-faq-a{padding:.875rem 1rem 1rem;font-size:1rem;}
 }
 
+/* ---- Glossary blocks (.lvbl-glossary, ~31 articles) ----
+   The markup is a semantic <dl>, but nothing styled it, so terms and their
+   definitions rendered as identical unstyled lines and the reader could not
+   tell which was which. Term = bold navy with a gold marker; definition =
+   indented behind a gold rule, with a wide gap before the next term so each
+   pair reads as one unit. */
+.lvbl-glossary{
+  --lvbl-g-accent:#CBA436;
+  --lvbl-g-term:#063760;
+  --lvbl-g-fg:#3f4a56;
+  background:#f7f9fc;
+  border:1px solid #e5e9f0;
+  border-radius:.75rem;
+  padding:1.35rem 1.6rem;
+  margin:1.5rem 0;
+}
+.lvbl-glossary dl{margin:0;}
+.lvbl-glossary dt{
+  margin:1.35rem 0 0;
+  font-weight:800;
+  font-size:1.12rem;
+  line-height:1.5;
+  color:var(--lvbl-g-term);
+}
+.lvbl-glossary dt:first-child{margin-top:0;}
+/* The dot hangs outside the text column (into the section padding) so the term
+   text stays flush with the block edge and the indented definition below it
+   reads as a clear second level. An inline dot would push the term in by the
+   same amount as the definition's indent and flatten that distinction. */
+.lvbl-glossary dt{position:relative;}
+.lvbl-glossary dt::before{
+  content:"";
+  position:absolute;
+  inset-inline-start:-1rem;
+  top:.62em;
+  width:.5rem;
+  height:.5rem;
+  border-radius:50%;
+  background:var(--lvbl-g-accent);
+}
+.lvbl-glossary dd{
+  margin:.4rem 0 0;
+  padding-inline-start:.9rem;
+  border-inline-start:3px solid var(--lvbl-g-accent);
+  font-size:1.03rem;
+  line-height:1.8;
+  color:var(--lvbl-g-fg);
+}
+@media (max-width:640px){
+  .lvbl-glossary{padding:1rem 1.1rem;}
+  .lvbl-glossary dt{font-size:1.05rem;}
+  .lvbl-glossary dd{font-size:1rem;}
+}
+
 /* ============ Client fixes ============ */
 
 /* 1. Floating Google reviews badge — larger on desktop only (~35%) */

@@ -103,4 +103,7 @@ export const SEED_REVIEWS: Review[] = [
 ];
 
 export const SEED_RATING = 5;
-export const SEED_TOTAL = 513;
+// Keep in sync with total_reviews in src/generated/reviews.json, which feeds the
+// floating badge and the reviews modal. When these drift, the page shows two
+// different counts depending on whether the Places API call succeeded.
+export const SEED_TOTAL = 520;
