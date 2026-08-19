@@ -1130,6 +1130,14 @@ button.elementor-button:focus-visible {
   color: #ffffff !important;
 }
 
+/* The decorative arrow inside gold CTA buttons ("לייעוץ חינם", "קראו עוד") is
+   filled #CBA436 — the button's own background — so it paints gold-on-gold and
+   is never seen, yet it still consumes ~16-20px and shoves the label off centre.
+   It is aria-hidden, so dropping it costs nothing and centres the text. */
+.elementor-button .elementor-button-icon:has(svg.e-fas-arrow-left) {
+  display: none;
+}
+
 /* Lead-capture "השאירו פרטים" forms sit on a gold card (--e-global-color-33ec037).
    The default gold submit button blends into that background, so give it the
    site's navy blue instead wherever the card is gold. */
