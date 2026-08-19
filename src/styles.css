@@ -2,7 +2,8 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-@import "./styles/admin.css";
+/* admin.css is imported from src/routes/admin.route.tsx instead, so the ~5.7KB
+   of dashboard-only CSS stays out of the render-blocking public bundle. */
 
 @custom-variant dark (&:is(.dark *));
 

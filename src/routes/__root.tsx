@@ -166,6 +166,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "/fonts/assistant-latin.woff2",
         crossOrigin: "anonymous",
       },
+      // GTM is the earliest third-party request (loaded async in the head), so it
+      // needs the connection warmed before the others.
+      { rel: "preconnect", href: "https://www.googletagmanager.com" },
+      { rel: "dns-prefetch", href: "https://www.googletagmanager.com" },
       { rel: "preconnect", href: "https://lpc.fixdigital.co.il", crossOrigin: "anonymous" },
       { rel: "preconnect", href: "https://cdn.trustindex.io", crossOrigin: "anonymous" },
       { rel: "dns-prefetch", href: "https://lpc.fixdigital.co.il" },

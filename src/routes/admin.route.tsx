@@ -1,5 +1,8 @@
 import { createFileRoute, Outlet, Link, redirect, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+// Dashboard-only styles. Imported here rather than from src/styles.css so they
+// are not part of the render-blocking stylesheet on every public page.
+import "@/styles/admin.css";
 
 // Imported dynamically: a static import here lands in the critical (non-split)
 // part of the route module and drags the Supabase auth client into the entry chunk.
