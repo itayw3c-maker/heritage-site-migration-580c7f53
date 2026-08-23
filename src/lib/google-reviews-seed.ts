@@ -100,6 +100,14 @@ export const SEED_REVIEWS: Review[] = [
     time: 1780963200,
     profile_photo_url: "https://lh3.googleusercontent.com/a-/ALV-UjWbFXO3hL87V9BTK4Fz5M8v3HFAd_aAFQRgEf4Oen5zwM3dPx4t=w40-h40-c-rp-mo-br100",
   },
+  {
+    author_name: "Bob 10",
+    rating: 5,
+    text: "ממליץ בחום על רפאל שמאות רכוש שמאי מקצועי יסודי זמין והגון יחס חם וידע עצום בתחום ! כבר לא מוצאים כאלו היום.\nהגיע אליי ברגעים הכי קשים לאחר נפילת הטיל וממש היה לצידי כל הדרך קשוב ונוכח עמידה בלוחות זמנים כיף גדול לפגוש אנשי מקצוע ברמה כזו מומלץ בחום .",
+    relative_time: "לפני 4 חודשים",
+    time: 1776902400,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
