@@ -220,6 +220,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1776902400,
     profile_photo_url: "",
   },
+  {
+    author_name: "Silvi Roz",
+    rating: 5,
+    text: "פניתי לשמאי נענתה במהירות ובמקצועיות.\nעלי לציין  לשבח על מתן שירות אדיב מקצועי אמין .\nעם סבלנות רבה והסברים ברורים מאד.\nמומלץ ביותר 💪 ...",
+    relative_time: "לפני 5 חודשים",
+    time: 1774224000,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "Mor Damari",
+    rating: 5,
+    text: "קודם כל בן אדם נשמה !\nמקצוען, נכנס לפרטים הקטנים כדי לעזור כמה שיותר.\nממליץ בלב שלם !",
+    relative_time: "לפני 3 חודשים",
+    time: 1779494400,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "אהרון יהודה גרשון",
+    rating: 5,
+    text: "שמאי מעולה ממליץ בחום , אנושי זמין בכל שעה והכי חשוב קידם לנו את הטיפול מול חברת הביטוח והפיק חוות דעת שמאית נהדרת שתיארה בצורה מפורטת ומדוייקת את המקרה שהיה לנו",
+    relative_time: "לפני 5 חודשים",
+    time: 1774224000,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "yossi mizrahi",
+    rating: 5,
+    text: "שמאי מאוד סבלני וקשוב. זמין תמיד.\nאדיב.ממליץ בחום.\nשמאי שמעריך נכון את הנזק. ...",
+    relative_time: "לפני 5 חודשים",
+    time: 1774224000,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "גלית חגי",
+    rating: 5,
+    text: "אמין מאוד, סופר מקצועי !! קשוב, מלווה את הלקוח מ- א ועד ת.\nלא מעכב טיפול, זמין בכל עת.  שלא נזדקק, אך אם כן, לקחת רק אותו",
+    relative_time: "לפני 6 חודשים",
+    time: 1771804800,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
