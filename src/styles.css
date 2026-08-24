@@ -425,6 +425,7 @@ html.a11y-focus *:focus, html.a11y-focus *:focus-visible {
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: "Assistant", sans-serif !important;
   }
 }
 
@@ -593,16 +594,16 @@ h1.rr-sitemap-title {
   }
   .elementor-element-881c8eb .elementor-image-box-title,
   .elementor-element-881c8eb .elementor-image-box-title a {
-    font-size: 11px !important;
-    line-height: 1.2 !important;
+    font-size: 10px !important;
+    line-height: 1.1 !important;
   }
   .elementor-element-881c8eb .elementor-image-box-description {
-    font-size: 15px !important;
-    line-height: 1.2 !important;
+    font-size: 13px !important;
+    line-height: 1.1 !important;
     margin: 0 !important;
   }
   .elementor-element-881c8eb .elementor-widget-container {
-    padding: 2px 10px 3px !important;
+    padding: 1px 10px 2px !important;
   }
 }
 
@@ -1142,7 +1143,6 @@ button.elementor-button:focus-visible {
 /* Lead-capture "השאירו פרטים" forms sit on a gold card (--e-global-color-33ec037).
    The default gold submit button blends into that background, so give it the
    site's navy blue instead wherever the card is gold. */
-.elementor-element-1e19f20 .elementor-button[type="submit"],
 .elementor-element-bd19157 .elementor-button[type="submit"],
 .elementor-element-52ffe1b .elementor-button[type="submit"] {
   background-color: #056FC4 !important;
@@ -1150,8 +1150,6 @@ button.elementor-button:focus-visible {
   color: #ffffff !important;
   box-shadow: 0 4px 14px rgba(6, 55, 96, 0.35);
 }
-.elementor-element-1e19f20 .elementor-button[type="submit"]:hover,
-.elementor-element-1e19f20 .elementor-button[type="submit"]:focus-visible,
 .elementor-element-bd19157 .elementor-button[type="submit"]:hover,
 .elementor-element-bd19157 .elementor-button[type="submit"]:focus-visible,
 .elementor-element-52ffe1b .elementor-button[type="submit"]:hover,

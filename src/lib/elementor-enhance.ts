@@ -843,8 +843,10 @@ function setupSubmenuToggles(root: ParentNode) {
       else open();
     };
 
-    li.addEventListener("mouseenter", open);
-    li.addEventListener("mouseleave", close);
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      li.addEventListener("mouseenter", open);
+      li.addEventListener("mouseleave", close);
+    }
 
     link.addEventListener("click", (e) => {
       const href = (link as HTMLAnchorElement).getAttribute("href") || "";
