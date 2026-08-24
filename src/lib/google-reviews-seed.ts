@@ -1348,6 +1348,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1776902400,
     profile_photo_url: "",
   },
+  {
+    author_name: "אשר הלוי",
+    rating: 5,
+    text: "רפאל שמאות רכוש מקצועי  ואמין ונתן שירות מעולה ויחס אנושי ומקצועי ללקוח בפרק זמן קצר פותר את הבעיות ממליץ עליו בחום",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "Yossi Elbaz",
+    rating: 5,
+    text: "רפאל היה אדיב, אכפתי וקשוב כל הכבוד ❤️",
+    relative_time: "לפני 5 חודשים",
+    time: 1774224000,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "פאני דנוח",
+    rating: 5,
+    text: "רפאל השמאי מקצועי ביותר , קשוב, עונה תמיד להודעות וזמין. תודה רפאל יישר כח",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "נריה אודיז",
+    rating: 5,
+    text: "שמאי אמין ומקצועי ויודע את העבודה ברמה מאוד גבוה נתן שירות עם הסברים על כל שאלה בהמון סבלנות ורוגע ממליץ בחום לכל מי שצריך שמאי",
+    relative_time: "לפני 2 שנים",
+    time: 1724371200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "Libi Shaubi",
+    rating: 5,
+    text: "תודה רבה, רפאל איש מקצועי מזמינה אותו כבר בפעם שניה, ממליצה בחום",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
