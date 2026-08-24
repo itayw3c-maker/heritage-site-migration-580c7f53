@@ -1708,6 +1708,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1755907200,
     profile_photo_url: "",
   },
+  {
+    author_name: "יגל מנצור",
+    rating: 5,
+    text: "רפאל היקר הערכה גדולה על ליווי צמוד ומקצועי תותח באמת אין מילים רב תודות",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "אלמוג אחדות",
+    rating: 5,
+    text: "רפאל נתן לי שירות מצוין, בחור מקצועי ממולץ מכל הלב",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "Roie Barom",
+    rating: 5,
+    text: "עבודה מקצועית, בחור מלבב שנותן שירות מעולה, ניכר שאכפת לו",
+    relative_time: "לפני 9 חודשים",
+    time: 1763856000,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "רויטל שמש",
+    rating: 5,
+    text: "שמאי עם אוזן קשבת מבין ויודע את הצורך ולפי זה מבצע את תפקידו לשביעות רצון הלקוח וכמובן בצורה הכי מקצועית שיש",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "haiim asaraf",
+    rating: 5,
+    text: "עזר לי בנזק מים מוח הביטוח , מומלץ בחום.",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
