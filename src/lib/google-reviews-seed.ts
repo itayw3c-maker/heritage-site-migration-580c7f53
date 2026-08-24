@@ -1548,6 +1548,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1724371200,
     profile_photo_url: "",
   },
+  {
+    author_name: "מני קריספין",
+    rating: 5,
+    text: "שירות אדיב ומקצועי שמחי לעבוד איתך.\nבכל אשר תעשה תצליח",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "צביקה טירנגל",
+    rating: 5,
+    text: "שרותי מקצועי אדיב ובעיקר בולטת אצלו הרצון והדאגה לצורכי הלקוח",
+    relative_time: "לפני 11 חודשים",
+    time: 1758585600,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "עובדיה אלגרבלי",
+    rating: 5,
+    text: "שמאי מומלץ מאוד . עזר לנו הרבה בנזקים ששוכריח גרמו לדירתי.",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "חנית כהן נגב",
+    rating: 5,
+    text: "מקצועי ואדיב מאוד\nפנייתנו נענתה במהרה",
+    relative_time: "לפני 4 חודשים",
+    time: 1776902400,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "יצחק וחניש",
+    rating: 5,
+    text: "אחלה רפאל מספר 1 ממליץ מאוד\nתודה לך על השרות ...",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
