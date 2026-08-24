@@ -1748,6 +1748,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1755907200,
     profile_photo_url: "",
   },
+  {
+    author_name: "מיכל שרביט",
+    rating: 5,
+    text: "שמאי מדהים עזר לנו בנזק מים , ממליצה בחום.",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "Karina Koltun",
+    rating: 5,
+    text: "שירות מעולה ,מהיר וייעיל בזמן מלחמה",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "יהונתן אבן חיים",
+    rating: 5,
+    text: "בחור מוכשר\nעשה עבודה יסודית ומהירה\nעזר לנו מאוד !",
+    relative_time: "לפני 2 שנים",
+    time: 1724457600,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "מישאל חדד יעוץ משכנתאות",
+    rating: 5,
+    text: "איש יקר,אדיב ,והכי מקצועי!!!",
+    relative_time: "לפני חודש",
+    time: 1782000000,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "Evgeny Krinets",
+    rating: 5,
+    text: "שרות מהיר מקצועי",
+    relative_time: "לפני 4 חודשים",
+    time: 1774800000,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
