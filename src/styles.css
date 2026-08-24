@@ -631,6 +631,10 @@ h1.rr-sitemap-title {
   .elementor-element-881c8eb .elementor-widget-container {
     padding: 1px 10px 2px !important;
   }
+  .elementor-element-881c8eb {
+    width: 190px !important;
+    max-width: 190px !important;
+  }
 }
 
 /* 2. Google reviews badge (rpi) → wide horizontal card */
