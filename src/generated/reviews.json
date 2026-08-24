@@ -1526,125 +1526,325 @@
       "relative_time": "לפני שנה",
       "profile_photo_url": ""
     },
-  {
-    "author_name": "מיכל שרביט",
-    "rating": 5,
-    "text": "שמאי מדהים עזר לנו בנזק מים , ממליצה בחום.",
-    "relative_time": "לפני שנה",
-    "time": 1755907200,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "Karina Koltun",
-    "rating": 5,
-    "text": "שירות מעולה ,מהיר וייעיל בזמן מלחמה",
-    "relative_time": "לפני שנה",
-    "time": 1755907200,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "יהונתן אבן חיים",
-    "rating": 5,
-    "text": "בחור מוכשר\nעשה עבודה יסודית ומהירה\nעזר לנו מאוד !",
-    "relative_time": "לפני 2 שנים",
-    "time": 1724457600,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "מישאל חדד יעוץ משכנתאות",
-    "rating": 5,
-    "text": "איש יקר,אדיב ,והכי מקצועי!!!",
-    "relative_time": "לפני חודש",
-    "time": 1782000000,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "Evgeny Krinets",
-    "rating": 5,
-    "text": "שרות מהיר מקצועי",
-    "relative_time": "לפני 4 חודשים",
-    "time": 1774800000,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "הילאי ריבוח",
-    "rating": 5,
-    "text": "תודה רבה על שירות מעולה. מומלץ בחום.",
-    "relative_time": "לפני שנה",
-    "time": 1755907200,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "הדסה הרשקוביץ",
-    "rating": 5,
-    "text": "מומלץ מאוד הכין לנו חוות דעת שמאית לנזקי מים",
-    "relative_time": "לפני 8 חודשים",
-    "time": 1764720000,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "יצחק הרשלר",
-    "rating": 5,
-    "text": "שירות מושלם והכי חשוב זה שהם שמרו על קירות של הבית",
-    "relative_time": "לפני שנה",
-    "time": 1755907200,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "שימי דבוש",
-    "rating": 5,
-    "text": "ממליץ בחום שירות ברמה גבוה אך ורק מנסיון",
-    "relative_time": "לפני שנה",
-    "time": 1755907200,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "Ofir Cohen",
-    "rating": 5,
-    "text": "שירות מהיר, אדיב, עונה על שאלות, מבין עניין",
-    "relative_time": "לפני שנה",
-    "time": 1755907200,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "יוסף חיים שוויישה",
-    "rating": 5,
-    "text": "תודה רבה אתה בנאדם טוב שעובד טוב ומדבר בגובה עיניים תודה על השירות !",
-    "relative_time": "לפני 3 שנים",
-    "time": 1693440000,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "רוזנפלד",
-    "rating": 5,
-    "text": "\" שירות מקצועי, אמין ומדויק! השמאי הפגין ידע רחב, יסודיות ואמינות לכל אורך התהליך. קיבלנו הערכה הוגנת ומפורטת, תוך מתן יחס אישי וסבלנות לכל שאלה. מומלץ בחום!\"",
-    "relative_time": "לפני שנה",
-    "time": 1755907200,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "ישי חדד",
-    "rating": 5,
-    "text": "שירות,אמינות,זמינות,יעילות,מקצועיות!\nאין עוד מה להוסיף",
-    "relative_time": "לפני 2 שנים",
-    "time": 1724457600,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "Tal Salomon",
-    "rating": 5,
-    "text": "יסודי ביותר\nנצן שירות מעולה והיה זמין לשאלות והבהרות",
-    "relative_time": "לפני שנה",
-    "time": 1755907200,
-    "profile_photo_url": ""
-  },
-  {
-    "author_name": "יעקב ספיר",
-    "rating": 5,
-    "text": "רפאל שמאות בחור אחראי ונוצן את כל כולו לעבודה נתן לי שירות vip יצאנו מרוצים ללא ספק\nמליץ מאוד ... 👍🤍",
-    "relative_time": "לפני 3 שנים",
-    "time": 1693440000,
-    "profile_photo_url": ""
-  }
-]
+    {
+      "author_name": "מיכל שרביט",
+      "rating": 5,
+      "text": "שמאי מדהים עזר לנו בנזק מים , ממליצה בחום.",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "Karina Koltun",
+      "rating": 5,
+      "text": "שירות מעולה ,מהיר וייעיל בזמן מלחמה",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "יהונתן אבן חיים",
+      "rating": 5,
+      "text": "בחור מוכשר\nעשה עבודה יסודית ומהירה\nעזר לנו מאוד !",
+      "relative_time": "לפני 2 שנים",
+      "time": 1724457600,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "מישאל חדד יעוץ משכנתאות",
+      "rating": 5,
+      "text": "איש יקר,אדיב ,והכי מקצועי!!!",
+      "relative_time": "לפני חודש",
+      "time": 1782000000,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "Evgeny Krinets",
+      "rating": 5,
+      "text": "שרות מהיר מקצועי",
+      "relative_time": "לפני 4 חודשים",
+      "time": 1774800000,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "הילאי ריבוח",
+      "rating": 5,
+      "text": "תודה רבה על שירות מעולה. מומלץ בחום.",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "הדסה הרשקוביץ",
+      "rating": 5,
+      "text": "מומלץ מאוד הכין לנו חוות דעת שמאית לנזקי מים",
+      "relative_time": "לפני 8 חודשים",
+      "time": 1764720000,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "יצחק הרשלר",
+      "rating": 5,
+      "text": "שירות מושלם והכי חשוב זה שהם שמרו על קירות של הבית",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "שימי דבוש",
+      "rating": 5,
+      "text": "ממליץ בחום שירות ברמה גבוה אך ורק מנסיון",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "Ofir Cohen",
+      "rating": 5,
+      "text": "שירות מהיר, אדיב, עונה על שאלות, מבין עניין",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "יוסף חיים שוויישה",
+      "rating": 5,
+      "text": "תודה רבה אתה בנאדם טוב שעובד טוב ומדבר בגובה עיניים תודה על השירות !",
+      "relative_time": "לפני 3 שנים",
+      "time": 1693440000,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "רוזנפלד",
+      "rating": 5,
+      "text": "\" שירות מקצועי, אמין ומדויק! השמאי הפגין ידע רחב, יסודיות ואמינות לכל אורך התהליך. קיבלנו הערכה הוגנת ומפורטת, תוך מתן יחס אישי וסבלנות לכל שאלה. מומלץ בחום!\"",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "ישי חדד",
+      "rating": 5,
+      "text": "שירות,אמינות,זמינות,יעילות,מקצועיות!\nאין עוד מה להוסיף",
+      "relative_time": "לפני 2 שנים",
+      "time": 1724457600,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "Tal Salomon",
+      "rating": 5,
+      "text": "יסודי ביותר\nנצן שירות מעולה והיה זמין לשאלות והבהרות",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "יעקב ספיר",
+      "rating": 5,
+      "text": "רפאל שמאות בחור אחראי ונוצן את כל כולו לעבודה נתן לי שירות vip יצאנו מרוצים ללא ספק\nמליץ מאוד ... 👍🤍",
+      "relative_time": "לפני 3 שנים",
+      "time": 1693440000,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "ישראל הובלות ומנופים",
+      "rating": 5,
+      "text": "שרות מעולה במספר שתפ\"ים ממליץ מאודד",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "ישי מנצור",
+      "rating": 5,
+      "text": "שמאי מומלץ מאוד\nעזר לי כבר בשני נזקי מים קשים",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "Zion Tzachi",
+      "rating": 5,
+      "text": "כל הכבוד לשמאי רפאל...טיפול לעילא ולעילא...תודה על הכל רפי",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "Rachel Alkobi",
+      "rating": 5,
+      "text": "שירות מכל הלב, אמין ממליצה בחום!!!!",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "חדש חד",
+      "rating": 5,
+      "text": "שמאי מעולה עזר לי מאוד אלוף",
+      "relative_time": "לפני 9 חודשים",
+      "time": 1763424000,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "מיקי בן חותא",
+      "rating": 5,
+      "text": "אדם אמין ומקצועי ברמה שאין לתאר\nהכי חשוב אנושי\nתודה רבה על הכול ...",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "ישראל סנדרוביץ",
+      "rating": 5,
+      "text": "אין על השירות והזמינות של רפאל האלוף.",
+      "relative_time": "לפני 10 חודשים",
+      "time": 1762185600,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "Uriel Ben atar",
+      "rating": 5,
+      "text": "קיבלתי שירות אליפותת מקצועי\nממליץ בחום!",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "Ortal David",
+      "rating": 5,
+      "text": "שמאיי מעולה נתן לנו שירות כמו שצריך\nאלוף ואין מישהו יותר טוב ממנו",
+      "relative_time": "לפני 3 שנים",
+      "time": 1693440000,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "Netanel Dandeker",
+      "rating": 5,
+      "text": "שירות מקצועי ואדיב.\nגישה טובה ללקוח.",
+      "relative_time": "לפני 2 שנים",
+      "time": 1724457600,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "הילה",
+      "rating": 5,
+      "text": "קיבלתי שירות מדהים ממליצה בחום",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "Refael Aharonof",
+      "rating": 5,
+      "text": "שמאי רכוש מקצועי אמין ויסודי מומלץ מאוד עזר לנו בנזק אש",
+      "relative_time": "לפני 9 חודשים",
+      "time": 1763424000,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "עדן כראדי",
+      "rating": 5,
+      "text": "שמאי רכוש רפאל עזר לי המון בנזק בבית",
+      "relative_time": "לפני 9 חודשים",
+      "time": 1763424000,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "דניאל אלקבץ",
+      "rating": 5,
+      "text": "שירות מקצועי מהיר ואמין מומלץ בחום",
+      "relative_time": "לפני 10 חודשים",
+      "time": 1762185600,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "אביתר אלקובי",
+      "rating": 5,
+      "text": "שמאי מומלץ עזר לי בנזק מים בעסק",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "נתן אביייב",
+      "rating": 5,
+      "text": "בעל מקצוע מהשורה הראשונה, חרוץ ואמין",
+      "relative_time": "לפני 2 שנים",
+      "time": 1724457600,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "Eli Eli",
+      "rating": 5,
+      "text": "אחלה שמאי טיפל במסירות אני ממליץ בחום!!!",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "ניסים מזרחי",
+      "rating": 5,
+      "text": "רפאל איש יקר שירות אישי ומקצועי ממליץ בחום ... 💪💪",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "nesia ben david",
+      "rating": 5,
+      "text": "שירות מעולה קשוב ונעים ממליצה מאוד",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "ויסאם עותמאן",
+      "rating": 5,
+      "text": "אלוף בתחום, מקצוען אמיתי , מהירות ביצוע להפליא 🙏 ...",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "משה סויסה",
+      "rating": 5,
+      "text": "אחלה שירות המקצועיות. צוות מנצח",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "Moshe Mesina",
+      "rating": 5,
+      "text": "רפאל, שמאי משכמו ומעלה זריז,תקטקן,ויעיל",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "מירים שירזי",
+      "rating": 5,
+      "text": "שירות מאוד אדיב ומקצועי גילה המון סבלנות והקשבה",
+      "relative_time": "לפני שנה",
+      "time": 1755907200,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "משה בן לולו",
+      "rating": 5,
+      "text": "שמאי מספר 1 עזר לי מואד שירות מעולה",
+      "relative_time": "לפני 2 שנים",
+      "time": 1724457600,
+      "profile_photo_url": ""
+    },
+    {
+      "author_name": "יוליה פלבנוב",
+      "rating": 5,
+      "text": "אמין מאוד , שירות אדיב ומקצועי",
+      "relative_time": "לפני 4 חודשים",
+      "time": 1774310400,
+      "profile_photo_url": ""
+    }
+  ]
 }
