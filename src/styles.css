@@ -947,11 +947,14 @@ body.page-id-624 .elementor-element-6173dd1 > .elementor-container {
   gap: 20px;
 }
 
-/* Fix: overflow-x:hidden on html/body breaks position:sticky.
-   Use overflow-clip-margin/overflow:clip which prevents horizontal scroll without creating a scroll container. */
+/* Keep the root scrollable on touch devices.
+   Elementor ships `html, body { overflow-x: hidden }`. Any non-visible overflow
+   on the root propagates to the viewport, and on mobile that kills touch
+   panning. `clip` has the same problem on Android Chrome. So the root gets
+   `visible` and nothing clips the viewport. If a specific element ever
+   overflows horizontally, clip that element — never the root. */
 html, body {
-  overflow-x: clip !important;
-  overflow-y: visible !important;
+  overflow-x: visible !important;
 }
 
 /* Header desktop sub-menus: fit long service items without truncating */
