@@ -543,6 +543,14 @@ function setupNestedTabs(root: ParentNode) {
       });
       // Re-hydrate galleries inside the now-visible panel (backgrounds may need computed style).
       hydrateGalleries(tabs);
+      // Measuring immediately can race the browser's own layout of the grid
+      // (columns/aspect-ratio not settled yet), which pins a wrong height.
+      // fixCollapsedTabWidgetHeights always re-measures from a clean slate
+      // (it clears any height it previously set before reading), so re-running
+      // it after layout settles self-corrects rather than compounding.
+      fixCollapsedTabWidgetHeights(tabs);
+      requestAnimationFrame(() => requestAnimationFrame(() => fixCollapsedTabWidgetHeights(tabs)));
+      window.setTimeout(() => fixCollapsedTabWidgetHeights(tabs), 500);
     };
 
     let initial = titles.findIndex((t) => t.getAttribute("aria-selected") === "true");
@@ -554,6 +562,46 @@ function setupNestedTabs(root: ParentNode) {
         e.preventDefault();
         activate(i);
       });
+    });
+  });
+}
+
+// Chromium on mobile (reproduces on real Android Chrome, not the desktop
+// emulator or iOS) sometimes resolves a `.elementor-widget`'s auto height to
+// a fraction of its content when that widget sits inside this nested flex
+// column (.e-n-tabs-content > .e-active > .elementor-widget), while the
+// widget's own .elementor-widget-container child still reports its correct,
+// full content height via getBoundingClientRect. The result: the widget's
+// box collapses (e.g. a 24-image gallery grid measuring ~2000px renders in a
+// ~130px box) but nothing clips the overflow, so the images just paint past
+// their collapsed ancestor and get visually covered by whatever follows in
+// the DOM (the footer, in the gallery page's case) — it looks like the page
+// ran out of content a couple of rows in. Forcing the widget's own height to
+// match its container via CSS (`height: auto !important`, `flex-shrink: 0`,
+// even `display: flow-root`) does not fix it — this isn't a cascade/priority
+// problem, the browser's auto-height algorithm itself computes the wrong
+// value in this specific nesting at narrow viewports. The one thing that
+// does work is setting an explicit pixel height, so we measure and pin it
+// here, then keep it in sync via ResizeObserver for lazy-loaded images.
+function fixCollapsedTabWidgetHeights(root: ParentNode) {
+  const panels = root.querySelectorAll<HTMLElement>(".e-n-tabs-content > .e-active");
+  panels.forEach((panel) => {
+    const widgets = panel.querySelectorAll<HTMLElement>(".elementor-widget");
+    widgets.forEach((widget) => {
+      const container = widget.querySelector<HTMLElement>(":scope > .elementor-widget-container");
+      if (!container) return;
+      // Clear any previous forced height before measuring, so we measure the
+      // container's real intrinsic size rather than re-reading a size we
+      // ourselves pinned (which — if the container has any percentage/stretch
+      // relationship to its ancestor — would otherwise grow without bound on
+      // every re-run: pin height X -> container reports X -> pin X again ->
+      // ... -> pin a bigger X once anything nudges the ancestor chain).
+      widget.style.removeProperty("height");
+      const contentH = container.getBoundingClientRect().height;
+      const ownH = widget.getBoundingClientRect().height;
+      if (contentH > 0 && contentH - ownH > 4) {
+        widget.style.setProperty("height", `${contentH}px`, "important");
+      }
     });
   });
 }
