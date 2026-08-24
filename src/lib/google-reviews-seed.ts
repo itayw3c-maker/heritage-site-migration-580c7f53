@@ -1628,6 +1628,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1774224000,
     profile_photo_url: "",
   },
+  {
+    author_name: "מתניה בשארי",
+    rating: 5,
+    text: "שמאי רכוש מומלץ עזר לי בתביעת ביטוח מול הראל ממליץ בחום",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "חבצלת שמיר",
+    rating: 5,
+    text: "אלוף שרות מעולה אישי מדוייק ואחראי שמחתי לקבל שרות ממך רפאל בהצלחה",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "shimon שמעון",
+    rating: 5,
+    text: "שמאי מעולה עזר לי בנזק מים מהשכן . ממליץ בחום.",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "איציק",
+    rating: 5,
+    text: "\" שירות מקצועי, אמין ומדויק! השמאי הפגין ידע רחב, יסודיות ואמינות לכל אורך התהליך. קיבלנו הערכה הוגנת ומפורטת, תוך מתן יחס אישי וסבלנות לכל שאלה. מומלץ בחום!\"",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "מאיר מרגי",
+    rating: 5,
+    text: "שירות מהמקצועי שראיתי בחיי! מספר 1 בתחום ממליץ מאוד",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
