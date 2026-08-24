@@ -1388,6 +1388,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1755907200,
     profile_photo_url: "",
   },
+  {
+    author_name: "אורי דוד כהן",
+    rating: 5,
+    text: "שירות אששש מעל הכל החמימות והשירות למרות ששיגעתי אותו בכל שעה ענה בחמימות ובסבלנות מומלץ בחום ❤️❤️❤️",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "may zfadia",
+    rating: 5,
+    text: "בקשתי הערכה לריהוט עתיק , העבודה נעשתה ביסודיות ובמקצועיות רבה\nקיבלתי את חוות הדעת במהרה, דו\"ח מקצועי ומפורט ביותר\nתודה רבה על עבודה מקצועית ויסודית\nמוריאל צפדיה",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "Ilan Oknin",
+    rating: 5,
+    text: "שרות מעולה יחס חם ואוהד",
+    relative_time: "לפני 4 חודשים",
+    time: 1776902400,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "גבריאל כהן",
+    rating: 5,
+    text: "שמטי מקצועי מומלץ מאוד עזר לי בשריפת הדירה שלי מומלץ מאוד",
+    relative_time: "לפני 9 חודשים",
+    time: 1763856000,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "אברהם מהדקר",
+    rating: 5,
+    text: "מקצועי אמין בא עושה את העבודה על הצד הטוב ביותר אין ספק שנחזור אליו ממליץ בחום",
+    relative_time: "לפני 2 שנים",
+    time: 1724371200,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
