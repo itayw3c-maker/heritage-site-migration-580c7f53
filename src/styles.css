@@ -425,6 +425,10 @@ html.a11y-focus *:focus, html.a11y-focus *:focus-visible {
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    /* !important: this rule lives in a Tailwind @layer, which always loses to the
+       unlayered `body { font-family: ... }` rule Elementor's own exported CSS
+       ships (home-critical.css / elementor-site.css), regardless of specificity
+       or source order. Cascade layers rank below unlayered rules unless important. */
     font-family: "Assistant", sans-serif !important;
   }
 }
@@ -577,6 +581,28 @@ h1.rr-sitemap-title {
   .elementor-element-c3d0fa1 { --margin-top: 20px !important; }
 }
 
+/* Mobile header: phone icon in the empty gutter left of the logo (client request) */
+.rr-header-call-mobile {
+  display: none;
+}
+@media (max-width: 767px) {
+  .rr-header-call-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #CBA436;
+    color: #fff;
+    z-index: 5;
+  }
+}
+
 /* Mobile: shrink the floating call strip + accessibility button (client request) */
 @media (max-width: 767px) {
   .a11y-fab {
@@ -604,16 +630,6 @@ h1.rr-sitemap-title {
   }
   .elementor-element-881c8eb .elementor-widget-container {
     padding: 1px 10px 2px !important;
-  }
-}
-
-.rr-header-call-mobile { display: none; }
-@media (max-width: 767px) {
-  .rr-header-call-mobile {
-    display: flex; align-items: center; justify-content: center;
-    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-    width: 32px; height: 32px; border-radius: 50%;
-    background: #CBA436; color: #fff; z-index: 5;
   }
 }
 
@@ -948,11 +964,25 @@ body.page-id-624 .elementor-element-6173dd1 > .elementor-container {
 }
 
 /* Keep the root scrollable on touch devices.
+
    Elementor ships `html, body { overflow-x: hidden }`. Any non-visible overflow
    on the root propagates to the viewport, and on mobile that kills touch
-   panning. `clip` has the same problem on Android Chrome. So the root gets
-   `visible` and nothing clips the viewport. If a specific element ever
-   overflows horizontally, clip that element — never the root. */
+   panning — the page cannot be dragged even though scrollHeight is far taller
+   than the viewport. It also breaks position:sticky.
+
+   Earlier attempts swapped `hidden` for `clip`, which fixed sticky but kept the
+   scrolling bug: `clip` still propagates to the viewport, so Chrome on Android
+   stayed unscrollable (an @supports fallback only rescued browsers too old to
+   know `clip`, which is why iOS started working while Galaxy did not). Note
+   that programmatic window.scrollTo still works under `clip`, so this only
+   reproduces with a real finger or by inspecting the computed value.
+
+   So the root gets `visible` and nothing clips the viewport. Checked that this
+   does not reintroduce sideways scrolling: with the rule neutralised, document
+   scrollWidth equals the viewport width on the home page, gallery, an article,
+   the category archive, צור-קשר and ההצלחות-שלנו. The home page's carousel
+   slides do extend past the fold, but Swiper clips them itself. If a specific
+   element ever overflows, clip that element — never the root. */
 html, body {
   overflow-x: visible !important;
 }
@@ -1155,7 +1185,9 @@ button.elementor-button:focus-visible {
 
 /* Lead-capture "השאירו פרטים" forms sit on a gold card (--e-global-color-33ec037).
    The default gold submit button blends into that background, so give it the
-   site's navy blue instead wherever the card is gold. */
+   site's navy blue instead wherever the card is gold. elementor-element-1e19f20
+   ("אנו כאן כדי לעזור") sits on a dark blue background image, not a gold card —
+   it keeps the brand's default gold button (see original.css) so it doesn't blend. */
 .elementor-element-bd19157 .elementor-button[type="submit"],
 .elementor-element-52ffe1b .elementor-button[type="submit"] {
   background-color: #056FC4 !important;
