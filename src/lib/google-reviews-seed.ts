@@ -1268,6 +1268,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1755907200,
     profile_photo_url: "",
   },
+  {
+    author_name: "שרית כלף",
+    rating: 5,
+    text: "רציתי רק להגיד תודה לרפאל שמאות על המקצועיות והמענה המהיר.",
+    relative_time: "לפני 10 חודשים",
+    time: 1761177600,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "ישראל כהן",
+    rating: 5,
+    text: "שמאי מקצוען עזר לי מאוד , מומלץ בחום. נשרף לנו הנכס. הגיע מיד וניהל את כל התביעה. ממליץ בחום.",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "Adi Sror",
+    rating: 5,
+    text: "בחור מקצועי אדיב וישר שאין שני לו. נתן שירות יוצא מין הכלל! ממליץ בחום!",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "מרכז המחשבים",
+    rating: 5,
+    text: "הגיע מהר, היה קשוב ומתחשב כבר באותו היום קיבלתי את השמאות.\nתודה רבה! מומלץ בחום.",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "alex dru",
+    rating: 5,
+    text: "איש  נחמד,תמיד זמין ותמיד מוכן לעזור ברמה מקצועית גבוהה.ממליץ לפנות  לרפאל  ,שמאי רכוש מכל הלב.",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
