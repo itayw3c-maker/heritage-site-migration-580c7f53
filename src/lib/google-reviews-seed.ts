@@ -1156,6 +1156,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1755907200,
     profile_photo_url: "",
   },
+  {
+    author_name: "netanel edri",
+    rating: 5,
+    text: "שמאי מעולה ממליץ בחום ,עזר לי מאוד בנזק מים שהיה לי בדירה לא עזב אותי עד שהתהליך הסתיים.",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "טל כהן",
+    rating: 5,
+    text: "קיבלתי שרות שמאות מרפאל. השירות היה  מקצועי ומהיר. ממליץ בחום.",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "חדי צאלים",
+    rating: 5,
+    text: "קיבלתי שירות של חמישה כוכבים , הייתי מאוד מרוצה מהטיפול בנושא שלי\nממליצה בלב שלם",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "ליעם נחום",
+    rating: 5,
+    text: "רפאל התותחים ליווי מקצועי מהתחלה עד הסוף מענה\nבכל רגע שצריך חד משמעית הבן אדם משמעית הבן אדם לבחור בו",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "מוטי אזולאי",
+    rating: 5,
+    text: "חייב,לפרגן לרפאל השמאי בנאדם ישר מקצועי הגענו אליו מדרך המלצה ולא התאכזבנו עזר לנו מעל ומעבר מומליצים ממליצים בחום",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
