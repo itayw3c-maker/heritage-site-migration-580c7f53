@@ -843,8 +843,16 @@ function setupSubmenuToggles(root: ParentNode) {
       else open();
     };
 
-    li.addEventListener("mouseenter", open);
-    li.addEventListener("mouseleave", close);
+    // Only bind hover-to-open on devices that actually have hover (mouse).
+    // On Android Chrome, a mouseenter listener on the item makes the browser
+    // treat the tap as a hover trigger: the first tap only fires mouseenter
+    // (revealing the submenu via our own open() call) and swallows the click,
+    // so the real navigation/toggle needs a second tap. Touch/small-screen
+    // opening is already handled by the click listener below.
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      li.addEventListener("mouseenter", open);
+      li.addEventListener("mouseleave", close);
+    }
 
     link.addEventListener("click", (e) => {
       const href = (link as HTMLAnchorElement).getAttribute("href") || "";
