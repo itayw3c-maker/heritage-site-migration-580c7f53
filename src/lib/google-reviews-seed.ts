@@ -1588,6 +1588,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1755907200,
     profile_photo_url: "",
   },
+  {
+    author_name: "נחמן פרץ",
+    rating: 5,
+    text: "מספר 1 בתחום 🏆\nשירות מהיר מקצועי ויעיל\nתודה עלייך ממליץ לכולם❤️ ...",
+    relative_time: "לפני 2 שנים",
+    time: 1724371200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "אלמז מישייב",
+    rating: 5,
+    text: "הוא שמאי מצויין אכפת לו וזמין לא על הכל",
+    relative_time: "לפני 5 חודשים",
+    time: 1774224000,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "אבינועם מורחי",
+    rating: 5,
+    text: "שמאי מקצועי . מבין ענין . נעים הליכות\nמומלץ בחום",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "Anel Bajrich",
+    rating: 5,
+    text: "רפאל שמאי אמין, מקצועי ונותן שירות מעולה  כל הלב  ממליץ בחום",
+    relative_time: "לפני 2 שנים",
+    time: 1724371200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "שלמה מלכא",
+    rating: 5,
+    text: "שמאי נהדר",
+    relative_time: "לפני 5 חודשים",
+    time: 1774224000,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
