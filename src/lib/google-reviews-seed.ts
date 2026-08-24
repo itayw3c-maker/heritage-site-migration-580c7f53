@@ -1668,6 +1668,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1755907200,
     profile_photo_url: "",
   },
+  {
+    author_name: "Yakov Tzarfati",
+    rating: 5,
+    text: "מעולה שירות יוצא מן הכלל ממליץ",
+    relative_time: "לפני 8 חודשים",
+    time: 1766448000,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "שי אלמליח",
+    rating: 5,
+    text: "מספר אחד בתחום!ממליץ מכל הלב אין עלייך!",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "גל חג'בי",
+    rating: 5,
+    text: "ממליצה בחום שירות יוצא מן הכלל , שמאי בחסד עליון!",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "השכרת נגררים באשדוד",
+    rating: 5,
+    text: "מומלץ!!!",
+    relative_time: "לפני 4 שבועות",
+    time: 1785024000,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "שילת אביטן",
+    rating: 5,
+    text: "משרד שמאים משכמו ומעלה עזרו לי מאוד בנזק מים מול הביטוח .",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
