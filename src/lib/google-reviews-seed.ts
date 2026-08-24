@@ -1508,6 +1508,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1755907200,
     profile_photo_url: "",
   },
+  {
+    author_name: "בן בוגנים",
+    rating: 5,
+    text: "אדם מקסים ושירותי עזר לנו ברגע קשה מאוד קשה תודה ממל בחום!!",
+    relative_time: "לפני 11 חודשים",
+    time: 1758585600,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "יצחק סיטבון",
+    rating: 5,
+    text: "שירות אמין שירות מהיר ומקצועי אני מאד שמח שרפאל שמאות נתן לי את כל השירות",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "אריאל אבן צור",
+    rating: 5,
+    text: "שירות מעולה אכפתיות מעל המצופה כלפי הלקוח אני אישית הרוחתי כפול כמה שציפית",
+    relative_time: "לפני 2 שנים",
+    time: 1724371200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "keren haskal",
+    rating: 5,
+    text: "רפאל טיפל בתביעה במהירות תוך הבנת המצב,\nובמקצועיות רבה",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "בני ביטון",
+    rating: 5,
+    text: "שירות אדיב ויחס אישי שקשה למצוא בשוק השמאות\nוהכי חשוב אמינות ומקצועיות ברמה מעל כולם",
+    relative_time: "לפני 2 שנים",
+    time: 1724371200,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
