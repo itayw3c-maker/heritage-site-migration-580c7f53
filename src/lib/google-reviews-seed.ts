@@ -1228,6 +1228,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1761177600,
     profile_photo_url: "",
   },
+  {
+    author_name: "eitan ashkenazi",
+    rating: 5,
+    text: "רפאל שמאי מקצועי ומנוסה אני ומשפחתי קיבלנו שירות מעולה. מקצוען אמיתי!",
+    relative_time: "לפני 9 חודשים",
+    time: 1763856000,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "יוסף גיגי",
+    rating: 5,
+    text: "קודם כל בן אדם מדהים ושירות עוד יותר מדהים כל שאלה שהייתי צריך הוא היה זמין אליי נתן כמו שצריך אני ממליץ בחום ממש מי שיפנה אליו לא יתאכזב מילה שלי",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "ניסן כמיסה",
+    rating: 5,
+    text: "השתמשתי בשירותים של רפאל לפני חודש להערכה של נכס+ מספר תכשיטים. במקצועות אפורים קשה למצוא את האור בקצה המנהרה, תודה לרפאל על שירות מקצועי, זמין , מומלץ באופן אישי תודה .",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "ishai macabi",
+    rating: 5,
+    text: "שמאי שהוא לא רק עושה את העבודה..\nשירות אם חיוך והמלצות בלי סוף\nאמינות במקום הראשון אצלך.\nהצלחה גדולה פרנסה בשפע!",
+    relative_time: "לפני 2 שנים",
+    time: 1724371200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "Galina Dziuba",
+    rating: 5,
+    text: "מאוד נהנתי מטיפול של רפאל, ענייני, מהיר ונעים בתקשורת, בזמן אמת קיבלתי מענה ותשובות תודה רבה",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
