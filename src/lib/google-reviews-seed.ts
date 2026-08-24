@@ -1428,6 +1428,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1724371200,
     profile_photo_url: "",
   },
+  {
+    author_name: "מאיר עטייה",
+    rating: 5,
+    text: "אחלה שמאי הוציא לי הרבה כסף ודאג לכל הפרטים לא הייתי צריך לעשות כמעט כלום לקח על עצמו את כל הפרוצדורה",
+    relative_time: "לפני 2 שנים",
+    time: 1724371200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "מאיר המהיר",
+    rating: 5,
+    text: "שירות אש איזה נעים הליכות יחס מיוחד ומחיר בהחלט סביר ירבו אנשי מקצוע כאלו",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "דניאל שלי",
+    rating: 5,
+    text: "היה אדיב יעיל ומקצועי  , טיפל באמא שלי בעקבות פגיעת הטיל בבת ים",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "יובל גל חגבי",
+    rating: 5,
+    text: "מומלץ מאוד, אין על רפאל וארז , סייעו לי מאוד בנזק מים שהיה לי בדירה.",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "בועז בנימין",
+    rating: 5,
+    text: "חמד של בחור\nהגיע מהר שלח דו\"ח במהירות ויעילות\nמומלץ בחום רב",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
