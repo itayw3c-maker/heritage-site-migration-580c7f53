@@ -1196,6 +1196,38 @@ export const SEED_REVIEWS: Review[] = [
     time: 1755907200,
     profile_photo_url: "",
   },
+  {
+    author_name: "Natalie garyani",
+    rating: 5,
+    text: "רפאל מקצועי אחראי וישר.\nהשירות היה מהיר מפורט ומקצועי.\nהגשת הדוח מעמיקה עד הפרטים הקטנים.\nהמחיר הוגן עבור השירות והדרישה הדחופה שאליה הגיע.\nבהחלט ממליצה עליו בחום!",
+    relative_time: "לפני 2 שנים",
+    time: 1724371200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "ליאת ארבוב",
+    rating: 5,
+    text: "אני חייבת לציין שאין בנאדם יותר סבלני ומקצועי ממנוומטפל בכל דבר הכי קטן שההיתי צריכה באותו רגע",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "נדין סקורי",
+    rating: 5,
+    text: "שירות אדיב ומהיר\nבחור רציני ולעניין יישר כוח 👍 ...",
+    relative_time: "לפני 4 חודשים",
+    time: 1776902400,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "יוסף חיים עוברני",
+    rating: 5,
+    text: "שמאי מומלץ עזר לי בנזק מים בדירה שלי מעל הפנלים",
+    relative_time: "לפני 10 חודשים",
+    time: 1761177600,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
