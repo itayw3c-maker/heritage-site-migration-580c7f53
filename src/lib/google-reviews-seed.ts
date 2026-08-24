@@ -1468,6 +1468,46 @@ export const SEED_REVIEWS: Review[] = [
     time: 1755907200,
     profile_photo_url: "",
   },
+  {
+    author_name: "יוסף חיים כהן",
+    rating: 5,
+    text: "מקצועי אדיב אין כמוהו בעולם\nשירות אש\nשיהיה לך תאומים השנה בעזרת השם",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "חיים ברום",
+    rating: 5,
+    text: "שירות יוצא מי הכלל יחד עם תוצאה מעולה. מומלץ בחום.",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "shahar avata",
+    rating: 5,
+    text: "שמאי מומלץ עזר לי בנזק הדירה בתביעת הביטוח באזור חיפה",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "דניאל *",
+    rating: 5,
+    text: "רפאל עשה לי שמאות ברמה גבוהה , שירות , ועמידה בזמנים .\nתודה רבה",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
+  {
+    author_name: "אולגה אברמוב",
+    rating: 5,
+    text: "התרשמתי מאוד מכוח רצון של רפאל. בנאדם מקצועי, נדיב ונעים.",
+    relative_time: "לפני שנה",
+    time: 1755907200,
+    profile_photo_url: "",
+  },
 ];
 
 export const SEED_RATING = 5;
