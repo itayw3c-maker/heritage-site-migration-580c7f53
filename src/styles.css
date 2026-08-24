@@ -607,6 +607,16 @@ h1.rr-sitemap-title {
   }
 }
 
+.rr-header-call-mobile { display: none; }
+@media (max-width: 767px) {
+  .rr-header-call-mobile {
+    display: flex; align-items: center; justify-content: center;
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #CBA436; color: #fff; z-index: 5;
+  }
+}
+
 /* 2. Google reviews badge (rpi) → wide horizontal card */
 #rpi-6226-static {
   position: fixed !important;
