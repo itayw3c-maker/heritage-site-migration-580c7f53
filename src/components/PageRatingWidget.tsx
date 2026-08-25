@@ -65,7 +65,17 @@ export function PageRatingWidget({ pageSlug }: PageRatingWidgetProps) {
 
   if (!loaded) return null;
 
-  const displayValue = hoverRating ?? myRating ?? 0;
+  // Touch devices don't have real hover: mouseenter/mouseleave fire from
+  // synthetic touch-to-mouse emulation, inconsistently around the tap/click
+  // sequence, and can leave a stale hoverRating that doesn't match what was
+  // actually tapped (the same class of bug already hit — and fixed the same
+  // way — for the hamburger submenu elsewhere in this codebase). On touch,
+  // skip the hover preview entirely and only ever reflect the submitted
+  // rating; on real pointer devices the hover preview still works.
+  const supportsHover =
+    typeof window !== "undefined" &&
+    window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const displayValue = (supportsHover ? hoverRating : null) ?? myRating ?? 0;
 
   return (
     <div className="rr-page-rating" dir="rtl">
@@ -77,8 +87,8 @@ export function PageRatingWidget({ pageSlug }: PageRatingWidgetProps) {
             className="rr-page-rating__star"
             aria-label={`דרג ${n} מתוך 5 כוכבים`}
             disabled={!!myRating || submitting}
-            onMouseEnter={() => !myRating && setHoverRating(n)}
-            onMouseLeave={() => setHoverRating(null)}
+            onMouseEnter={() => supportsHover && !myRating && setHoverRating(n)}
+            onMouseLeave={() => supportsHover && setHoverRating(null)}
             onClick={() => submitRating(n)}
           >
             <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">

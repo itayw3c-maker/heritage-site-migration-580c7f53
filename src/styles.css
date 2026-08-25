@@ -2145,6 +2145,11 @@ button.rr-page-rating__star {
   line-height: 0;
   box-sizing: border-box;
   transition: transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  outline-color: transparent;
+}
+button.rr-page-rating__star::-moz-focus-inner {
+  border: 0;
 }
 button.rr-page-rating__star:hover:not(:disabled) {
   transform: scale(1.12);
