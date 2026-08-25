@@ -19,6 +19,7 @@ export function PageRatingWidget({ pageSlug }: PageRatingWidgetProps) {
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_PREFIX + pageSlug);
@@ -48,12 +49,20 @@ export function PageRatingWidget({ pageSlug }: PageRatingWidgetProps) {
   async function submitRating(rating: number) {
     if (myRating || submitting) return;
     setSubmitting(true);
+    setFailed(false);
     const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase
       .from("page_ratings")
       .insert({ page_slug: pageSlug, rating });
     setSubmitting(false);
-    if (error) return;
+    // Never swallow this silently: if the insert fails (missing table,
+    // RLS rejection, network) the tap otherwise looks like a dead button
+    // with no feedback at all, which is exactly how this shipped broken.
+    if (error) {
+      console.error("[PageRating] vote failed", error);
+      setFailed(true);
+      return;
+    }
     window.localStorage.setItem(STORAGE_PREFIX + pageSlug, String(rating));
     setMyRating(rating);
     setCount((c) => c + 1);
@@ -103,7 +112,9 @@ export function PageRatingWidget({ pageSlug }: PageRatingWidgetProps) {
         ))}
       </div>
       <div className="rr-page-rating__summary">
-        {myRating ? (
+        {failed ? (
+          <span>הדירוג לא נשמר, נסו שוב מאוחר יותר.</span>
+        ) : myRating ? (
           <span>תודה שדירגתם! הדירוג שלכם: {myRating} מתוך 5.</span>
         ) : (
           <span>דרגו את המדריך הזה</span>
