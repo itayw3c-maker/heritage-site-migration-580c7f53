@@ -1,6 +1,7 @@
 import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SingleTemplate, type SingleRecord } from "@/components/SingleTemplate";
+import { PageRatingWidget } from "@/components/PageRatingWidget";
 import { getSeoRecord } from "@/lib/seo.functions";
 import { getSeoOverride, isExpertReviewedPath } from "@/lib/seo-overrides";
 import {
@@ -14,6 +15,12 @@ import {
 } from "@/lib/seo-head";
 import { checkContentPath } from "@/lib/content-existence.functions";
 import { getContentRecord } from "@/lib/content-record.functions";
+
+// Pilot slugs for the on-page star-rating widget (see PageRatingWidget).
+// Independent of any third-party review source; expand this list once approved.
+const RATING_WIDGET_SLUGS = new Set([
+  "שמאי-רכוש-לוחות-זמנים-חברות-ביטוח",
+]);
 
 export const Route = createFileRoute("/$")({
   loader: async ({ params }) => {
@@ -140,11 +147,21 @@ function PlaceholderPage() {
   }, [slug, ssrRecord]);
 
   if (ssrRecord) {
-    return <SingleTemplate record={ssrRecord} slug={slug} related={ssrRelated} />;
+    return (
+      <>
+        <SingleTemplate record={ssrRecord} slug={slug} related={ssrRelated} />
+        {RATING_WIDGET_SLUGS.has(slug) && <PageRatingWidget pageSlug={slug} />}
+      </>
+    );
   }
 
   if (status === "found" && record) {
-    return <SingleTemplate record={record} slug={slug} />;
+    return (
+      <>
+        <SingleTemplate record={record} slug={slug} />
+        {RATING_WIDGET_SLUGS.has(slug) && <PageRatingWidget pageSlug={slug} />}
+      </>
+    );
   }
 
   if (status === "loading") {

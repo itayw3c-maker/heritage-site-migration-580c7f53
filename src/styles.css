@@ -2102,3 +2102,41 @@ footer .elementor-element-b655895 .elementor-custom-embed {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* ============ On-page star rating widget (pilot) ============
+   Independent of GMB/any third-party review source — see PageRatingWidget
+   and its migration for the full rationale. Pilot rollout: one page only. */
+.rr-page-rating {
+  max-width: 860px;
+  margin: 32px auto;
+  padding: 18px 24px;
+  border: 1px solid #e3e8ee;
+  border-radius: 12px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-family: "Assistant", sans-serif;
+}
+.rr-page-rating__stars {
+  display: flex;
+  gap: 2px;
+}
+.rr-page-rating__star {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  line-height: 0;
+}
+.rr-page-rating__star:disabled {
+  cursor: default;
+}
+.rr-page-rating__summary {
+  font-size: 15px;
+  color: #25313c;
+}
+.rr-page-rating__count {
+  color: #5b6a7d;
+}
