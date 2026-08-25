@@ -2105,38 +2105,63 @@ footer .elementor-element-b655895 .elementor-custom-embed {
 
 /* ============ On-page star rating widget (pilot) ============
    Independent of GMB/any third-party review source — see PageRatingWidget
-   and its migration for the full rationale. Pilot rollout: one page only. */
+   and its migration for the full rationale. Pilot rollout: one page only.
+
+   The theme's own reset ([type=button],[type=submit],button { border:1px
+   solid #c36; border-radius:3px; ... }, loaded from the Elementor theme
+   sheet) targets every plain <button> on the site and wins on unstyled
+   properties at equal specificity. Same fix used elsewhere in this file
+   for .a11y-fab: qualify the selector with the element (button.rr-page-
+   rating__star) so it outranks the theme's attribute selector by source
+   order, instead of leaving stray pink #c36 borders on the star buttons. */
 .rr-page-rating {
   max-width: 860px;
   margin: 32px auto;
-  padding: 18px 24px;
+  padding: 20px 26px;
   border: 1px solid #e3e8ee;
   border-radius: 12px;
-  background: #fff;
+  background: linear-gradient(180deg, #fffdf5 0%, #ffffff 60%);
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   flex-wrap: wrap;
   font-family: "Assistant", sans-serif;
+  border-right: 4px solid #CBA436;
 }
 .rr-page-rating__stars {
   display: flex;
-  gap: 2px;
+  gap: 4px;
 }
-.rr-page-rating__star {
-  background: none;
-  border: none;
+button.rr-page-rating__star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
   padding: 2px;
+  margin: 0;
   cursor: pointer;
   line-height: 0;
+  box-sizing: border-box;
+  transition: transform 0.1s ease;
 }
-.rr-page-rating__star:disabled {
+button.rr-page-rating__star:hover:not(:disabled) {
+  transform: scale(1.12);
+}
+button.rr-page-rating__star:disabled {
   cursor: default;
+}
+button.rr-page-rating__star:focus-visible {
+  outline: 2px solid #056FC4;
+  outline-offset: 2px;
 }
 .rr-page-rating__summary {
   font-size: 15px;
-  color: #25313c;
+  font-weight: 600;
+  color: #063760;
 }
 .rr-page-rating__count {
+  font-weight: 400;
   color: #5b6a7d;
 }
