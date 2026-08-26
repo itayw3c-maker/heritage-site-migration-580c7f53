@@ -83,6 +83,27 @@ export type Database = {
         }
         Relationships: []
       }
+      page_ratings: {
+        Row: {
+          created_at: string
+          id: string
+          page_slug: string
+          rating: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          page_slug: string
+          rating: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          page_slug?: string
+          rating?: number
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           category_id: number
