@@ -16,12 +16,6 @@ import {
 import { checkContentPath } from "@/lib/content-existence.functions";
 import { getContentRecord } from "@/lib/content-record.functions";
 
-// Pilot slugs for the on-page star-rating widget (see PageRatingWidget).
-// Independent of any third-party review source; expand this list once approved.
-const RATING_WIDGET_SLUGS = new Set([
-  "שמאי-רכוש-לוחות-זמנים-חברות-ביטוח",
-]);
-
 export const Route = createFileRoute("/$")({
   loader: async ({ params }) => {
     const raw = (params as { _splat?: string })._splat ?? "";
@@ -150,7 +144,7 @@ function PlaceholderPage() {
     return (
       <>
         <SingleTemplate record={ssrRecord} slug={slug} related={ssrRelated} />
-        {RATING_WIDGET_SLUGS.has(slug) && <PageRatingWidget pageSlug={slug} />}
+        <PageRatingWidget pageSlug={slug} />
       </>
     );
   }
@@ -159,7 +153,7 @@ function PlaceholderPage() {
     return (
       <>
         <SingleTemplate record={record} slug={slug} />
-        {RATING_WIDGET_SLUGS.has(slug) && <PageRatingWidget pageSlug={slug} />}
+        <PageRatingWidget pageSlug={slug} />
       </>
     );
   }
