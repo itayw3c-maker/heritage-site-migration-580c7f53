@@ -2170,3 +2170,13 @@ button.rr-page-rating__star:focus-visible {
   font-weight: 400;
   color: #5b6a7d;
 }
+
+/* Hero H1: force "רפאל ריבוח" onto a second line on mobile only */
+.rr-hero-h1-break {
+  display: none;
+}
+@media (max-width: 767px) {
+  .rr-hero-h1-break {
+    display: inline;
+  }
+}
