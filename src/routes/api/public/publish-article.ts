@@ -3,19 +3,52 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type { Json } from "@/integrations/supabase/types";
 import { resolveCategory } from "@/lib/db-post";
+import { sanitizeArticleHtml } from "@/lib/html-sanitize.server";
+import { audit, clientKey, rateLimit } from "@/lib/abuse-guard.server";
 
 const SITE = "https://www.rrshamaut.co.il";
 
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
+// The documented consumer is a server-to-server pipeline, so no browser
+// origin needs cross-origin access. CORS is therefore not advertised at all;
+// only a documented origin list (if ever configured) may be echoed back.
+const ALLOWED_ORIGINS = (process.env["PUBLISH_ALLOWED_ORIGINS"] ?? "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
 
-function json(body: unknown, status = 200) {
+function corsHeaders(request?: Request): Record<string, string> {
+  const origin = request?.headers.get("origin");
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) return { Vary: "Origin" };
+  return {
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Max-Age": "600",
+    Vary: "Origin",
+  };
+}
+
+// Application-layer limits (no DB policy involved):
+//   POST   30 requests / 5 min per client
+//   DELETE  5 requests / 5 min per client, and off unless explicitly enabled
+const WINDOW_MS = 5 * 60 * 1000;
+const POST_LIMIT = 30;
+const DELETE_LIMIT = 5;
+const MAX_BODY_BYTES = 512 * 1024;
+
+function deleteEnabled(): boolean {
+  return (process.env["PUBLISH_ALLOW_DELETE"] ?? "").toLowerCase() === "true";
+}
+
+function json(body: unknown, status = 200, request?: Request) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json", ...CORS },
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff",
+      ...corsHeaders(request),
+    },
   });
 }
 
@@ -64,22 +97,72 @@ const str = (v: unknown): string | null =>
 export const Route = createFileRoute("/api/public/publish-article")({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
+      OPTIONS: async ({ request }) =>
+        new Response(null, { status: 204, headers: corsHeaders(request) }),
 
       POST: async ({ request }) => {
-        if (!authorized(request)) return json({ error: "Unauthorized" }, 401);
+        const key = clientKey(request);
+        if (!authorized(request)) {
+          audit("publish.unauthorized", { method: "POST", client: key });
+          return json({ error: "Unauthorized" }, 401, request);
+        }
+        const limit = rateLimit(`publish:post:${key}`, POST_LIMIT, WINDOW_MS);
+        if (!limit.allowed) {
+          audit("publish.rate_limited", { method: "POST", client: key });
+          return new Response(
+            JSON.stringify({ error: "Too many requests" }),
+            {
+              status: 429,
+              headers: {
+                "Content-Type": "application/json",
+                "Retry-After": String(limit.retryAfterSeconds),
+                ...corsHeaders(request),
+              },
+            },
+          );
+        }
+
+        const raw = await request.text();
+        if (raw.length > MAX_BODY_BYTES) {
+          audit("publish.payload_too_large", { client: key, bytes: raw.length });
+          return json({ error: "Payload too large" }, 413, request);
+        }
 
         let body: Payload;
         try {
-          body = (await request.json()) as Payload;
+          body = JSON.parse(raw) as Payload;
         } catch {
-          return json({ error: "Invalid JSON body" }, 400);
+          return json({ error: "Invalid JSON body" }, 400, request);
+        }
+        if (!body || typeof body !== "object" || Array.isArray(body)) {
+          return json({ error: "Invalid JSON body" }, 400, request);
         }
 
         const title = str(body.title);
-        const bodyHtml = str(body.body_html);
-        if (!title) return json({ error: "title is required" }, 400);
-        if (!bodyHtml) return json({ error: "body_html is required" }, 400);
+        const rawHtml = str(body.body_html);
+        if (!title) return json({ error: "title is required" }, 400, request);
+        if (!rawHtml) return json({ error: "body_html is required" }, 400, request);
+
+        // Server-side allowlist sanitization happens before anything is
+        // persisted: scripts, event handlers and javascript: URLs cannot
+        // reach the database, let alone a rendered page.
+        const sanitized = sanitizeArticleHtml(rawHtml);
+        const bodyHtml = sanitized.html;
+        if (!bodyHtml.trim()) {
+          return json({ error: "body_html contained no allowed content" }, 422, request);
+        }
+        if (
+          sanitized.removedTags.length ||
+          sanitized.removedAttributes.length ||
+          sanitized.blockedUrls
+        ) {
+          audit("publish.sanitized", {
+            client: key,
+            removed_tags: sanitized.removedTags.join(",").slice(0, 200),
+            removed_attributes: sanitized.removedAttributes.join(",").slice(0, 200),
+            blocked_urls: sanitized.blockedUrls,
+          });
+        }
 
         const rawStatus = typeof body.status === "string" ? body.status : "draft";
         if (rawStatus !== "draft" && rawStatus !== "publish") {
@@ -117,7 +200,10 @@ export const Route = createFileRoute("/api/public/publish-article")({
           .select("id")
           .eq("slug", slug)
           .maybeSingle();
-        if (findError) return json({ error: findError.message }, 500);
+        if (findError) {
+          audit("publish.db_error", { client: key, stage: "lookup" });
+          return json({ error: "Database error" }, 500, request);
+        }
 
         let id: string;
         if (existing?.id) {
@@ -127,7 +213,10 @@ export const Route = createFileRoute("/api/public/publish-article")({
             .eq("id", existing.id)
             .select("id")
             .single();
-          if (error) return json({ error: error.message }, 500);
+          if (error) {
+            audit("publish.db_error", { client: key, stage: "update" });
+            return json({ error: "Database error" }, 500, request);
+          }
           id = data.id;
         } else {
           const { data, error } = await supabaseAdmin
@@ -135,9 +224,20 @@ export const Route = createFileRoute("/api/public/publish-article")({
             .insert(row)
             .select("id")
             .single();
-          if (error) return json({ error: error.message }, 500);
+          if (error) {
+            audit("publish.db_error", { client: key, stage: "insert" });
+            return json({ error: "Database error" }, 500, request);
+          }
           id = data.id;
         }
+
+        audit("publish.ok", {
+          client: key,
+          slug,
+          status,
+          updated: Boolean(existing?.id),
+          html_bytes: bodyHtml.length,
+        });
 
         return json({
           id,
@@ -145,24 +245,49 @@ export const Route = createFileRoute("/api/public/publish-article")({
           status,
           category_id: categoryId,
           url: `${SITE}/${slug}/`,
-        });
+        }, 200, request);
       },
 
+      // Destructive path: blocked by default. It only becomes available when
+      // PUBLISH_ALLOW_DELETE=true is set for the environment, and even then it
+      // soft-deletes (status -> draft) instead of destroying rows.
       DELETE: async ({ request }) => {
-        if (!authorized(request)) return json({ error: "Unauthorized" }, 401);
+        const key = clientKey(request);
+        if (!authorized(request)) {
+          audit("publish.unauthorized", { method: "DELETE", client: key });
+          return json({ error: "Unauthorized" }, 401, request);
+        }
+        if (!deleteEnabled()) {
+          audit("publish.delete_blocked", { client: key });
+          return json({ error: "Delete is disabled for this endpoint" }, 405, request);
+        }
+        const limit = rateLimit(`publish:delete:${key}`, DELETE_LIMIT, WINDOW_MS);
+        if (!limit.allowed) {
+          audit("publish.rate_limited", { method: "DELETE", client: key });
+          return json({ error: "Too many requests" }, 429, request);
+        }
         let body: { id?: unknown };
         try {
           body = (await request.json()) as { id?: unknown };
         } catch {
-          return json({ error: "Invalid JSON body" }, 400);
+          return json({ error: "Invalid JSON body" }, 400, request);
         }
         const id = str(body.id);
-        if (!id) return json({ error: "id is required" }, 400);
+        if (!id || !/^[0-9a-f-]{36}$/i.test(id)) {
+          return json({ error: "id is required" }, 400, request);
+        }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { error } = await supabaseAdmin.from("posts").delete().eq("id", id);
-        if (error) return json({ error: error.message }, 500);
-        return json({ ok: true });
+        const { error } = await supabaseAdmin
+          .from("posts")
+          .update({ status: "draft" })
+          .eq("id", id);
+        if (error) {
+          audit("publish.db_error", { client: key, stage: "delete" });
+          return json({ error: "Database error" }, 500, request);
+        }
+        audit("publish.unpublished", { client: key, id });
+        return json({ ok: true }, 200, request);
       },
     },
   },

@@ -48,8 +48,26 @@ export function PageRatingWidget({ pageSlug }: PageRatingWidgetProps) {
 
   async function submitRating(rating: number) {
     if (myRating || submitting) return;
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) return;
     setSubmitting(true);
     setFailed(false);
+    // Graduated anti-abuse (application layer only): one vote per page is
+    // already enforced by localStorage; on top of that a single visitor may
+    // cast at most 10 votes per 30 minutes across the whole site.
+    const { checkSubmissionGuard, recordSubmission, RATING_GUARD_KEY, RATING_MAX_PER_WINDOW } =
+      await import("@/lib/anti-abuse");
+    const guard = checkSubmissionGuard({
+      key: RATING_GUARD_KEY,
+      max: RATING_MAX_PER_WINDOW,
+      duplicateCooldownMs: 5000,
+      fingerprint: pageSlug,
+    });
+    if (!guard.ok) {
+      setSubmitting(false);
+      setFailed(true);
+      return;
+    }
+    recordSubmission(RATING_GUARD_KEY, pageSlug);
     const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase
       .from("page_ratings")
