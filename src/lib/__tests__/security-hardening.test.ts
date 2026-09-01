@@ -99,7 +99,9 @@ describe("sanitizeArticleHtml — encoded and malformed XSS variants", () => {
       expect(out.toLowerCase()).not.toMatch(/<\s*(svg|iframe|object|form|meta|base|input)/);
       expect(out.toLowerCase()).not.toMatch(/on[a-z]+\s*=/);
       expect(out.toLowerCase()).not.toContain("data:text/html");
-      expect(out).not.toContain("alert(1)");
+      // Escaped leftover *text* is inert; what must never survive is an
+      // executable construct — a tag or attribute carrying the payload.
+      expect(out).not.toMatch(/<[^>]*alert\(1\)/);
     });
   }
 

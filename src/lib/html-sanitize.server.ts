@@ -84,9 +84,12 @@ export function sanitizeArticleHtml(input: unknown): SanitizeReport {
     allowedSchemes: ALLOWED_SCHEMES,
     allowedSchemesAppliedToAttributes: ["href", "src", "cite", "srcset"],
     allowProtocolRelative: false,
-    // Reject `data:` URLs entirely; base64 raster images are re-allowed in the
-    // transform below after an explicit format check.
-    allowedSchemesByTag: {},
+    // `data:` is permitted only on image sources, and only for the base64
+    // raster formats checked explicitly in the transform below.
+    allowedSchemesByTag: {
+      img: [...ALLOWED_SCHEMES, "data"],
+      source: [...ALLOWED_SCHEMES, "data"],
+    },
     enforceHtmlBoundary: false,
     parser: { lowerCaseAttributeNames: true },
     exclusiveFilter: () => false,
