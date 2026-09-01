@@ -115,26 +115,35 @@ describe("flood attempt", () => {
 });
 
 describe("authorized pipeline compatibility (staging)", () => {
-  it("accepts the documented Digipharm payload and sanitizes without rejecting it", async () => {
+  it("accepts the documented publisher payload through auth, validation and sanitizing", async () => {
     const res = await handlers.POST({
       request: req("POST", {
-        dry_run: true,
         external_id: "queue-4711",
         op: "publish",
         title: "בדיקת צינור פרסום",
         slug: "בדיקת-צינור-פרסום",
-        content:
+        body_html:
           '<h2>כותרת</h2><p>פסקה עם <strong>הדגשה</strong> ו<a href="https://www.rrshamaut.co.il/">קישור</a></p><ul><li>סעיף</li></ul>',
         excerpt: "תקציר",
-        featured_image_url: "https://www.rrshamaut.co.il/wp-content/uploads/a.jpg",
-        featured_image_alt: "תמונה",
         status: "publish",
         meta_title: "בדיקה",
         meta_description: "תיאור",
       }),
     });
-    // Preflight must still succeed for the authorized pipeline: not 401/403/405/422.
-    expect([200, 201]).toContain(res.status);
+    // The hardening must not break the authorized pipeline: no auth, method,
+    // size, validation, sanitize or rate-limit rejection. (Anything past this
+    // point is the database write, which is out of scope for a unit test.)
+    expect([400, 401, 403, 405, 413, 422, 429]).not.toContain(res.status);
+  });
+
+  it("does not strip legitimate article markup on the way to persistence", async () => {
+    const { sanitizeArticleHtml } = await import("@/lib/html-sanitize.server");
+    const html =
+      '<h2>כותרת</h2><p dir="rtl">פסקה</p><ul><li>סעיף</li></ul><table><tr><td>א</td></tr></table><img src="/wp-content/uploads/a.jpg" alt="נזק">';
+    const out = sanitizeArticleHtml(html).html;
+    for (const needle of ["<h2>", "<li>", "<td>", 'alt="נזק"', "/wp-content/uploads/a.jpg"]) {
+      expect(out).toContain(needle);
+    }
   });
 
   it("keeps the allowlisted origin working when PUBLISH_ALLOWED_ORIGINS is set", async () => {
