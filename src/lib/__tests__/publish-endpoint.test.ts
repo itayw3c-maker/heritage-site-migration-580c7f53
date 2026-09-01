@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 // Exercises the publish endpoint handlers directly: unauthorized access,
 // DELETE being blocked by default, malicious payload rejection and flooding.
@@ -12,6 +12,32 @@ type Handlers = {
 };
 
 let handlers: Handlers;
+
+const PUBLISHED_ID = "00000000-0000-0000-0000-000000000001";
+
+vi.mock("@/integrations/supabase/client.server", () => ({
+  supabaseAdmin: {
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          maybeSingle: async () => ({ data: null, error: null }),
+        }),
+      }),
+      insert: () => ({
+        select: () => ({
+          single: async () => ({ data: { id: PUBLISHED_ID }, error: null }),
+        }),
+      }),
+      update: () => ({
+        eq: () => ({
+          select: () => ({
+            single: async () => ({ data: { id: PUBLISHED_ID }, error: null }),
+          }),
+        }),
+      }),
+    }),
+  },
+}));
 
 function req(method: string, body?: unknown, token = TEST_TOKEN) {
   return new Request("https://site.test/api/public/publish-article", {
