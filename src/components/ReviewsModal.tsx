@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { GoogleG, Stars } from "@/components/SocialRatingFloat";
 
 type Review = {
@@ -60,6 +60,8 @@ function ModalReviewCard({ review }: { review: Review }) {
 }
 
 export function ReviewsModal({ data, onClose }: { data: ReviewsData; onClose: () => void }) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -68,15 +70,41 @@ export function ReviewsModal({ data, onClose }: { data: ReviewsData; onClose: ()
     };
   }, []);
 
+  const trapFocus = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Tab") return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const focusable = Array.from(
+      dialog.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((element) => element.tabIndex >= 0);
+    if (!focusable.length) {
+      event.preventDefault();
+      return;
+    }
+    const first = focusable[0]!;
+    const last = focusable[focusable.length - 1]!;
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
   return (
     <div className="rr-reviews-overlay" role="presentation" onClick={onClose}>
       <div
         className="rr-reviews-modal"
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={`ביקורות גוגל על ${data.business_name}`}
         dir="rtl"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={trapFocus}
       >
         <header className="rr-reviews-modal__header">
           <button

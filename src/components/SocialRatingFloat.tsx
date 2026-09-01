@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import reviewsData from "@/generated/reviews.json";
 import { ReviewsModal } from "@/components/ReviewsModal";
 
@@ -42,19 +42,46 @@ export function Stars({ rating = 5, size = 14 }: { rating?: number; size?: numbe
 
 export function SocialRatingFloat() {
   const [open, setOpen] = useState(false);
+  const badgeRef = useRef<HTMLButtonElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
   const data = reviewsData;
+
+  const openReviews = (trigger: HTMLElement | null) => {
+    openerRef.current = trigger;
+    setOpen(true);
+  };
+
+  const closeReviews = () => {
+    setOpen(false);
+    requestAnimationFrame(() => {
+      const opener = openerRef.current;
+      if (opener?.isConnected) {
+        opener.focus();
+      } else {
+        badgeRef.current?.focus();
+      }
+    });
+  };
 
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") closeReviews();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
   useEffect(() => {
-    const openFromEvent = () => setOpen(true);
+    const openFromEvent = (event: Event) => {
+      const trigger =
+        event instanceof CustomEvent && event.detail?.trigger instanceof HTMLElement
+          ? event.detail.trigger
+          : document.activeElement instanceof HTMLElement
+            ? document.activeElement
+            : null;
+      openReviews(trigger);
+    };
     window.addEventListener("rr:open-reviews", openFromEvent);
     return () => window.removeEventListener("rr:open-reviews", openFromEvent);
   }, []);
@@ -63,9 +90,10 @@ export function SocialRatingFloat() {
     <>
       <div className="rr-social-float" aria-live="polite">
         <button
+          ref={badgeRef}
           type="button"
           className="rr-social-badge"
-          onClick={() => setOpen(true)}
+          onClick={(event) => openReviews(event.currentTarget)}
           aria-label={`דירוג ${data.rating} בגוגל, ${data.total_reviews} ביקורות — פתיחת הביקורות`}
         >
           <span className="rr-social-badge__icon">
@@ -78,7 +106,7 @@ export function SocialRatingFloat() {
           </span>
         </button>
       </div>
-      {open && <ReviewsModal data={data} onClose={() => setOpen(false)} />}
+      {open && <ReviewsModal data={data} onClose={closeReviews} />}
     </>
   );
 }
