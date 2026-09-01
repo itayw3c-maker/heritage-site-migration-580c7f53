@@ -28,7 +28,7 @@ function req(method: string, body?: unknown, token = TEST_TOKEN) {
 beforeAll(async () => {
   process.env["PUBLISH_TOKEN"] = TEST_TOKEN;
   delete process.env["PUBLISH_ALLOW_DELETE"];
-  const mod = (await import("@/routes/api/public/publish-article")) as {
+  const mod = (await import("@/routes/api/public/publish-article")) as unknown as {
     Route: { options: { server: { handlers: Handlers } } };
   };
   handlers = mod.Route.options.server.handlers;
@@ -72,7 +72,7 @@ describe("malicious payloads", () => {
   });
 
   it("rejects non-object bodies", async () => {
-    const res = await handlers.POST({ request: req("POST", ["a"]) });
+    const res = await handlers.POST({ request: req("POST", ["a"] as unknown) });
     expect(res.status).toBe(400);
   });
 });
