@@ -2,10 +2,15 @@
 // Runs before anything is persisted, so untrusted article HTML can never
 // introduce scripts, inline event handlers or javascript: URLs into a page.
 //
-// Deliberately dependency-free: the Worker runtime bundles everything at
-// build time and a hand-written tokenizer keeps the allowlist auditable.
+// Parsing/serialisation is delegated to `sanitize-html`, which is built on the
+// pure-JS htmlparser2 tokenizer (no DOM, no native bindings) and therefore
+// bundles cleanly for the Worker runtime. This module only owns the explicit
+// allowlist and the reporting shape — there is no hand-written parser and no
+// regex-based "sanitisation" of markup.
 
-const ALLOWED_TAGS = new Set([
+import sanitizeHtml from "sanitize-html";
+
+const ALLOWED_TAGS = [
   "p", "br", "hr", "span", "div", "section", "article", "figure", "figcaption",
   "h1", "h2", "h3", "h4", "h5", "h6",
   "strong", "b", "em", "i", "u", "s", "small", "sup", "sub", "abbr", "code", "pre",
@@ -13,33 +18,35 @@ const ALLOWED_TAGS = new Set([
   "ul", "ol", "li", "dl", "dt", "dd",
   "table", "thead", "tbody", "tfoot", "tr", "th", "td", "caption", "colgroup", "col",
   "a", "img", "picture", "source",
-]);
+];
 
 // Tags whose *entire content* is dropped, not just the tag itself.
-const DROP_WITH_CONTENT = new Set([
+const DROP_WITH_CONTENT = [
   "script", "style", "iframe", "object", "embed", "applet", "template",
   "noscript", "form", "input", "button", "select", "textarea", "svg", "math",
   "link", "meta", "base", "frame", "frameset", "audio", "video",
-]);
+];
 
-const VOID_TAGS = new Set(["br", "hr", "img", "col", "source"]);
+const GLOBAL_ATTRS = ["dir", "lang", "title", "id", "class", "role"];
 
-const GLOBAL_ATTRS = new Set(["dir", "lang", "title", "id", "class", "role"]);
-const TAG_ATTRS: Record<string, Set<string>> = {
-  a: new Set(["href", "target", "rel"]),
-  img: new Set(["src", "alt", "width", "height", "loading", "decoding", "srcset", "sizes"]),
-  source: new Set(["src", "srcset", "sizes", "type", "media"]),
-  td: new Set(["colspan", "rowspan", "headers"]),
-  th: new Set(["colspan", "rowspan", "scope", "headers"]),
-  col: new Set(["span"]),
-  colgroup: new Set(["span"]),
-  ol: new Set(["start", "type"]),
-  blockquote: new Set(["cite"]),
-  q: new Set(["cite"]),
-  abbr: new Set(["title"]),
+const TAG_ATTRS: Record<string, string[]> = {
+  a: ["href", "target", "rel"],
+  img: ["src", "alt", "width", "height", "loading", "decoding", "srcset", "sizes"],
+  source: ["src", "srcset", "sizes", "type", "media"],
+  td: ["colspan", "rowspan", "headers"],
+  th: ["colspan", "rowspan", "scope", "headers"],
+  col: ["span"],
+  colgroup: ["span"],
+  ol: ["start", "type"],
+  blockquote: ["cite"],
+  q: ["cite"],
+  abbr: ["title"],
 };
 
-const SAFE_URL = /^(?:https?:\/\/|\/(?!\/)|#|mailto:|tel:)/i;
+// Protocols allowed anywhere a URL attribute is accepted. `data:` is handled
+// separately below so only base64 raster images pass.
+const ALLOWED_SCHEMES = ["http", "https", "mailto", "tel"];
+const ALLOWED_DATA_IMAGE = /^data:image\/(png|jpe?g|gif|webp|avif);base64,[a-z0-9+/=\s]+$/i;
 
 export interface SanitizeReport {
   html: string;
@@ -48,145 +55,101 @@ export interface SanitizeReport {
   blockedUrls: number;
 }
 
-function safeUrl(value: string): boolean {
-  const v = value.trim().replace(/[\u0000-\u001f\u007f]/g, "");
-  if (v === "") return false;
-  if (/^data:image\/(png|jpe?g|gif|webp|avif);base64,/i.test(v)) return true;
-  if (/^[a-z0-9.+-]*script\s*:/i.test(v)) return false;
-  return SAFE_URL.test(v);
-}
-
-function escapeText(text: string): string {
-  return text.replace(/&(?![a-zA-Z#][a-zA-Z0-9]{0,30};)/g, "&amp;").replace(/</g, "&lt;");
+function buildAllowedAttributes(): Record<string, string[]> {
+  const map: Record<string, string[]> = { "*": [...GLOBAL_ATTRS] };
+  for (const [tag, attrs] of Object.entries(TAG_ATTRS)) map[tag] = [...attrs];
+  return map;
 }
 
 /**
- * Sanitize untrusted article HTML against a tag/attribute allowlist.
- * Unknown tags are unwrapped (their text kept); dangerous tags are dropped
- * with their content; event handlers, style attributes, javascript:/data:
- * URLs and framing attributes are stripped.
+ * Sanitize untrusted article HTML against the explicit allowlist above.
+ * Returns the safe HTML plus a report used for audit logging (counts only —
+ * never the payload itself).
  */
-export function sanitizeArticleHtml(input: string): SanitizeReport {
+export function sanitizeArticleHtml(input: unknown): SanitizeReport {
+  if (typeof input !== "string" || input.trim() === "") {
+    return { html: "", removedTags: [], removedAttributes: [], blockedUrls: 0 };
+  }
+
   const removedTags = new Set<string>();
   const removedAttributes = new Set<string>();
   let blockedUrls = 0;
-  let out = "";
-  let i = 0;
-  const openStack: string[] = [];
 
-  while (i < input.length) {
-    const lt = input.indexOf("<", i);
-    if (lt === -1) {
-      out += escapeText(input.slice(i));
-      break;
-    }
-    out += escapeText(input.slice(i, lt));
-
-    // comments / doctype / CDATA
-    if (input.startsWith("<!--", lt)) {
-      const end = input.indexOf("-->", lt + 4);
-      i = end === -1 ? input.length : end + 3;
-      continue;
-    }
-    if (input.startsWith("<!", lt) || input.startsWith("<?", lt)) {
-      const end = input.indexOf(">", lt);
-      i = end === -1 ? input.length : end + 1;
-      continue;
-    }
-
-    const match = /^<\s*(\/?)\s*([a-zA-Z][a-zA-Z0-9:-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>?/.exec(
-      input.slice(lt),
-    );
-    if (!match) {
-      out += "&lt;";
-      i = lt + 1;
-      continue;
-    }
-    const raw = match[0]!;
-    const closing = match[1] === "/";
-    const tag = match[2]!.toLowerCase();
-    const attrText = match[3] ?? "";
-    i = lt + raw.length;
-
-    if (DROP_WITH_CONTENT.has(tag)) {
-      removedTags.add(tag);
-      if (!closing) {
-        const closeRe = new RegExp(`<\\s*/\\s*${tag}\\s*>`, "i");
-        const rest = input.slice(i);
-        const m = closeRe.exec(rest);
-        i = m ? i + m.index + m[0].length : input.length;
-      }
-      continue;
-    }
-
-    if (!ALLOWED_TAGS.has(tag)) {
-      // Unwrap unknown-but-harmless markup: keep inner text, drop the tag.
-      removedTags.add(tag);
-      continue;
-    }
-
-    if (closing) {
-      const idx = openStack.lastIndexOf(tag);
-      if (idx === -1) continue;
-      openStack.splice(idx, 1);
-      out += `</${tag}>`;
-      continue;
-    }
-
-    const allowed = TAG_ATTRS[tag];
-    const attrs: string[] = [];
-    const attrRe = /([a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*(?:=\s*("[^"]*"|'[^']*'|[^\s"'>]+))?/g;
-    let am: RegExpExecArray | null;
-    while ((am = attrRe.exec(attrText))) {
-      const name = am[1]!.toLowerCase();
-      let value = am[2] ?? "";
-      if (value.startsWith('"') || value.startsWith("'")) value = value.slice(1, -1);
-      if (name.startsWith("on") || name === "style" || name === "srcdoc" || name === "formaction") {
-        removedAttributes.add(name);
-        continue;
-      }
-      const isData = name.startsWith("data-") && !/["'<>]/.test(value);
-      if (!GLOBAL_ATTRS.has(name) && !isData && !(allowed && allowed.has(name))) {
-        removedAttributes.add(name);
-        continue;
-      }
-      if (name === "href" || name === "src" || name === "cite" || name === "srcset") {
-        const candidates = name === "srcset" ? value.split(",").map((s) => s.trim().split(/\s+/)[0] ?? "") : [value];
-        if (candidates.some((c) => !safeUrl(c))) {
-          blockedUrls++;
-          removedAttributes.add(name);
-          continue;
+  const html = sanitizeHtml(input, {
+    allowedTags: ALLOWED_TAGS,
+    allowedAttributes: buildAllowedAttributes(),
+    // Anything not on the allowlist is removed; these lose their text too.
+    nonTextTags: DROP_WITH_CONTENT,
+    disallowedTagsMode: "discard",
+    allowedSchemes: ALLOWED_SCHEMES,
+    allowedSchemesAppliedToAttributes: ["href", "src", "cite", "srcset"],
+    allowProtocolRelative: false,
+    // Reject `data:` URLs entirely; base64 raster images are re-allowed in the
+    // transform below after an explicit format check.
+    allowedSchemesByTag: {},
+    enforceHtmlBoundary: false,
+    parser: { lowerCaseAttributeNames: true },
+    exclusiveFilter: () => false,
+    onOpenTag(name) {
+      // Records what the allowlist rejected, for the audit trail.
+      if (!ALLOWED_TAGS.includes(name)) removedTags.add(name);
+    },
+    transformTags: {
+      "*": (tagName, attribs) => {
+        const out: Record<string, string> = {};
+        const allowed = new Set([...GLOBAL_ATTRS, ...(TAG_ATTRS[tagName] ?? [])]);
+        for (const [rawName, rawValue] of Object.entries(attribs)) {
+          const name = rawName.toLowerCase();
+          if (!allowed.has(name)) {
+            removedAttributes.add(name);
+            continue;
+          }
+          const value = String(rawValue ?? "");
+          if (name === "href" || name === "src" || name === "cite" || name === "srcset") {
+            if (ALLOWED_DATA_IMAGE.test(value.trim())) {
+              out[name] = value.trim();
+              continue;
+            }
+            if (value.trim().toLowerCase().startsWith("data:")) {
+              blockedUrls += 1;
+              continue;
+            }
+          }
+          out[name] = value;
         }
-      }
-      const safeValue = value.replace(/&(?![a-zA-Z#][a-zA-Z0-9]{0,30};)/g, "&amp;").replace(/"/g, "&quot;");
-      attrs.push(value === "" && !am[2] ? name : `${name}="${safeValue}"`);
-    }
+        if (tagName === "a" && out["href"]) {
+          const href = out["href"];
+          if (/^https?:\/\//i.test(href)) {
+            out["rel"] = "noopener noreferrer";
+          }
+        }
+        return { tagName, attribs: out };
+      },
+    },
+  });
 
-    if (tag === "a") {
-      const hasHref = attrs.some((a) => a.startsWith("href="));
-      if (hasHref && !attrs.some((a) => a.startsWith("rel="))) {
-        attrs.push('rel="noopener noreferrer"');
-      }
-    }
-
-    const selfClosing = VOID_TAGS.has(tag) || /\/\s*>?$/.test(raw);
-    out += `<${tag}${attrs.length ? " " + attrs.join(" ") : ""}${VOID_TAGS.has(tag) ? " /" : ""}>`;
-    if (!selfClosing) openStack.push(tag);
+  // sanitize-html strips unsafe URLs silently; detect that so the audit log
+  // reflects blocked links without inspecting the payload downstream.
+  const inputUrlCount = (input.match(/\s(?:href|src|cite)\s*=/gi) ?? []).length;
+  const outputUrlCount = (html.match(/\s(?:href|src|cite)\s*=/gi) ?? []).length;
+  if (inputUrlCount > outputUrlCount) {
+    blockedUrls += inputUrlCount - outputUrlCount;
   }
 
-  while (openStack.length) out += `</${openStack.pop()}>`;
-
   return {
-    html: out,
+    html,
     removedTags: [...removedTags],
     removedAttributes: [...removedAttributes],
     blockedUrls,
   };
 }
 
-/** True when the payload contains markup we refuse outright. */
-export function containsHardBlockedMarkup(input: string): boolean {
-  return /<\s*script\b|javascript\s*:|\son[a-z]+\s*=|<\s*iframe\b|<\s*object\b|<\s*embed\b/i.test(
-    input,
-  );
+/**
+ * Cheap pre-check used to reject obviously hostile payloads before the full
+ * sanitize pass. This is a *detection* helper for the audit log and early 422s,
+ * never the security boundary — `sanitizeArticleHtml` is.
+ */
+export function containsHardBlockedMarkup(input: unknown): boolean {
+  if (typeof input !== "string") return false;
+  return /<\s*(script|iframe|object|embed|form|svg|math|link|meta|base)\b/i.test(input);
 }
