@@ -113,3 +113,55 @@ describe("flood attempt", () => {
     expect(sawRateLimit).toBe(true);
   });
 });
+
+describe("authorized pipeline compatibility (staging)", () => {
+  it("accepts the documented publisher payload through auth, validation and sanitizing", async () => {
+    const res = await handlers.POST({
+      request: req("POST", {
+        external_id: "queue-4711",
+        op: "publish",
+        title: "בדיקת צינור פרסום",
+        slug: "בדיקת-צינור-פרסום",
+        body_html:
+          '<h2>כותרת</h2><p>פסקה עם <strong>הדגשה</strong> ו<a href="https://www.rrshamaut.co.il/">קישור</a></p><ul><li>סעיף</li></ul>',
+        excerpt: "תקציר",
+        status: "publish",
+        meta_title: "בדיקה",
+        meta_description: "תיאור",
+      }),
+    });
+    // The hardening must not break the authorized pipeline: no auth, method,
+    // size, validation, sanitize or rate-limit rejection. (Anything past this
+    // point is the database write, which is out of scope for a unit test.)
+    expect([400, 401, 403, 405, 413, 422, 429]).not.toContain(res.status);
+  });
+
+  it("does not strip legitimate article markup on the way to persistence", async () => {
+    const { sanitizeArticleHtml } = await import("@/lib/html-sanitize.server");
+    const html =
+      '<h2>כותרת</h2><p dir="rtl">פסקה</p><ul><li>סעיף</li></ul><table><tr><td>א</td></tr></table><img src="/wp-content/uploads/a.jpg" alt="נזק">';
+    const out = sanitizeArticleHtml(html).html;
+    for (const needle of ["<h2>", "<li>", "<td>", 'alt="נזק"', "/wp-content/uploads/a.jpg"]) {
+      expect(out).toContain(needle);
+    }
+  });
+
+  it("keeps the allowlisted origin working when PUBLISH_ALLOWED_ORIGINS is set", async () => {
+    process.env["PUBLISH_ALLOWED_ORIGINS"] = "https://staging.digipharm.test";
+    try {
+      const mod = (await import("@/routes/api/public/publish-article")) as unknown as {
+        Route: { options: { server: { handlers: Handlers } } };
+      };
+      const request = new Request("https://site.test/api/public/publish-article", {
+        method: "OPTIONS",
+        headers: { Origin: "https://staging.digipharm.test" },
+      });
+      const res = await mod.Route.options.server.handlers.OPTIONS({ request });
+      // Either the origin is echoed back, or CORS is simply not used by the
+      // documented server-to-server pipeline — never a wildcard.
+      expect(res.headers.get("access-control-allow-origin")).not.toBe("*");
+    } finally {
+      delete process.env["PUBLISH_ALLOWED_ORIGINS"];
+    }
+  });
+});

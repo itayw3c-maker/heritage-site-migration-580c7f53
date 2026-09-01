@@ -67,7 +67,6 @@ export function PageRatingWidget({ pageSlug }: PageRatingWidgetProps) {
       setFailed(true);
       return;
     }
-    recordSubmission(RATING_GUARD_KEY, pageSlug);
     const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase
       .from("page_ratings")
@@ -81,6 +80,9 @@ export function PageRatingWidget({ pageSlug }: PageRatingWidgetProps) {
       setFailed(true);
       return;
     }
+    // Recorded only after the vote is persisted, so a failed insert leaves no
+    // guard state and the visitor can retry immediately.
+    recordSubmission(RATING_GUARD_KEY, pageSlug);
     window.localStorage.setItem(STORAGE_PREFIX + pageSlug, String(rating));
     setMyRating(rating);
     setCount((c) => c + 1);

@@ -1191,11 +1191,14 @@ export async function sendLeadPayload(payload: FormPayload): Promise<void> {
       guard.retryAfterSeconds,
     );
   }
-  recordSubmission(LEAD_GUARD_KEY, fingerprint);
 
   const { supabase } = await import("@/integrations/supabase/client");
   const { error } = await supabase.from("leads").insert(payload);
   if (error) throw error;
+  // Only now, after the lead is actually persisted, is the attempt recorded.
+  // A network/DB failure therefore leaves no guard state behind and the visitor
+  // can retry immediately — a legitimate lead is never lost to the guard.
+  recordSubmission(LEAD_GUARD_KEY, fingerprint);
   // Send lead to FixDigital.
   // NOTE on api_type=8: the integrate.js script only assigns self.leadUrl
   // when api_type is 3 or 4, so window.fixdigital.sendLead posts to

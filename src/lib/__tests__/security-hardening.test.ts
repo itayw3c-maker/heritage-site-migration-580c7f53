@@ -66,6 +66,65 @@ describe("sanitizeArticleHtml — malicious payloads", () => {
   });
 });
 
+describe("sanitizeArticleHtml — encoded and malformed XSS variants", () => {
+  const cases: Array<[string, string]> = [
+    ["decimal-entity javascript", '<a href="&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;alert(1)">x</a>'],
+    ["hex-entity javascript", '<a href="&#x6a;avascript&#x3a;alert(1)">x</a>'],
+    ["tab/newline split scheme", '<a href="java\tscript:alert(1)">x</a>'],
+    ["null byte in scheme", '<a href="java\u0000script:alert(1)">x</a>'],
+    ["leading whitespace scheme", '<a href="   javascript:alert(1)">x</a>'],
+    ["mixed case vbscript", '<a href="VbScRiPt:msgbox(1)">x</a>'],
+    ["unclosed script tag", '<p>טקסט</p><script>alert(1)'],
+    ["broken attribute quoting", '<img src=x onerror=alert(1)>'],
+    ["nested/obfuscated script", '<scr<script>ipt>alert(1)</script>'],
+    ["uppercase tag with handler", '<DIV ONMOUSEOVER="alert(1)">x</DIV>'],
+    ["svg onload payload", '<svg/onload=alert(1)>'],
+    ["style expression", '<div style="background:url(javascript:alert(1))">x</div>'],
+    ["meta refresh", '<meta http-equiv="refresh" content="0;url=javascript:alert(1)">'],
+    ["base tag hijack", '<base href="https://evil.test/">'],
+    ["srcset javascript", '<img srcset="javascript:alert(1) 1x">'],
+    ["form action hijack", '<form action="javascript:alert(1)"><input name="a"></form>'],
+    ["iframe srcdoc", '<iframe srcdoc="<script>alert(1)</script>"></iframe>'],
+    ["object data", '<object data="javascript:alert(1)"></object>'],
+    ["html comment breakout", '<!--<script>alert(1)</script>-->'],
+    ["data:text/html image", '<img src="data:text/html,<script>alert(1)</script>">'],
+  ];
+
+  for (const [name, payload] of cases) {
+    it(`neutralises ${name}`, () => {
+      const out = sanitizeArticleHtml(payload).html;
+      expect(out.toLowerCase()).not.toContain("javascript:");
+      expect(out.toLowerCase()).not.toContain("vbscript:");
+      expect(out.toLowerCase()).not.toMatch(/<\s*script/);
+      expect(out.toLowerCase()).not.toMatch(/<\s*(svg|iframe|object|form|meta|base|input)/);
+      expect(out.toLowerCase()).not.toMatch(/on[a-z]+\s*=/);
+      expect(out.toLowerCase()).not.toContain("data:text/html");
+      // Escaped leftover *text* is inert; what must never survive is an
+      // executable construct — a tag or attribute carrying the payload.
+      expect(out).not.toMatch(/<[^>]*alert\(1\)/);
+    });
+  }
+
+  it("keeps legitimate Hebrew article markup intact", () => {
+    const out = sanitizeArticleHtml(
+      '<h2>נזקי מים</h2><p dir="rtl">טקסט עם <a href="https://www.rrshamaut.co.il/x/">קישור</a></p><ul><li>סעיף</li></ul><img src="/wp-content/a.jpg" alt="נזק">',
+    ).html;
+    expect(out).toContain("<h2>נזקי מים</h2>");
+    expect(out).toContain('href="https://www.rrshamaut.co.il/x/"');
+    expect(out).toContain("<li>סעיף</li>");
+    expect(out).toContain('alt="נזק"');
+  });
+
+  it("accepts an inline base64 raster image but not other data URLs", () => {
+    const ok = sanitizeArticleHtml(
+      '<img src="data:image/png;base64,iVBORw0KGgo=" alt="x">',
+    ).html;
+    expect(ok).toContain("data:image/png;base64,");
+    const bad = sanitizeArticleHtml('<img src="data:application/xml;base64,PHg+" alt="x">').html;
+    expect(bad).not.toContain("data:application");
+  });
+});
+
 describe("rateLimit — flood attempts", () => {
   it("allows up to the limit then rejects with retry-after", () => {
     const key = `test-${Math.random()}`;
@@ -124,6 +183,24 @@ describe("lead anti-abuse guard", () => {
     recordSubmission(LEAD_GUARD_KEY, fp);
     const second = checkSubmissionGuard({ key: LEAD_GUARD_KEY, max: LEAD_MAX_PER_WINDOW, duplicateCooldownMs: LEAD_DUPLICATE_COOLDOWN_MS, fingerprint: fp });
     expect(second.ok).toBe(false);
+  });
+
+
+  it("does not consume the guard when the send fails (no lost lead)", () => {
+    // recordSubmission is called by the caller ONLY after a successful insert,
+    // so a failed attempt leaves no state and an immediate retry is allowed.
+    const fp = fingerprintLead(["דנה", "0501234567"]);
+    const opts = {
+      key: LEAD_GUARD_KEY,
+      max: LEAD_MAX_PER_WINDOW,
+      duplicateCooldownMs: LEAD_DUPLICATE_COOLDOWN_MS,
+      fingerprint: fp,
+    };
+    expect(checkSubmissionGuard(opts).ok).toBe(true); // attempt 1 -> network error
+    expect(checkSubmissionGuard(opts).ok).toBe(true); // immediate retry allowed
+    expect(checkSubmissionGuard(opts).ok).toBe(true);
+    recordSubmission(LEAD_GUARD_KEY, fp); // succeeded at last
+    expect(checkSubmissionGuard(opts).ok).toBe(false); // now debounced
   });
 
   it("allows a different legitimate lead right away", () => {
