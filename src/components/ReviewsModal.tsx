@@ -84,6 +84,7 @@ export function ReviewsModal({ data, onClose }: { data: ReviewsData; onClose: ()
             className="rr-reviews-modal__close"
             onClick={onClose}
             aria-label="סגירה"
+            autoFocus
           >
             <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
               <path
