@@ -1147,7 +1147,52 @@ const pendingLeadForms = new WeakSet<HTMLFormElement>();
  * Throws if the Supabase insert fails; FixDigital / notify failures are
  * swallowed (best-effort) so a lead is never lost to a side-channel error.
  */
+export class LeadThrottledError extends Error {
+  constructor(
+    message: string,
+    readonly retryAfterSeconds: number,
+  ) {
+    super(message);
+    this.name = "LeadThrottledError";
+  }
+}
+
 export async function sendLeadPayload(payload: FormPayload): Promise<void> {
+  // Graduated anti-abuse: identical submissions are debounced for 60s and a
+  // single visitor may send at most 5 leads per 30 minutes. Both thresholds
+  // are far above real human behaviour, and the guard fails open when
+  // storage is unavailable so a legitimate lead is never lost.
+  const {
+    checkSubmissionGuard,
+    recordSubmission,
+    fingerprintLead,
+    LEAD_GUARD_KEY,
+    LEAD_MAX_PER_WINDOW,
+    LEAD_DUPLICATE_COOLDOWN_MS,
+  } = await import("@/lib/anti-abuse");
+  const fingerprint = fingerprintLead([
+    payload.name,
+    payload.phone,
+    payload.email,
+    payload.message,
+    payload.form_name,
+  ]);
+  const guard = checkSubmissionGuard({
+    key: LEAD_GUARD_KEY,
+    max: LEAD_MAX_PER_WINDOW,
+    duplicateCooldownMs: LEAD_DUPLICATE_COOLDOWN_MS,
+    fingerprint,
+  });
+  if (!guard.ok) {
+    throw new LeadThrottledError(
+      guard.reason === "duplicate"
+        ? "הפנייה נשלחה כבר. אנא המתינו רגע לפני שליחה חוזרת."
+        : "נשלחו מספר פניות בזמן קצר. אנא נסו שוב בעוד מספר דקות או צרו קשר טלפונית.",
+      guard.retryAfterSeconds,
+    );
+  }
+  recordSubmission(LEAD_GUARD_KEY, fingerprint);
+
   const { supabase } = await import("@/integrations/supabase/client");
   const { error } = await supabase.from("leads").insert(payload);
   if (error) throw error;
@@ -1320,7 +1365,9 @@ async function submitLead(form: HTMLFormElement) {
     showFormMessage(
       form,
       "danger",
-      "אירעה שגיאה בשליחת הטופס. אנא נסו שוב או צרו קשר טלפונית.",
+      err instanceof LeadThrottledError
+        ? err.message
+        : "אירעה שגיאה בשליחת הטופס. אנא נסו שוב או צרו קשר טלפונית.",
     );
     form.querySelector<HTMLElement>(".elementor-message-danger")?.focus();
     pendingLeadForms.delete(form);
