@@ -15,6 +15,7 @@ import {
 } from "@/lib/seo-head";
 import { checkContentPath } from "@/lib/content-existence.functions";
 import { getContentRecord } from "@/lib/content-record.functions";
+import { REDIRECTS_ENABLED, resolveRedirect } from "@/lib/redirect-map";
 
 export const Route = createFileRoute("/$")({
   loader: async ({ params }) => {
@@ -34,6 +35,18 @@ export const Route = createFileRoute("/$")({
         href: "/about/%D7%94%D7%A9%D7%9E%D7%90%D7%99-%D7%A8%D7%A4%D7%90%D7%9C-%D7%A8%D7%99%D7%91%D7%95%D7%97-%D7%9E%D7%99%D7%99%D7%A1%D7%93-%D7%95%D7%91%D7%A2%D7%9C%D7%99%D7%9D/",
         statusCode: 301,
       } as unknown as Parameters<typeof redirect>[0]);
+    }
+    // Content-consolidation 301s. Each duplicate article points at the one
+    // canonical page for its search intent. Disabled until the merged content
+    // is live and the client signs off - see src/lib/redirect-map.ts.
+    if (REDIRECTS_ENABLED) {
+      const consolidated = resolveRedirect(path);
+      if (consolidated) {
+        throw redirect({
+          href: consolidated,
+          statusCode: 301,
+        } as unknown as Parameters<typeof redirect>[0]);
+      }
     }
     if (!path || path.startsWith("admin"))
       return { seo: null, record: null, related: { w1: "", w2: "" } };
