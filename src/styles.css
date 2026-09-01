@@ -1940,6 +1940,11 @@ body.page-id-3268 .elementor-gallery__container > .e-gallery-item .e-gallery-ima
   color: #1e3a5f;
   cursor: pointer;
 }
+.rr-reviews-modal button:focus-visible,
+.rr-reviews-modal a:focus-visible {
+  outline: 3px solid #1e3a5f;
+  outline-offset: 3px;
+}
 .rr-reviews-modal__list { list-style: none; margin: 0; padding: 8px 20px 16px; }
 .rr-review-card { border-bottom: 1px solid #f0f2f6; padding: 14px 0; }
 .rr-review-card:last-child { border-bottom: none; }
