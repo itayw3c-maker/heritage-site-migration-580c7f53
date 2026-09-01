@@ -13,14 +13,22 @@ type Handlers = {
 
 let handlers: Handlers;
 
-const PUBLISHED_ID = "00000000-0000-0000-0000-000000000001";
+const storage = vi.hoisted(() => ({
+  lookupError: false,
+  publishedId: "00000000-0000-0000-0000-000000000001",
+}));
+
+const PUBLISHED_ID = storage.publishedId;
 
 vi.mock("@/integrations/supabase/client.server", () => ({
   supabaseAdmin: {
     from: () => ({
       select: () => ({
         eq: () => ({
-          maybeSingle: async () => ({ data: null, error: null }),
+          maybeSingle: async () =>
+            storage.lookupError
+              ? { data: null, error: { message: "Simulated lookup failure" } }
+              : { data: null, error: null },
         }),
       }),
       insert: () => ({
@@ -147,7 +155,7 @@ describe("authorized pipeline compatibility (staging)", () => {
         external_id: "queue-4711",
         op: "publish",
         title: "בדיקת צינור פרסום",
-        slug: "בדיקת-צינור-פרסום",
+        slug: "publisher-pipeline-check",
         body_html:
           '<h2>כותרת</h2><p>פסקה עם <strong>הדגשה</strong> ו<a href="https://www.rrshamaut.co.il/">קישור</a></p><ul><li>סעיף</li></ul>',
         excerpt: "תקציר",
@@ -156,10 +164,30 @@ describe("authorized pipeline compatibility (staging)", () => {
         meta_description: "תיאור",
       }),
     });
-    // The hardening must not break the authorized pipeline: no auth, method,
-    // size, validation, sanitize or rate-limit rejection. (Anything past this
-    // point is the database write, which is out of scope for a unit test.)
-    expect([400, 401, 403, 405, 413, 422, 429]).not.toContain(res.status);
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject({
+      id: PUBLISHED_ID,
+      slug: "publisher-pipeline-check",
+      status: "published",
+      url: "https://www.rrshamaut.co.il/publisher-pipeline-check/",
+    });
+  });
+
+  it("returns a safe server error when the publish storage lookup fails", async () => {
+    storage.lookupError = true;
+    try {
+      const res = await handlers.POST({
+        request: req("POST", {
+          title: "בדיקת תקלה",
+          slug: "publisher-storage-error",
+          body_html: "<p>תוכן תקין</p>",
+        }),
+      });
+      expect(res.status).toBe(500);
+      await expect(res.json()).resolves.toEqual({ error: "Database error" });
+    } finally {
+      storage.lookupError = false;
+    }
   });
 
   it("does not strip legitimate article markup on the way to persistence", async () => {
