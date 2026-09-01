@@ -1191,7 +1191,6 @@ export async function sendLeadPayload(payload: FormPayload): Promise<void> {
       guard.retryAfterSeconds,
     );
   }
-  recordSubmission(LEAD_GUARD_KEY, fingerprint);
 
   const { supabase } = await import("@/integrations/supabase/client");
   const { error } = await supabase.from("leads").insert(payload);
