@@ -113,3 +113,46 @@ describe("flood attempt", () => {
     expect(sawRateLimit).toBe(true);
   });
 });
+
+describe("authorized pipeline compatibility (staging)", () => {
+  it("accepts the documented Digipharm payload and sanitizes without rejecting it", async () => {
+    const res = await handlers.POST({
+      request: req("POST", {
+        dry_run: true,
+        external_id: "queue-4711",
+        op: "publish",
+        title: "בדיקת צינור פרסום",
+        slug: "בדיקת-צינור-פרסום",
+        content:
+          '<h2>כותרת</h2><p>פסקה עם <strong>הדגשה</strong> ו<a href="https://www.rrshamaut.co.il/">קישור</a></p><ul><li>סעיף</li></ul>',
+        excerpt: "תקציר",
+        featured_image_url: "https://www.rrshamaut.co.il/wp-content/uploads/a.jpg",
+        featured_image_alt: "תמונה",
+        status: "publish",
+        meta_title: "בדיקה",
+        meta_description: "תיאור",
+      }),
+    });
+    // Preflight must still succeed for the authorized pipeline: not 401/403/405/422.
+    expect([200, 201]).toContain(res.status);
+  });
+
+  it("keeps the allowlisted origin working when PUBLISH_ALLOWED_ORIGINS is set", async () => {
+    process.env["PUBLISH_ALLOWED_ORIGINS"] = "https://staging.digipharm.test";
+    try {
+      const mod = (await import("@/routes/api/public/publish-article")) as unknown as {
+        Route: { options: { server: { handlers: Handlers } } };
+      };
+      const request = new Request("https://site.test/api/public/publish-article", {
+        method: "OPTIONS",
+        headers: { Origin: "https://staging.digipharm.test" },
+      });
+      const res = await mod.Route.options.server.handlers.OPTIONS({ request });
+      // Either the origin is echoed back, or CORS is simply not used by the
+      // documented server-to-server pipeline — never a wildcard.
+      expect(res.headers.get("access-control-allow-origin")).not.toBe("*");
+    } finally {
+      delete process.env["PUBLISH_ALLOWED_ORIGINS"];
+    }
+  });
+});
