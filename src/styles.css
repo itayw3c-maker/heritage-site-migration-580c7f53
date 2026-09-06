@@ -2185,3 +2185,71 @@ button.rr-page-rating__star:focus-visible {
     display: inline;
   }
 }
+
+/* Center the complete contact block on the press page. */
+#main-content [data-id="50bee4a"] [data-id="0f26b2b"] {
+  align-items: center;
+  text-align: center;
+}
+#main-content [data-id="50bee4a"] [data-id="211562f"],
+#main-content [data-id="50bee4a"] [data-id="2872ce0"] {
+  width: 100%;
+  max-width: 1000px;
+  margin-inline: auto;
+  text-align: center;
+}
+#main-content [data-id="2872ce0"] .elementor-form-fields-wrapper {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  align-items: stretch;
+}
+#main-content [data-id="2872ce0"] .elementor-field-group {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+}
+#main-content [data-id="2872ce0"] .elementor-field-textual {
+  width: 100%;
+  min-width: 0;
+  text-align: center;
+}
+#main-content [data-id="2872ce0"] select {
+  text-align-last: center;
+}
+#main-content [data-id="2872ce0"] .elementor-field-type-submit button {
+  width: 100%;
+  padding-inline: 20px;
+}
+#main-content [data-id="2872ce0"] .elementor-field-type-acceptance {
+  grid-column: 1 / -1;
+  order: 4;
+  text-align: center;
+}
+#main-content [data-id="2872ce0"] .elementor-field-subgroup {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+#main-content [data-id="2872ce0"] .elementor-field-option {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  max-width: 100%;
+}
+#main-content [data-id="2872ce0"] .elementor-acceptance-field {
+  flex: 0 0 auto;
+  margin: 5px 0 0;
+}
+#main-content [data-id="2872ce0"] .elementor-field-option label {
+  text-align: center;
+}
+@media (max-width: 767px) {
+  #main-content [data-id="2872ce0"] .elementor-form-fields-wrapper {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
