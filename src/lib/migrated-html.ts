@@ -1,3 +1,5 @@
+import { restoreMigratedImages } from "./native-images";
+
 function escAttr(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -214,7 +216,7 @@ export function improveMigratedHtml(html: string, pageTitle: string): string {
           .replace("ויוודא כי אתם מקבלים את כל מה שמגיע לכם על פי הפוליסה.", "ויסייע להציג את הטענות והמסמכים לפי הפוליסה, ללא הבטחת קבלתם.")
           .replace("כדי להבטיח פיצוי מלא ולהימנע ממכשולים, מומלץ להיעזר בשירותי שמאי נזקי אש פרטי שילווה אתכם לכל אורך התהליך.", "כדי לתעד ולכמת את הנזק באופן מסודר, ניתן להיעזר בשמאי נזקי אש פרטי בהתאם להיקף התיק והמחלוקת.")
       : html;
-  return professionallyCorrectedHtml
+  return restoreMigratedImages(professionallyCorrectedHtml)
     .replace(/<a\b([^>]*\bhref=["']([^"']+)["'][^>]*)>([\s\S]*?)<\/a>/gi, (tag, _attrs: string, href: string, body: string) => {
       let url: URL;
       try { url = new URL(href, "https://www.rrshamaut.co.il"); } catch { return tag; }
