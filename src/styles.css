@@ -2185,9 +2185,3 @@ button.rr-page-rating__star:focus-visible {
     display: inline;
   }
 }
-
-/* Slightly enlarge only the homepage hero consultation CTA. */
-.elementor-57 .elementor-element.elementor-element-dabb116 .elementor-element.elementor-element-2f7c01a .elementor-button {
-  font-size: 18px;
-  padding: 14px 28px;
-}
