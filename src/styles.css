@@ -2253,3 +2253,15 @@ button.rr-page-rating__star:focus-visible {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Keep Rafael's rectangular homepage portrait intact in both profile widgets. */
+#main-content .elementor-3052 [data-id="969c2d9"] img,
+#main-content .elementor-3052 [data-id="a0f67e5"] img {
+  -webkit-mask-image: none;
+  mask-image: none;
+  clip-path: none;
+  border-radius: 0;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
