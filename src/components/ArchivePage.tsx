@@ -1,35 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import categoryWrap from "@/generated/archives/category.html?raw";
 import shortsWrap from "@/generated/archives/shorts.html?raw";
 import successWrap from "@/generated/archives/success.html?raw";
 import { enhanceElementor } from "@/lib/elementor-enhance";
 import { improveMigratedHtml } from "@/lib/migrated-html";
 
-export type ArchiveKind = "category" | "shorts" | "success";
-
-export interface IndexPost {
-  slug: string;
-  title: string;
-  date: string;
-  modified: string;
-  excerpt: string;
-  thumbnail: string;
-  categories: number[];
-  video_settings?: string;
-}
-
-interface IndexBundle {
-  categories: Record<string, { name: string; slug: string }>;
-  posts: IndexPost[];
-  shorts: IndexPost[];
-  success: IndexPost[];
-}
-
-const PAGE_SIZES: Record<ArchiveKind, number> = {
-  category: 9,
-  shorts: 6,
-  success: 30,
-};
+import type { ArchiveData, ArchiveKind, IndexPost } from "@/lib/archive";
+export type { ArchiveKind, IndexPost } from "@/lib/archive";
 
 const WRAPPERS: Record<ArchiveKind, string> = {
   category: categoryWrap,
@@ -45,37 +22,6 @@ const BODY_CLASSES: Record<ArchiveKind, (extra?: string) => string> = {
   success: () =>
     "rtl archive post-type-archive post-type-archive-success wp-custom-logo wp-embed-responsive wp-theme-hello-elementor eio-default manage-default ally-default esm-default hello-elementor-default elementor-page-4112 elementor-default elementor-template-full-width elementor-kit-7",
 };
-
-const TITLES: Record<ArchiveKind, string> = {
-  category: "מידע מקצועי - רפאל שמאות רכוש | RR",
-  shorts: "סרטונים קצרים - רפאל שמאות רכוש | RR",
-  success: "ארכיון הצלחות המשרד - רפאל שמאות רכוש | RR",
-};
-
-const DESCRIPTIONS: Record<ArchiveKind, string> = {
-  category:
-    "מאמרים ומידע מקצועי בנושא שמאות רכוש, ניהול תביעות ביטוח והערכת נזקים ממשרד רפאל שמאות רכוש.",
-  shorts:
-    "סרטונים קצרים והסברים מקצועיים בנושא שמאות רכוש, תביעות ביטוח והערכת נזקים.",
-  success:
-    "סיפורי הצלחה של לקוחות רפאל שמאות רכוש בטיפול בתביעות ביטוח והערכות נזקים.",
-};
-
-const ARCHIVE_HEADINGS: Record<ArchiveKind, string> = {
-  category: "מאמרים ומידע מקצועי בנושא שמאות רכוש",
-  shorts: "סרטונים קצרים והסברים מקצועיים",
-  success: "סיפורי הצלחה בתביעות ביטוח ושמאות רכוש",
-};
-
-function setMetaDescription(content: string) {
-  let el = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
-  if (!el) {
-    el = document.createElement("meta");
-    el.name = "description";
-    document.head.appendChild(el);
-  }
-  el.content = content;
-}
 
 function escAttr(s: string): string {
   return s
@@ -100,7 +46,7 @@ function categoryCard(p: IndexPost): string {
       ${thumb}
       <div class="elementor-post__text">
         <h3 class="elementor-post__title">
-          <a href="${escAttr(href)}">${p.title}</a>
+          <a href="${escAttr(href)}">${escText(p.title)}</a>
         </h3>
         <div class="elementor-post__excerpt">
           <p>${escText(p.excerpt)}</p>
@@ -121,7 +67,7 @@ function categoryRelated(p: IndexPost): string {
   return `<article class="elementor-post elementor-grid-item post type-post status-publish format-standard hentry">
 ${thumb}
 <div class="elementor-post__text">
-<div class="elementor-post__title"><a href="${escAttr(href)}">${p.title}</a></div>
+<div class="elementor-post__title"><a href="${escAttr(href)}">${escText(p.title)}</a></div>
 <div class="elementor-post__read-more-wrapper"><a class="elementor-post__read-more" href="${escAttr(href)}" aria-label="קרא עוד אודות ${escAttr(p.title)}" tabindex="-1">קראו עוד »</a></div>
 </div>
 </article>`;
@@ -145,7 +91,7 @@ function shortsCard(p: IndexPost): string {
         </div>
         <div class="elementor-element elementor-widget elementor-widget-theme-post-title elementor-page-title elementor-widget-heading" data-element_type="widget" data-widget_type="theme-post-title.default">
           <div class="elementor-widget-container">
-            <div class="elementor-heading-title elementor-size-default"><a href="${escAttr(href)}">${p.title}</a></div>
+            <div class="elementor-heading-title elementor-size-default"><a href="${escAttr(href)}">${escText(p.title)}</a></div>
           </div>
         </div>
         <div class="elementor-element elementor-align-center elementor-widget elementor-widget-button" data-element_type="widget" data-widget_type="button.default">
@@ -177,7 +123,7 @@ function successCard(p: IndexPost): string {
         </div>
         <div class="elementor-element elementor-widget elementor-widget-theme-post-title elementor-page-title elementor-widget-heading" data-element_type="widget" data-widget_type="theme-post-title.default">
           <div class="elementor-widget-container">
-            <div class="elementor-heading-title elementor-size-default">${p.title}</div>
+            <div class="elementor-heading-title elementor-size-default">${escText(p.title)}</div>
           </div>
         </div>
         <div class="elementor-element elementor-align-center elementor-widget elementor-widget-button" data-element_type="widget" data-widget_type="button.default">
@@ -228,94 +174,27 @@ function paginationHtml(kind: ArchiveKind, catSlug: string | undefined, page: nu
   return `<nav class="elementor-pagination" aria-label="Pagination" role="navigation">${parts.join("\n")}</nav>`;
 }
 
-export function ArchivePage({
-  kind,
-  page,
-  categorySlug,
-  extraPosts,
-}: {
-  kind: ArchiveKind;
-  page: number;
-  categorySlug?: string;
-  extraPosts?: IndexPost[];
-}) {
-  const [index, setIndex] = useState<IndexBundle | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/content/_indexes.json")
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((d: IndexBundle) => {
-        if (!cancelled) setIndex(d);
-      })
-      .catch((e) => !cancelled && setErr(String(e)));
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
+export function ArchivePage({ archive }: { archive: ArchiveData }) {
+  const { kind, page, categorySlug } = archive;
   const html = useMemo(() => {
-    if (!index) return "";
-    let posts: IndexPost[];
-    if (kind === "category") {
-      const cats = index.categories;
-      const norm = (s: string) => {
-        try { return decodeURIComponent(s); } catch { return s; }
-      };
-      const target = norm(categorySlug ?? "");
-      const catId = Object.entries(cats).find(([, v]) => norm(v.slug) === target)?.[0];
-      const catNum = catId ? Number(catId) : null;
-      const merged = [...(extraPosts ?? []), ...index.posts];
-      posts = merged
-        .filter((p) => (catNum == null ? false : p.categories?.includes(catNum)))
-        .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-    } else if (kind === "shorts") {
-      posts = index.shorts;
-    } else {
-      posts = index.success;
-    }
-    const size = PAGE_SIZES[kind];
-    const totalPages = Math.max(1, Math.ceil(posts.length / size));
-    const p = Math.min(Math.max(1, page), totalPages);
-    const slice = posts.slice((p - 1) * size, p * size);
+    const slice = archive.posts;
     const build = CARD_BUILDERS[kind];
     const itemsHtml = slice.map(build).join("\n");
-    const pagHtml = paginationHtml(kind, categorySlug, p, totalPages);
-    let relatedHtml = "";
-    if (kind === "category") {
-      const relatedPool = posts.filter((x) => !slice.some((s) => s.slug === x.slug));
-      relatedHtml = relatedPool.slice(0, 4).map(categoryRelated).join("\n");
-    }
-    return improveMigratedHtml(WRAPPERS[kind], TITLES[kind])
+    const pagHtml = paginationHtml(kind, categorySlug, page, archive.totalPages);
+    const relatedHtml = archive.related.map(categoryRelated).join("\n");
+    return improveMigratedHtml(WRAPPERS[kind], archive.title)
+      .replace(/(<h1\b[^>]*>)[\s\S]*?(<\/h1>)/i, (_match, open, close) => `${open}${escText(archive.heading)}${close}`)
       .split("__HOLE_ITEMS__").join(itemsHtml)
       .split("__HOLE_PAGINATION__").join(pagHtml)
       .split("__HOLE_RELATED_1__").join(relatedHtml);
-  }, [index, kind, page, categorySlug, extraPosts]);
+  }, [archive, kind, page, categorySlug]);
 
   useEffect(() => {
-    const base = TITLES[kind];
-    document.title = page > 1 ? `${base} - עמוד ${page}` : base;
-    setMetaDescription(DESCRIPTIONS[kind]);
     document.body.className = BODY_CLASSES[kind]();
     document.querySelectorAll(".e-con.e-parent").forEach((el) => el.classList.add("e-lazyloaded"));
     enhanceElementor(document);
   }, [kind, html, page]);
 
-  if (err) {
-    return (
-      <div style={{ padding: "4rem 1rem", textAlign: "center" }}>
-        <h1>{ARCHIVE_HEADINGS[kind]}</h1>
-        <p role="alert">שגיאה בטעינת הארכיון</p>
-      </div>
-    );
-  }
-  if (!index) {
-    return (
-      <div style={{ minHeight: "60vh" }} aria-busy="true">
-        <h1 className="rr-sr-only">{ARCHIVE_HEADINGS[kind]}</h1>
-      </div>
-    );
-  }
   return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }
+

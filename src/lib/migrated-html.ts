@@ -215,6 +215,18 @@ export function improveMigratedHtml(html: string, pageTitle: string): string {
           .replace("כדי להבטיח פיצוי מלא ולהימנע ממכשולים, מומלץ להיעזר בשירותי שמאי נזקי אש פרטי שילווה אתכם לכל אורך התהליך.", "כדי לתעד ולכמת את הנזק באופן מסודר, ניתן להיעזר בשמאי נזקי אש פרטי בהתאם להיקף התיק והמחלוקת.")
       : html;
   return professionallyCorrectedHtml
+    .replace(/<a\b([^>]*\bhref=["']([^"']+)["'][^>]*)>([\s\S]*?)<\/a>/gi, (tag, _attrs: string, href: string, body: string) => {
+      let url: URL;
+      try { url = new URL(href, "https://www.rrshamaut.co.il"); } catch { return tag; }
+      if (!/^(?:www\.)?rrshamaut\.co\.il$/i.test(url.hostname)) return tag;
+      const text = body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+      const target = /קובי\s+ליבוביץ/.test(text)
+        ? "/about/עורך-דין-קובי-ליבוביץ/"
+        : /נזקי טבע שיטפונות וסערה/.test(text)
+          ? "/נזקי-טבע-שיטפונות-וסערה/"
+          : null;
+      return target ? tag.replace(/\bhref=(["'])[^"']*\1/i, `href="${target}${escAttr(url.search + url.hash)}"`) : tag;
+    })
     .replace(
       "אני מאמין שלכל אחד מגיע לקבל את מלוא הפיצוי שמגיע לו, לא פחות ואני כאן ללוות אתכם בפשטות, בתהליכים מורכבים מול חברות הביטוח.",
       "אני מאמין שלכל לקוח מגיע להבין את הנזק, המסמכים והאפשרויות העומדות בפניו, ואני כאן ללוות אתכם בפשטות בתהליכים מורכבים מול חברות הביטוח.",
@@ -252,3 +264,4 @@ export function improveMigratedHtml(html: string, pageTitle: string): string {
       return tag.replace(/^<img\b/i, `<img alt="${fallbackAlt}"`);
     });
 }
+

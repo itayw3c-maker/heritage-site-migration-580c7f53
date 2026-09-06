@@ -1,14 +1,21 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { ArchivePage } from "@/components/ArchivePage";
-import { getSeoRecord } from "@/lib/seo.functions";
+import { getArchivePage } from "@/lib/archive.functions";
 import { buildSeoHead } from "@/lib/seo-head";
 
 export const Route = createFileRoute("/success/")({
-  loader: async () => ({ seo: await getSeoRecord({ data: { path: "success" } }) }),
-  head: ({ loaderData }) => buildSeoHead(loaderData?.seo),
-  component: SuccessArchive,
+  loader: async () => {
+    const data = await getArchivePage({ data: { kind: "success", page: 1 } });
+    if (!data) throw notFound();
+    return data;
+  },
+  head: ({ loaderData }) => loaderData
+    ? buildSeoHead(loaderData.seo)
+    : { meta: [{ title: "העמוד לא נמצא | רפאל שמאות רכוש" }, { name: "robots", content: "noindex, follow" }] },
+  component: Archive,
 });
 
-function SuccessArchive() {
-  return <ArchivePage kind="success" page={1} />;
+function Archive() {
+  const { archive } = Route.useLoaderData();
+  return <ArchivePage archive={archive} />;
 }
