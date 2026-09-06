@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { selectArchivePage, archiveSeo, type ArchiveKind, type IndexBundle } from "./archive";
+import { selectArchivePage, archiveSeo, type ArchiveKind } from "./archive";
 
 // The public index is bundled only into the server. Return one page, not the
 // complete archive, so SSR and hydration share the same small payload.
@@ -21,7 +21,7 @@ export const getArchivePage = createServerFn({ method: "GET" })
         console.error("Could not load published archive posts", error);
       }
     }
-    const archive = selectArchivePage(index as IndexBundle, data, extraPosts);
+    const archive = selectArchivePage(index, data, extraPosts);
     if (!archive) return null;
     const { loadSeoRecord } = await import("./seo-data.server");
     const path = data.kind === "category" ? `category/${archive.categorySlug}` : data.kind;
