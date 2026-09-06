@@ -8,7 +8,7 @@ export interface IndexPost {
   modified: string;
   excerpt: string;
   thumbnail: string;
-  categories: number[];
+  categories?: number[];
   video_settings?: string;
 }
 export interface IndexBundle {
