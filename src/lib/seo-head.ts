@@ -187,13 +187,14 @@ export function seoFileKey(path: string): string {
 // identity in og:url / schema @id. Rewrite every variant.
 function decodeIfValid(url: string): string {
   try {
-    const decoded = decodeURIComponent(url);
-    // Re-encoding must round-trip, otherwise the source was not valid encoding.
-    return encodeURI(decoded) === encodeURI(url) ? decoded : url;
+    // decodeURI leaves reserved escaped delimiters intact and throws only on
+    // malformed escapes, so an already-encoded URL decodes safely.
+    return decodeURI(url);
   } catch {
     return url;
   }
 }
+
 
 function urlEncodingVariants(url: string): string[] {
   const decoded = decodeIfValid(url);
