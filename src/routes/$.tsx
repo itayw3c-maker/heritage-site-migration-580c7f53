@@ -66,11 +66,24 @@ export const Route = createFileRoute("/$")({
     }
     let pageSeo = correctArticleWordCount(content.dbSeo ?? seo, content.record ?? {});
     const seoOverride = getSeoOverride(path);
+    // Rafael's page is served from the legacy `-2` record, whose og:url and
+    // schema @ids still name the `-2` URL. Force the public canonical identity.
+    const rafaelCanonical = `https://www.rrshamaut.co.il/${encodeURI(rafaelPath)}/`;
     pageSeo = overrideSeoIdentity(pageSeo, {
-      canonical: path === kobiPath ? `https://www.rrshamaut.co.il/${encodeURI(kobiPath)}/` : undefined,
+      canonical:
+        path === kobiPath
+          ? `https://www.rrshamaut.co.il/${encodeURI(kobiPath)}/`
+          : path === rafaelPath
+            ? rafaelCanonical
+            : undefined,
+      legacyUrls:
+        path === rafaelPath
+          ? [`https://www.rrshamaut.co.il/${duplicateRafaelPath}/`]
+          : undefined,
       title: seoOverride?.title,
       description: seoOverride?.description,
     });
+
     const typedSeo =
       content.record?.type === "movie"
         ? augmentVideoSeo(pageSeo, content.record)
