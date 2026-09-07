@@ -47,4 +47,40 @@ describe("overrideSeoIdentity URL identity", () => {
     expect(out.schema).not.toContain(lowerEncoded(RAFAEL));
     expect(out.schema).toContain(KOBI);
   });
+  it("rewrites an already percent-encoded source canonical in every form", () => {
+    const rec = {
+      canonical: encodeURI(RAFAEL),
+      og: { og_url: encodeURI(RAFAEL) },
+      schema: JSON.stringify({
+        "@graph": [
+          { "@type": "WebPage", "@id": RAFAEL, url: lowerEncoded(RAFAEL) },
+          { "@type": "BreadcrumbList", "@id": `${encodeURI(RAFAEL)}#breadcrumb` },
+        ],
+      }),
+    } as never;
+
+    const out = overrideSeoIdentity(rec, { canonical: KOBI })!;
+
+    expect(out.canonical).toBe(KOBI);
+    expect(out.og?.og_url).toBe(KOBI);
+    expect(out.schema).toContain(KOBI);
+    expect(out.schema).toContain(`${KOBI}#breadcrumb`);
+    expect(out.schema).not.toContain("רפאל-ריבוח");
+    expect(out.schema).not.toContain(lowerEncoded(RAFAEL));
+    expect(out.schema).not.toContain(encodeURI(RAFAEL));
+  });
+
+  it("leaves an unrelated longer path under the same prefix untouched", () => {
+    const longer = `${RAFAEL}gallery/`;
+    const rec = {
+      canonical: RAFAEL,
+      og: { og_url: RAFAEL },
+      schema: JSON.stringify({ "@graph": [{ "@type": "WebPage", url: longer }] }),
+    } as never;
+
+    const out = overrideSeoIdentity(rec, { canonical: KOBI })!;
+
+    expect(out.og?.og_url).toBe(KOBI);
+    expect(out.schema).toContain(longer);
+  });
 });
