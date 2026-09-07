@@ -215,7 +215,7 @@ function replaceUrlOccurrences(text: string, variant: string, target: string): s
     if (at === -1) return out + text.slice(from);
     const end = at + variant.length;
     // Only swap whole URLs; never a URL that is a prefix of a longer one.
-    if (variant.endsWith("/") || isUrlBoundary(text[end])) {
+    if (isUrlBoundary(text[end])) {
       out += text.slice(from, at) + target;
     } else {
       out += text.slice(from, end);
