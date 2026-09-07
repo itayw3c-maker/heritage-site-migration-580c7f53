@@ -185,23 +185,57 @@ export function seoFileKey(path: string): string {
 // schema uses the lowercase form). A plain string replace on one form leaves
 // the others behind, which is how a page ended up advertising another page's
 // identity in og:url / schema @id. Rewrite every variant.
+function decodeIfValid(url: string): string {
+  try {
+    const decoded = decodeURIComponent(url);
+    // Re-encoding must round-trip, otherwise the source was not valid encoding.
+    return encodeURI(decoded) === encodeURI(url) ? decoded : url;
+  } catch {
+    return url;
+  }
+}
+
 function urlEncodingVariants(url: string): string[] {
-  const encoded = encodeURI(url);
+  const decoded = decodeIfValid(url);
+  const encoded = encodeURI(decoded);
   const lower = encoded.replace(/%[0-9A-F]{2}/g, (m) => m.toLowerCase());
-  return [...new Set([url, encoded, lower])];
+  return [...new Set([url, decoded, encoded, lower])].filter(Boolean);
+}
+
+/** True when the character after a match cannot extend the URL's path. */
+function isUrlBoundary(next: string | undefined): boolean {
+  return next === undefined || /[\s"'<>),;}\]?#\\]/.test(next);
+}
+
+function replaceUrlOccurrences(text: string, variant: string, target: string): string {
+  let out = "";
+  let from = 0;
+  for (;;) {
+    const at = text.indexOf(variant, from);
+    if (at === -1) return out + text.slice(from);
+    const end = at + variant.length;
+    // Only swap whole URLs; never a URL that is a prefix of a longer one.
+    if (variant.endsWith("/") || isUrlBoundary(text[end])) {
+      out += text.slice(from, at) + target;
+    } else {
+      out += text.slice(from, end);
+    }
+    from = end;
+  }
 }
 
 function rewriteUrl(text: string, sources: string[], target: string): string {
   let out = text;
   for (const source of sources) {
-    if (!source || source === target) continue;
+    if (!source || source === target || !/^https?:\/\//i.test(source)) continue;
     for (const variant of urlEncodingVariants(source)) {
       if (variant === target) continue;
-      out = out.split(variant).join(target);
+      out = replaceUrlOccurrences(out, variant, target);
     }
   }
   return out;
 }
+
 
 export function overrideSeoIdentity(
   rec: SeoRecord | null,
