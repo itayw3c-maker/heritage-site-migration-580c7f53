@@ -2,6 +2,7 @@
 // Build-time sitemap generator. Reads public/content/**/*.json and writes public/sitemap.xml.
 import { readdirSync, statSync, readFileSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
+import { buildModMap } from "./sitemap-lastmod.mjs";
 
 const SITE = "https://www.rrshamaut.co.il";
 const CONTENT_DIR = "public/content";
@@ -36,12 +37,7 @@ function encodeSlug(slug) {
 const idx = JSON.parse(readFileSync(join(CONTENT_DIR, "_indexes.json"), "utf8"));
 // Bundle public archive data for SSR without an internal HTTP request.
 writeFileSync("src/generated/archive-index.json", JSON.stringify(idx));
-const modMap = new Map();
-for (const key of ["posts", "shorts", "success"]) {
-  for (const item of idx[key] ?? []) {
-    if (item.slug) modMap.set(item.slug, item.modified || item.date || undefined);
-  }
-}
+const modMap = buildModMap(idx);
 
 const urls = [];
 urls.push({ loc: `${SITE}/` });
