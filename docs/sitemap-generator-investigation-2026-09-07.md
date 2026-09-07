@@ -1,44 +1,63 @@
-# Sitemap / archive-index generator investigation (2026-09-07)
+# Sitemap generator investigation (2026-09-07), corrected
 
-Read-only comparison. `scripts/generate-sitemap.mjs` was run in an isolated copy
-(`/tmp/sgen`); no committed generated file was regenerated or overwritten.
+Correction notice: the first version of this document treated the committed
+303-URL `public/sitemap.xml` snapshot as the authority. It is not. Per
+`docs/seo-remediation-2026-09-06.md`, the September 6 remediation
+**intentionally** (a) published all six valid category archives and
+(b) omitted `<lastmod>` wherever no real source date exists, instead of
+stamping every URL with the build date. The live sitemap serves 308 URLs.
+The 303-URL committed file is a stale pre-remediation snapshot.
+
+`scripts/generate-sitemap.mjs` was verified in an isolated copy
+(`/tmp/gencheck`); no committed generated file was overwritten.
 
 ## Counts
 
-| Artifact | Current committed | Regenerated (isolated) |
-| --- | --- | --- |
-| `public/sitemap.xml` `<loc>` | 303 | 308 |
-| `public/sitemap.xml` `<lastmod>` | 303 | 153 |
-| `archive-index.json` posts / shorts / success | 153 / 47 / 31 | 153 / 47 / 31 |
-| categories | 6 | 6 |
+| Artifact | Stale committed snapshot | Generator before fix | Generator after fix |
+| --- | --- | --- | --- |
+| `<loc>` | 303 | 308 | 308 |
+| `<lastmod>` | 303 (incl. fabricated build dates) | 153 | 231 |
+| `/category/` URLs | 1 | 6 | 6 |
+| index posts / shorts / success | 153 / 47 / 31 | 153 / 47 / 31 | 153 / 47 / 31 |
 
-`public/content/_indexes.json` (source) holds 153 posts, 47 shorts, 31 success,
-6 categories — identical to the bundled index, so `archive-index.json` is NOT
-stale or shrunken.
+231 = every entry in `_indexes.json` that actually has a `modified`/`date`
+value (153 posts + 47 shorts + 31 success). Category archives, `/shorts/`,
+`/success/`, the home page and static pages have no page-specific source date
+and therefore correctly carry no `<lastmod>`.
 
-URL diff: 0 URLs exist only in the current sitemap; 5 exist only in the
-regenerated one — the English category archives
-(`property-damage-assessment`, `fire-damage`, `natural-disaster-insurance`,
-`construction-defects`, `water-damage-insurance`). The current sitemap lists
-only the Hebrew `מידע-מקצועי` category.
+## Two different things, previously conflated
 
-## Root cause of the earlier "shrink"
+1. **Intentional, not a defect — 303 → 308 and fewer lastmods.** The five
+   additional URLs are the valid English category archives
+   (`property-damage-assessment`, `fire-damage`,
+   `natural-disaster-insurance`, `construction-defects`,
+   `water-damage-insurance`), added deliberately on September 6. The drop in
+   `<lastmod>` count for URLs with no known source date is also deliberate:
+   the old snapshot's dates for those URLs were build timestamps, not content
+   dates. No category allowlist is to be added, and no fabricated dates are to
+   be restored.
+2. **Real defect — known nested dates were being lost.** `modMap` was keyed by
+   the bare `item.slug` from `_indexes.json`, while shorts and success content
+   files live under `public/content/shorts/` and `public/content/success/`.
+   The sitemap loop keys on the content path, so 78 genuine source dates
+   (47 shorts + 31 success) never matched and were silently dropped.
 
-Two independent generator defects, both lossy against the committed files:
+## Fix applied
 
-1. **lastmod loss (303 → 153).** The generator builds `modMap` keyed by
-   `item.slug` from `_indexes.json`, but shorts and success items carry bare
-   slugs (`video-on-flood-damage-...`, `170k-pipe-burst-settlement`) while their
-   content files live at `public/content/shorts/*.json` and
-   `public/content/success/*.json`. The sitemap loop keys on the file path, so
-   only the 153 root-level post slugs match. Static pages never get a lastmod at
-   all. Result: 150 previously-published `<lastmod>` values are dropped.
-2. **Category set drift (+5 thin archives).** The generator emits one URL per
-   entry in `_indexes.json.categories`, including the five English category
-   slugs that the curated sitemap deliberately excludes.
+`scripts/sitemap-lastmod.mjs` (new) owns the mapping and is imported by
+`scripts/generate-sitemap.mjs`:
 
-## Conclusion
+- shorts → `shorts/{slug}`, success → `success/{slug}`, posts stay at the root;
+- the prefix is not applied twice if an index slug already carries it;
+- an entry with no `modified`/`date` produces no `<lastmod>` at all.
 
-Do not run `scripts/generate-sitemap.mjs` against `public/` until both defects
-are fixed (slug-prefix-aware lastmod lookup + explicit category allowlist).
-No generated file was changed by this investigation.
+Regression coverage: `src/lib/__tests__/sitemap-lastmod.test.ts` asserts nested
+path keying, no double prefix, omission of unknown dates, and that every dated
+entry in the real bundled index resolves to a path the sitemap loop uses.
+
+## Status
+
+The generator now reproduces the intended September 6 output (308 URLs, six
+category archives) and no longer loses the 78 known nested dates. The stale
+303-URL committed snapshot was left untouched by this investigation — it was
+neither restored nor treated as a target.
