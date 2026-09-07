@@ -180,9 +180,38 @@ export function seoFileKey(path: string): string {
   return key ? encodeURIComponent(key) : "__home__";
 }
 
+// The WordPress export writes page URLs in several encodings: fully decoded
+// Hebrew, uppercase percent-encoding, and lowercase percent-encoding (Yoast
+// schema uses the lowercase form). A plain string replace on one form leaves
+// the others behind, which is how a page ended up advertising another page's
+// identity in og:url / schema @id. Rewrite every variant.
+function urlEncodingVariants(url: string): string[] {
+  const encoded = encodeURI(url);
+  const lower = encoded.replace(/%[0-9A-F]{2}/g, (m) => m.toLowerCase());
+  return [...new Set([url, encoded, lower])];
+}
+
+function rewriteUrl(text: string, sources: string[], target: string): string {
+  let out = text;
+  for (const source of sources) {
+    if (!source || source === target) continue;
+    for (const variant of urlEncodingVariants(source)) {
+      if (variant === target) continue;
+      out = out.split(variant).join(target);
+    }
+  }
+  return out;
+}
+
 export function overrideSeoIdentity(
   rec: SeoRecord | null,
-  overrides: { canonical?: string; title?: string; description?: string },
+  overrides: {
+    canonical?: string;
+    title?: string;
+    description?: string;
+    /** Extra (legacy) URLs whose every encoding maps onto the canonical URL. */
+    legacyUrls?: string[];
+  },
 ): SeoRecord | null {
   if (!rec) return rec;
   const next: SeoRecord = {
@@ -192,13 +221,20 @@ export function overrideSeoIdentity(
   };
   if (next.og && overrides.title) next.og.og_title = overrides.title;
   if (next.og && overrides.description) next.og.og_description = overrides.description;
+  const target = next.canonical;
+  const sources = [
+    ...(overrides.canonical && rec.canonical ? [rec.canonical] : []),
+    ...(overrides.legacyUrls ?? []),
+  ];
   if (next.og && overrides.canonical) next.og.og_url = overrides.canonical;
+  if (next.og?.og_url && target) next.og.og_url = rewriteUrl(next.og.og_url, sources, target);
   if (!rec.schema) return next;
   try {
     let serialized = rec.schema;
-    if (overrides.canonical && rec.canonical) {
-      serialized = serialized.split(rec.canonical).join(overrides.canonical);
+    if (target) {
+      serialized = rewriteUrl(serialized, sources, target);
     }
+
     const schema = JSON.parse(serialized) as { "@graph"?: unknown[] };
     if ((overrides.title || overrides.description) && Array.isArray(schema["@graph"])) {
       for (const item of schema["@graph"]) {
