@@ -105,6 +105,18 @@ describe("makeSlashRedirectPermanent", () => {
     expect(makeSlashRedirectPermanent(request, response).status).toBe(307);
   });
 
+  it("leaves file-like paths temporary so a later upload is not blocked", () => {
+    for (const path of ["/fonts/missing.woff2", "/wp-content/uploads/gone.png", "/robots.txt"]) {
+      const { request, response } = redirect(path, `${path}/`);
+      expect(makeSlashRedirectPermanent(request, response).status).toBe(307);
+    }
+  });
+
+  it("still upgrades page paths that merely contain a dot", () => {
+    const { request, response } = redirect("/about/v1.2-guide", "/about/v1.2-guide/");
+    expect(makeSlashRedirectPermanent(request, response).status).toBe(308);
+  });
+
   it("does not touch other redirect codes", () => {
     const { request, response } = redirect("/about", "/about/", 302);
     expect(makeSlashRedirectPermanent(request, response).status).toBe(302);

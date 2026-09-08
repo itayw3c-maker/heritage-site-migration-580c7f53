@@ -16,7 +16,7 @@ made. Two claims did not survive verification and are recorded as such.
 | `SearchAction` not applicable                 | Confirmed                      | `/?s=test` returns the homepage; the app has no search route                                            |
 | Self-declared rating                          | Confirmed                      | `aggregateRating` 5/520 in the sitewide JSON-LD, no reviews marked up                                   |
 | Two parallel business entities                | Confirmed                      | root `ProfessionalService` had no `@id`, so it never merged with `#organization`                        |
-| Hero images without effective `Cache-Control` | Confirmed, root cause found | the `public/_headers` rules never reach the response: `/wp-content/uploads/` and `/fonts/` return no `Cache-Control`, while the host's own hashed `/assets/` output is cached by its default |
+| Hero images without effective `Cache-Control` | Confirmed, cause is the deployment layer | `/wp-content/uploads/` and `/fonts/` return no `Cache-Control`; `_headers` is a Pages feature this Worker deploy ignores, and Workers Assets serves existing files ahead of the Worker — see "Still open" below |
 | Font served as `application/octet-stream`     | Confirmed                      | `/fonts/assistant-hebrew.woff2`                                                                         |
 | Conversion events missing                     | Partly false                   | `generate_lead` was already implemented; `click_to_phone` and `click_to_whatsapp` were genuinely absent |
 | Duplicate `BreadcrumbList`                    | False                          | one rendered `BreadcrumbList`; the second string occurrence is the TanStack hydration payload           |
@@ -42,13 +42,9 @@ carried `og:type=article` without an article node in their schema graph.
   itself, with no individual reviews on the page, is not eligible for rich
   results and risks a structured-data penalty. The real 5.0/520 Google rating
   stays in the live reviews widget, where it is verifiable.
-- Asset `Cache-Control` and font `Content-Type` are set in
-  `src/lib/asset-headers.ts`, applied from `src/server.ts`, which is the layer
-  that demonstrably reaches the response. `public/_headers` is kept but
-  annotated: its rules shipped in August and still do not apply. An existing
-  `Cache-Control` is never overwritten, so the host's own header on `/assets/`
-  still wins.
-- Trailing-slash redirects answer `308` instead of `307`.
+- Trailing-slash redirects answer `308` instead of `307`, except on file-like
+  paths, which stay `307` so a later upload is not blocked by a permanently
+  cached redirect.
 - `click_to_phone` and `click_to_whatsapp` fire from one delegated document
   listener covering every `tel:` and WhatsApp link, tagged with where on the
   page the tap happened.
@@ -84,11 +80,48 @@ homepage target is required.
 - **GSC / GA4 / GTM items.** Require account access. The two new click events
   still need `DebugView` confirmation and marking as key events after release.
 
+## Verified live after deployment
+
+Deployed to production on 08.09.2026 (`b5c22f5`, build `index-DZvb8jTo.js`).
+12 of 15 live checks pass: `og:site_name`, no `article:*` on the homepage,
+`og:type=website`, no `SearchAction`, no `aggregateRating`, one
+`#organization` identity across all five references, the honest `/jobs/`
+title, the retired URL's `301`, the `308` upgrade, and both click events
+present in the shipped bundle.
+
+## Still open: asset caching and font MIME
+
+The three failing checks are the asset headers, and the cause is the
+deployment layer, not this code.
+
+Cloudflare Workers Assets serves a static file that exists directly, ahead of
+the Worker, so `src/lib/asset-headers.ts` never sees those requests. Proven on
+the live site after deploying: `/fonts/assistant-hebrew.woff2` with a
+cache-busting query still returns `application/octet-stream` and no
+`Cache-Control`, while `/fonts/does-not-exist.woff2` — a file that is not
+there — does reach the Worker and comes back with its redirect handling
+applied. `public/_headers` cannot fix it either: that is a Cloudflare Pages
+feature, and this project deploys as a Worker with an assets binding.
+
+Two ways to close it:
+
+1. `assets.run_worker_first`, scoped to `/fonts/*` and `/wp-content/*`, passed
+   through `nitro.cloudflare.wrangler` in `vite.config.ts`. Nitro's Cloudflare
+   preset overrides `assets.binding` and `assets.directory` but merges the
+   rest, so the extra key survives. This makes the existing module effective.
+   It needs a test deployment: if the host's runtime rejects the glob form,
+   static asset serving is what breaks, so verify on the preview URL first.
+2. A Cache Rule on the Cloudflare zone setting Edge and Browser TTL for
+   `/wp-content/*` and `/fonts/*`. No deployment risk, but it lives outside
+   the repository and is invisible to anyone reading this code.
+
+`src/lib/asset-headers.ts` is kept and tested. It is inert for static files
+until option 1 ships, and its header comment says so.
+
 ## Validation
 
 `src/lib/__tests__/qa-remediation.test.ts` and
 `src/lib/__tests__/asset-headers.test.ts` cover the property naming, `og:type`
 derivation, `SearchAction` removal, the legacy redirect, asset caching, MIME
-correction and the `308` upgrade. Run the full suite and build before advancing
-main. Header and redirect behaviour must be re-checked against the live site
-after deployment, since both live in the request path.
+correction and the `308` upgrade including the file-like exception. 101 tests
+pass. Run the full suite and build before advancing main.

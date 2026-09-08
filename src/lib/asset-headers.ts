@@ -1,14 +1,22 @@
-// The custom rules in public/_headers do not reach the live response. Measured
-// on 08.09.2026, months after those rules shipped: the host's own hashed build
-// output under /assets/ comes back `public, max-age=31536000, immutable`, but
-// /wp-content/uploads/ and /fonts/ - which _headers covers with identical
-// rules - come back with no Cache-Control at all. So the caching on /assets/
-// is the host's default for its build output, not _headers being honoured, and
-// every migrated image and font was refetched on each visit. Caching is
-// applied here instead, where it demonstrably reaches the response.
+// NOT IN EFFECT YET - needs one line of deployment config, see below.
+//
+// Migrated images and fonts come back with no Cache-Control at all, and .woff2
+// with Content-Type application/octet-stream, so they are refetched on every
+// visit. public/_headers does not fix it: that is a Cloudflare Pages feature,
+// and this site deploys as a Worker with an assets binding.
+//
+// This module is the correct fix but cannot run yet. Verified against the live
+// site on 08.09.2026, after deploying it: a request for a static file that
+// EXISTS still returns the unfixed headers, while a request for one that does
+// NOT exist reaches this worker. That is Cloudflare Workers Assets serving
+// matching files directly, ahead of the Worker. To route them through here,
+// the generated wrangler config needs `assets.run_worker_first` scoped to
+// these paths - passed via `nitro.cloudflare.wrangler` in vite.config.ts.
+// Until then the alternative is a Cache Rule on the Cloudflare zone, and this
+// module is inert for static files.
 //
 // /assets/ is listed too, harmlessly: an existing Cache-Control is never
-// overwritten, so the host's own header still wins there.
+// overwritten, so the host's own header on its hashed build output still wins.
 const IMMUTABLE_ASSET_PATH = /^\/(?:wp-content\/(?:uploads|plugins)|wp-includes|fonts|assets)\//i;
 
 // The host serves .woff2 as application/octet-stream, and its nosniff header
@@ -44,10 +52,17 @@ export function withAssetHeaders(pathname: string, response: Response): Response
   });
 }
 
-// TanStack's trailing-slash normalization answers with a temporary 307. The
-// canonical form of every URL on this site is the trailing-slash one and that
-// is not going to change, so the redirect is made permanent - a 308 keeps the
-// method and body semantics 307 has, unlike a 301.
+// A path whose last segment has a file extension, e.g. /fonts/x.woff2. Requests
+// for a file that exists never reach the worker; ones for a file that does not
+// reach it and get trailing-slash normalized. Those must stay temporary: a
+// permanent redirect is cached by the browser indefinitely, so adding the file
+// later would not fix the URL for anyone who had already requested it.
+const FILE_LIKE_PATH = /\/[^/]+\.[a-z0-9]{2,5}$/i;
+
+// TanStack's trailing-slash normalization answers with a temporary 307. For
+// real pages the trailing-slash form is the canonical one and is not going to
+// change, so the redirect is made permanent - a 308 keeps the method and body
+// semantics 307 has, unlike a 301.
 export function makeSlashRedirectPermanent(request: Request, response: Response): Response {
   if (response.status !== 307) return response;
   const location = response.headers.get("location");
@@ -57,6 +72,7 @@ export function makeSlashRedirectPermanent(request: Request, response: Response)
   const to = new URL(location, from);
   if (to.origin !== from.origin) return response;
   if (to.pathname !== `${from.pathname.replace(/\/+$/, "")}/`) return response;
+  if (FILE_LIKE_PATH.test(from.pathname)) return response;
 
   return new Response(response.body, {
     status: 308,
