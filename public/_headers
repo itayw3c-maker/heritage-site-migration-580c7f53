@@ -1,3 +1,11 @@
+# THESE RULES DO NOT REACH THE LIVE RESPONSE. Measured 08.09.2026, months
+# after they shipped: /wp-content/uploads/ and /fonts/ come back with no
+# Cache-Control at all. The host's own hashed output under /assets/ IS cached,
+# but that is its default for build output, not this file being honoured.
+# The rules that actually take effect live in src/lib/asset-headers.ts, applied
+# from src/server.ts. Kept only so the intent is documented if the site ever
+# moves to a host that reads _headers.
+#
 # Versioned WordPress migration assets never change in place. Cache them at
 # the browser and edge for one year; new uploads use a new path or filename.
 /wp-content/uploads/*

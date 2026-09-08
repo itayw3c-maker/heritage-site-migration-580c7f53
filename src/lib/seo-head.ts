@@ -24,6 +24,62 @@ export interface HeadFragment {
   scripts: Array<Record<string, string>>;
 }
 
+// Open Graph namespaces used by the exported WordPress metadata. Everything
+// after the namespace is part of the property name and keeps its underscores.
+const OG_NAMESPACES = ["og", "article", "profile", "book", "music", "video", "fb"] as const;
+
+export function ogPropertyName(key: string): string {
+  for (const ns of OG_NAMESPACES) {
+    if (key.startsWith(`${ns}_`)) return `${ns}:${key.slice(ns.length + 1)}`;
+  }
+  return key;
+}
+
+/**
+ * Open Graph type for a page, derived from its own structured data instead of
+ * the exported value: the WordPress export labelled 152 plain pages
+ * (services, contact, FAQ, archives) as "article". A page is an article only
+ * when its schema graph actually carries an article node.
+ */
+export function resolveOgType(schema: unknown): "article" | "website" {
+  const graph = (schema as { "@graph"?: unknown } | null)?.["@graph"];
+  if (!Array.isArray(graph)) return "website";
+  const articleTypes = new Set(["Article", "BlogPosting", "NewsArticle"]);
+  for (const node of graph) {
+    const type = (node as { "@type"?: unknown })?.["@type"];
+    const types = Array.isArray(type) ? type : [type];
+    if (types.some((t) => typeof t === "string" && articleTypes.has(t))) return "article";
+  }
+  return "website";
+}
+
+/**
+ * Drops WordPress-era claims the React site cannot honour. The exported
+ * WebSite node advertises a SearchAction against /?s={term}, which this app
+ * has no search route for - the URL just renders the homepage. Declaring a
+ * sitelinks searchbox that does not exist is a false capability, so the
+ * potentialAction is removed rather than shipped.
+ */
+export function stripUnsupportedSearchAction(schema: unknown): unknown {
+  if (!schema || typeof schema !== "object") return schema;
+  const graph = (schema as { "@graph"?: unknown })["@graph"];
+  if (!Array.isArray(graph)) return schema;
+
+  let changed = false;
+  const nextGraph = graph.map((node) => {
+    if (!node || typeof node !== "object") return node;
+    const type = (node as { "@type"?: unknown })["@type"];
+    const types = Array.isArray(type) ? type : [type];
+    if (!types.includes("WebSite")) return node;
+    if (!("potentialAction" in (node as Record<string, unknown>))) return node;
+    const { potentialAction: _dropped, ...rest } = node as Record<string, unknown>;
+    changed = true;
+    return rest;
+  });
+
+  return changed ? { ...(schema as Record<string, unknown>), "@graph": nextGraph } : schema;
+}
+
 export function buildSeoHead(rec: SeoRecord | null | undefined): HeadFragment {
   const meta: HeadFragment["meta"] = [];
   const links: HeadFragment["links"] = [];
@@ -51,9 +107,16 @@ export function buildSeoHead(rec: SeoRecord | null | undefined): HeadFragment {
 
   // og:*
   if (rec.og) {
+    // The WordPress export stores every Open Graph key with underscores
+    // (og_site_name, article_modified_time). Only the namespace prefix is a
+    // colon in the real property name - the rest of the key keeps its
+    // underscores, so og_site_name is og:site_name, never og:site:name.
+    const isArticle = rec.og["og_type"] === "article";
     for (const [k, v] of Object.entries(rec.og)) {
       if (!v) continue;
-      const prop = k.replace(/_/g, ":");
+      // article:* timestamps only belong on pages that really are articles.
+      if (!isArticle && k.startsWith("article_")) continue;
+      const prop = ogPropertyName(k);
       // og:image handled separately below
       if (prop === "og:image") continue;
       meta.push({ property: prop, content: String(v) });

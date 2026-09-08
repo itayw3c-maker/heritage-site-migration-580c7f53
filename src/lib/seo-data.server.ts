@@ -1,4 +1,9 @@
-import { seoFileKey, type SeoRecord } from "./seo-head";
+import {
+  resolveOgType,
+  seoFileKey,
+  stripUnsupportedSearchAction,
+  type SeoRecord,
+} from "./seo-head";
 
 type RawSeoRecord = {
   canonical?: string;
@@ -58,16 +63,25 @@ function normalizeSeoLookupPath(path: string): string {
 }
 
 function normalizeSeoRecord(raw: RawSeoRecord): SeoRecord {
+  const schema = stripUnsupportedSearchAction(raw.schema);
   return {
     canonical: raw.canonical,
     robots: raw.robots,
-    og: raw.og,
+    og: normalizeOg(raw.og, raw.schema),
     og_image: raw.og_image?.url
       ? raw.og_image
       : (getFallbackOgImage(raw.schema) ?? DEFAULT_SOCIAL_IMAGE),
     twitter: raw.twitter,
-    schema: raw.schema ? JSON.stringify(raw.schema) : null,
+    schema: schema ? JSON.stringify(schema) : null,
   };
+}
+
+function normalizeOg(
+  og: Record<string, string> | undefined,
+  schema: unknown,
+): Record<string, string> | undefined {
+  if (!og) return og;
+  return { ...og, og_type: resolveOgType(schema) };
 }
 
 function getFallbackOgImage(schema: unknown): SeoRecord["og_image"] {

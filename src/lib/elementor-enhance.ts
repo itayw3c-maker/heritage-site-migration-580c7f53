@@ -454,6 +454,64 @@ export function enhanceElementor(root: ParentNode = document) {
   enhancePhoneInputs(root);
   hydrateGalleries(root);
   setupNestedTabs(root);
+  trackContactClicks();
+}
+
+let contactClickTrackingBound = false;
+
+/**
+ * Phone and WhatsApp taps are the site's two highest-intent actions and were
+ * the only conversions with no GA4 event - generate_lead already fires on
+ * successful form submits. One delegated listener on the document covers every
+ * tel:/wa.me link, including the floating buttons and links inside the
+ * injected Elementor HTML, and keeps working after re-renders.
+ */
+function trackContactClicks() {
+  if (contactClickTrackingBound || typeof document === "undefined") return;
+  contactClickTrackingBound = true;
+
+  document.addEventListener(
+    "click",
+    (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const link = target.closest<HTMLAnchorElement>("a[href]");
+      if (!link) return;
+
+      const href = link.getAttribute("href") ?? "";
+      const name = contactEventName(href);
+      if (!name) return;
+
+      void import("@/lib/analytics").then(({ trackEvent }) => {
+        trackEvent(name, {
+          link_url: href,
+          link_text: (link.textContent ?? "").trim().slice(0, 100),
+          // Where on the page the tap happened, so the floating buttons can be
+          // told apart from the header and in-content links in GA4.
+          link_location: contactLinkLocation(link),
+        });
+      });
+    },
+    // Capture, so the event is recorded even if a handler downstream stops
+    // propagation before the click reaches the document.
+    { capture: true },
+  );
+}
+
+function contactEventName(href: string): "click_to_phone" | "click_to_whatsapp" | null {
+  if (/^tel:/i.test(href)) return "click_to_phone";
+  if (/^https?:\/\/(?:api\.|web\.)?wa\.me\//i.test(href)) return "click_to_whatsapp";
+  if (/^https?:\/\/(?:api|web)\.whatsapp\.com\//i.test(href)) return "click_to_whatsapp";
+  if (/^whatsapp:/i.test(href)) return "click_to_whatsapp";
+  return null;
+}
+
+function contactLinkLocation(link: HTMLElement): string {
+  if (link.closest("header, .elementor-location-header")) return "header";
+  if (link.closest("footer, .elementor-location-footer")) return "footer";
+  if (link.closest(".a11y-fab, .elementor-element-74e3b16, [class*='sticky'], [class*='float']"))
+    return "floating";
+  return "content";
 }
 
 let generatedLeadFieldId = 0;

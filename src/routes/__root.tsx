@@ -182,6 +182,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "ProfessionalService",
+          // Same @id as the #organization node in the per-page WordPress
+          // schema graph, so both descriptions resolve to one business entity
+          // instead of two competing ones. This node contributes the details
+          // the exported graph lacks: opening hours, geo, contact point.
+          "@id": "https://www.rrshamaut.co.il/#organization",
           name: "רפאל שמאות רכוש",
           legalName: "רפאל שמאות רכוש - שמאי רכוש",
           url: "https://www.rrshamaut.co.il/",
@@ -212,11 +217,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             latitude: 31.8153,
             longitude: 34.6593,
           },
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "5",
-            reviewCount: "520",
-          },
+          // No aggregateRating here. A business rating the site declares about
+          // itself, with no individual reviews marked up on the page, is
+          // self-serving markup: Google ignores it for Organization/
+          // LocalBusiness and it risks a structured-data penalty. The real
+          // 5.0/520 Google rating stays where it is verifiable - the live
+          // Google reviews widget.
           openingHoursSpecification: [
             {
               "@type": "OpeningHoursSpecification",

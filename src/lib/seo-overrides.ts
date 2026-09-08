@@ -106,11 +106,12 @@ const SEO_OVERRIDES: Record<string, SeoOverride> = {
     description:
       "מה עושים כשהשכן מסרב לתקן נזילה, איך מוכיחים את המקור ולמי פונים? מדריך לתיעוד, איתור, ביטוח, שמאות וייעוץ משפטי לפי המקרה.",
   },
-  "jobs": {
-    title: "שכר שמאי רכוש: מה משפיע ואיך נכנסים למקצוע | רפאל",
-    description:
-      "כמה מרוויח שמאי רכוש ומה משפיע על השכר? ההבדל בין שכיר לעצמאי, ניסיון, אחריות, סוג תיקים ותנאים — לצד מצב הגיוס ברפאל שמאות.",
-  },
+  // No override for "jobs". The page is a 15-word notice that the firm is not
+  // recruiting right now; the override here promised a guide to appraiser
+  // salaries and career entry, which the page does not contain. The page now
+  // uses its own honest title and description from the exported record
+  // ("דרושים ברפאל שמאות רכוש"). Targeting "שכר שמאי רכוש" needs an article
+  // that actually answers it, not a title on the recruitment notice.
   "שמאי-רכוש-מחיר-כל-מה-שצריך-לדעת-על-אופן": {
     title: "מחיר שמאי רכוש: מה משפיע על שכר הטרחה | רפאל",
     description:

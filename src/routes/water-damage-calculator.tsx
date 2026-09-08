@@ -36,6 +36,7 @@ export const Route = createFileRoute("/water-damage-calculator")({
           offers: { "@type": "Offer", price: "0", priceCurrency: "ILS" },
           provider: {
             "@type": "ProfessionalService",
+            "@id": "https://www.rrshamaut.co.il/#organization",
             name: "רפאל שמאות רכוש",
             url: "https://www.rrshamaut.co.il/",
             telephone: "+972-77-805-1266",

@@ -16,6 +16,7 @@ import {
 import { checkContentPath } from "@/lib/content-existence.functions";
 import { getContentRecord } from "@/lib/content-record.functions";
 import { REDIRECTS_ENABLED, resolveRedirect } from "@/lib/redirect-map";
+import { resolveLegacyRedirect } from "@/lib/legacy-redirects";
 
 export const Route = createFileRoute("/$")({
   loader: async ({ params }) => {
@@ -33,6 +34,15 @@ export const Route = createFileRoute("/$")({
     if (path === duplicateRafaelPath) {
       throw redirect({
         href: "/about/%D7%94%D7%A9%D7%9E%D7%90%D7%99-%D7%A8%D7%A4%D7%90%D7%9C-%D7%A8%D7%99%D7%91%D7%95%D7%97-%D7%9E%D7%99%D7%99%D7%A1%D7%93-%D7%95%D7%91%D7%A2%D7%9C%D7%99%D7%9D/",
+        statusCode: 301,
+      } as unknown as Parameters<typeof redirect>[0]);
+    }
+    // Retired WordPress URLs that would otherwise 404 - see
+    // src/lib/legacy-redirects.ts.
+    const legacy = resolveLegacyRedirect(path);
+    if (legacy) {
+      throw redirect({
+        href: legacy,
         statusCode: 301,
       } as unknown as Parameters<typeof redirect>[0]);
     }
