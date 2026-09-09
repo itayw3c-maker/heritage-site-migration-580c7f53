@@ -16,9 +16,6 @@ import fontFaceCss from "../generated/fonts-face.css?raw";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { AccessibilityWidget } from "@/components/AccessibilityWidget";
-import { CookieBanner } from "@/components/CookieBanner";
-import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { hydrateFixDigital } from "@/lib/fixdigital";
 import { rememberPasswordRecovery } from "@/lib/password-recovery-flag";
 
@@ -51,6 +48,24 @@ if (typeof window !== "undefined" && !window.__rrPasswordRecoveryListenerAttache
 const SocialRatingFloat = lazy(() =>
   import("@/components/SocialRatingFloat").then((m) => ({
     default: m.SocialRatingFloat,
+  })),
+);
+
+const AccessibilityWidget = lazy(() =>
+  import("@/components/AccessibilityWidget").then((m) => ({
+    default: m.AccessibilityWidget,
+  })),
+);
+
+const CookieBanner = lazy(() =>
+  import("@/components/CookieBanner").then((m) => ({
+    default: m.CookieBanner,
+  })),
+);
+
+const GoogleAnalytics = lazy(() =>
+  import("@/components/GoogleAnalytics").then((m) => ({
+    default: m.GoogleAnalytics,
   })),
 );
 
@@ -427,16 +442,14 @@ function RootComponent() {
         <Outlet />
       </main>
       {!isAdmin && <SiteFooter />}
-      {!isAdmin && <AccessibilityWidget />}
-      {!isAdmin && <CookieBanner />}
-      {!isAdmin && <DeferredSocialRating />}
-      {!isAdmin && <GoogleAnalytics />}
+      {!isAdmin && <DeferredNonCriticalChrome />}
     </QueryClientProvider>
   );
 }
 
-function DeferredSocialRating() {
+function DeferredNonCriticalChrome() {
   const [show, setShow] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
     let cancelled = false;
@@ -449,11 +462,15 @@ function DeferredSocialRating() {
     }).requestIdleCallback;
     let idleId: number | null = null;
     let timeoutId: number | null = null;
+    const isHomePage = pathname === "/" || pathname === "";
+    const isMobileViewport = window.matchMedia("(max-width: 767px)").matches;
+    const idleTimeout = isHomePage && isMobileViewport ? 5500 : 2500;
+    const fallbackDelay = isHomePage && isMobileViewport ? 3500 : 1200;
 
     if (typeof ric === "function") {
-      idleId = ric(reveal, { timeout: 3500 });
+      idleId = ric(reveal, { timeout: idleTimeout });
     } else {
-      timeoutId = window.setTimeout(reveal, 2500);
+      timeoutId = window.setTimeout(reveal, fallbackDelay);
     }
 
     return () => {
@@ -465,12 +482,15 @@ function DeferredSocialRating() {
       }
       if (timeoutId !== null) window.clearTimeout(timeoutId);
     };
-  }, []);
+  }, [pathname]);
 
   if (!show) return null;
   return (
     <Suspense fallback={null}>
+      <AccessibilityWidget />
+      <CookieBanner />
       <SocialRatingFloat />
+      <GoogleAnalytics />
     </Suspense>
   );
 }
