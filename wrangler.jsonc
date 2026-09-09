@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Route only migrated, versioned assets through the Worker so
+  // src/lib/asset-headers.ts can add long-lived browser caching and correct
+  // font MIME types. Hashed Vite assets keep Cloudflare's direct fast path.
+  "assets": {
+    "run_worker_first": ["/fonts/*", "/wp-content/*", "/wp-includes/*"]
+  }
+}

@@ -12,6 +12,8 @@ type Payload = {
 };
 
 const GAP = 24;
+const MAX_RENDERED_REVIEWS = 24;
+const COLLAPSED_TEXT_LENGTH = 180;
 const GOOGLE_ICON = "https://cdn.trustindex.io/assets/platform/Google/icon.svg";
 const GOOGLE_LOGO = "https://cdn.trustindex.io/assets/platform/Google/logo.svg";
 
@@ -97,17 +99,18 @@ function reviewCard(r: Review): HTMLElement {
   card.appendChild(stars);
   card.appendChild(body);
 
-  requestAnimationFrame(() => {
-    if (text.scrollHeight > text.clientHeight + 2) {
-      const more = el("button", "crs-more", "קרא עוד");
-      more.type = "button";
-      more.addEventListener("click", () => {
-        text.classList.add("crs-text-open");
-        more.remove();
-      });
-      body.appendChild(more);
-    }
-  });
+  // Avoid a forced layout read (scrollHeight/clientHeight) for every card.
+  // Text length is a stable, layout-independent signal for showing the
+  // expansion control; CSS still performs the visual line clamp.
+  if (r.text.length > COLLAPSED_TEXT_LENGTH) {
+    const more = el("button", "crs-more", "קרא עוד");
+    more.type = "button";
+    more.addEventListener("click", () => {
+      text.classList.add("crs-text-open");
+      more.remove();
+    });
+    body.appendChild(more);
+  }
 
   slide.appendChild(card);
   return slide;
@@ -180,7 +183,10 @@ function buildWidget(data: Payload): HTMLElement {
   const outer = el("div", "crs-outer");
   const viewport = el("div", "crs-viewport");
   const track = el("div", "crs-track");
-  data.reviews.forEach((r) => track.appendChild(reviewCard(r)));
+  const reviews = data.reviews.slice(0, MAX_RENDERED_REVIEWS);
+  const cards = document.createDocumentFragment();
+  reviews.forEach((review) => cards.appendChild(reviewCard(review)));
+  track.appendChild(cards);
   viewport.appendChild(track);
 
   const prev = el("button", "crs-btn crs-prev", "❯");
@@ -195,7 +201,7 @@ function buildWidget(data: Payload): HTMLElement {
   outer.appendChild(next);
   mount.appendChild(outer);
 
-  wireCarousel(track, prev, next, data.reviews.length);
+  wireCarousel(track, prev, next, reviews.length);
   return mount;
 }
 

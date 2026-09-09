@@ -294,37 +294,55 @@ function injectVideos(root: ParentNode) {
     ".elementor-widget-video[data-settings]",
   );
   widgets.forEach((widget) => {
-    if (widget.querySelector("iframe")) return;
+    if (widget.querySelector("iframe, .rr-youtube-facade")) return;
     const s = parseSettings(widget);
     if (!s) return;
     const url = String(s.youtube_url ?? "");
     const id = url ? extractYoutubeId(url) : null;
     if (!id) return;
     const controls = s.controls === "yes" ? "1" : "0";
-    const iframe = document.createElement("iframe");
-    iframe.className = "elementor-video-iframe";
-    iframe.src = `https://www.youtube.com/embed/${id}?controls=${controls}&rel=0`;
-    iframe.title = "YouTube video";
-    iframe.loading = "lazy";
-    iframe.setAttribute("allowfullscreen", "");
-    iframe.setAttribute(
-      "allow",
-      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
-    );
-    iframe.setAttribute(
-      "style",
-      "width:100%;height:100%;border:0;display:block",
-    );
     const videoEl = widget.querySelector<HTMLElement>(".elementor-video");
-    if (videoEl) {
-      videoEl.replaceWith(iframe);
-    } else {
-      const fallback =
-        widget.querySelector<HTMLElement>(".elementor-wrapper") ??
-        widget.querySelector<HTMLElement>(".elementor-widget-container") ??
-        widget;
-      fallback.appendChild(iframe);
-    }
+    const host =
+      videoEl ??
+      widget.querySelector<HTMLElement>(".elementor-wrapper") ??
+      widget.querySelector<HTMLElement>(".elementor-widget-container") ??
+      widget;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "rr-youtube-facade";
+    button.setAttribute("aria-label", "נגן סרטון YouTube");
+
+    const thumbnail = document.createElement("img");
+    thumbnail.src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+    thumbnail.alt = "";
+    thumbnail.loading = "lazy";
+    thumbnail.width = 480;
+    thumbnail.height = 360;
+    button.appendChild(thumbnail);
+
+    const play = document.createElement("span");
+    play.className = "rr-youtube-play";
+    play.setAttribute("aria-hidden", "true");
+    button.appendChild(play);
+
+    button.addEventListener(
+      "click",
+      () => {
+        const iframe = document.createElement("iframe");
+        iframe.className = "elementor-video-iframe";
+        iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&controls=${controls}&rel=0`;
+        iframe.title = "YouTube video";
+        iframe.setAttribute("allowfullscreen", "");
+        iframe.setAttribute(
+          "allow",
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+        );
+        iframe.setAttribute("style", "width:100%;height:100%;border:0;display:block");
+        button.replaceWith(iframe);
+      },
+      { once: true },
+    );
+    host.replaceChildren(button);
   });
 }
 

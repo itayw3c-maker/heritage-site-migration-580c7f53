@@ -1,19 +1,9 @@
-// NOT IN EFFECT YET - needs one line of deployment config, see below.
-//
 // Migrated images and fonts come back with no Cache-Control at all, and .woff2
 // with Content-Type application/octet-stream, so they are refetched on every
-// visit. public/_headers does not fix it: that is a Cloudflare Pages feature,
-// and this site deploys as a Worker with an assets binding.
-//
-// This module is the correct fix but cannot run yet. Verified against the live
-// site on 08.09.2026, after deploying it: a request for a static file that
-// EXISTS still returns the unfixed headers, while a request for one that does
-// NOT exist reaches this worker. That is Cloudflare Workers Assets serving
-// matching files directly, ahead of the Worker. To route them through here,
-// the generated wrangler config needs `assets.run_worker_first` scoped to
-// these paths - passed via `nitro.cloudflare.wrangler` in vite.config.ts.
-// Until then the alternative is a Cache Rule on the Cloudflare zone, and this
-// module is inert for static files.
+// visit. public/_headers does not fix it because this site deploys as a Worker
+// with an assets binding. wrangler.jsonc selectively enables
+// assets.run_worker_first for these paths, allowing this response wrapper to
+// apply the headers without routing hashed application assets through SSR.
 //
 // /assets/ is listed too, harmlessly: an existing Cache-Control is never
 // overwritten, so the host's own header on its hashed build output still wins.

@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import mainHtml from "@/generated/main.html?raw";
 import { getSeoRecord } from "@/lib/seo.functions";
 import { augmentHomepagePrivateSeo, buildSeoHead } from "@/lib/seo-head";
-import { mountLiveGoogleReviews } from "@/lib/live-google-reviews";
 import { improveMigratedHtml } from "@/lib/migrated-html";
 
 const homepageCardImages = [
@@ -150,12 +149,36 @@ function Index() {
     document.querySelectorAll(".e-con.e-parent").forEach((el) => {
       el.classList.add("e-lazyloaded");
     });
-    // Live Google reviews (with graceful fallback to static widget)
-    const t1 = window.setTimeout(() => mountLiveGoogleReviews(document), 300);
-    const t2 = window.setTimeout(() => mountLiveGoogleReviews(document), 1500);
+    // The reviews module contains a large offline data set. Keep it out of the
+    // initial route bundle and only download/build the carousel when it is
+    // close enough to be useful to the visitor.
+    const reviewsAnchor = document.querySelector<HTMLElement>(
+      ".elementor-shortcode pre.ti-widget, .ti-widget-container",
+    );
+    const reviewsSection =
+      reviewsAnchor?.closest<HTMLElement>(".elementor-shortcode") ?? reviewsAnchor;
+    let reviewsObserver: IntersectionObserver | undefined;
+    let cancelled = false;
+    const mountReviews = () => {
+      reviewsObserver?.disconnect();
+      void import("@/lib/live-google-reviews").then(({ mountLiveGoogleReviews }) => {
+        if (!cancelled) mountLiveGoogleReviews(document);
+      });
+    };
+    if (reviewsSection && "IntersectionObserver" in window) {
+      reviewsObserver = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) mountReviews();
+        },
+        { rootMargin: "600px 0px" },
+      );
+      reviewsObserver.observe(reviewsSection);
+    } else {
+      mountReviews();
+    }
     return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
+      cancelled = true;
+      reviewsObserver?.disconnect();
     };
   }, []);
 
