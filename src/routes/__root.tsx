@@ -8,7 +8,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import fontFaceCss from "../generated/fonts-face.css?raw";
@@ -18,9 +18,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AccessibilityWidget } from "@/components/AccessibilityWidget";
 import { CookieBanner } from "@/components/CookieBanner";
-import { SocialRatingFloat } from "@/components/SocialRatingFloat";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
-import { enhanceElementor } from "@/lib/elementor-enhance";
 import { hydrateFixDigital } from "@/lib/fixdigital";
 import { rememberPasswordRecovery } from "@/lib/password-recovery-flag";
 
@@ -49,6 +47,12 @@ if (typeof window !== "undefined" && !window.__rrPasswordRecoveryListenerAttache
   if (typeof ric === "function") ric(attachRecoveryListener);
   else window.setTimeout(attachRecoveryListener, 1500);
 }
+
+const SocialRatingFloat = lazy(() =>
+  import("@/components/SocialRatingFloat").then((m) => ({
+    default: m.SocialRatingFloat,
+  })),
+);
 
 function NotFoundComponent() {
   return (
@@ -151,7 +155,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "/wp-content/uploads/2024/04/Vector-2.png",
       },
       { rel: "apple-touch-icon", href: "/wp-content/uploads/2024/04/Vector-2.png" },
-      { rel: "stylesheet", href: appCss },
       {
         rel: "preload",
         as: "font",
@@ -166,14 +169,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "/fonts/assistant-latin.woff2",
         crossOrigin: "anonymous",
       },
+      {
+        rel: "preload",
+        as: "image",
+        href: "/wp-content/uploads/2025/12/רפאל-שמאות-רכוש-200x300.webp",
+        media: "(max-width: 767px)",
+        fetchPriority: "high",
+      },
+      {
+        rel: "preload",
+        as: "image",
+        href: "/wp-content/uploads/2025/12/רפאל-שמאות-רכוש.webp",
+        media: "(min-width: 768px)",
+        fetchPriority: "high",
+      },
       // GTM is the earliest third-party request (loaded async in the head), so it
       // needs the connection warmed before the others.
       { rel: "preconnect", href: "https://www.googletagmanager.com" },
       { rel: "dns-prefetch", href: "https://www.googletagmanager.com" },
       { rel: "preconnect", href: "https://lpc.fixdigital.co.il", crossOrigin: "anonymous" },
-      { rel: "preconnect", href: "https://cdn.trustindex.io", crossOrigin: "anonymous" },
       { rel: "dns-prefetch", href: "https://lpc.fixdigital.co.il" },
-      { rel: "dns-prefetch", href: "https://cdn.trustindex.io" },
       { rel: "dns-prefetch", href: "https://api.fixdigital.co.il" },
     ],
     scripts: [
@@ -304,8 +319,8 @@ function RootShell({ children }: { children: ReactNode }) {
     "s.src='https://lpc.fixdigital.co.il/external_files/scripts/clp/fixdigital_integrate.js';" +
     "document.head.appendChild(s);};" +
     "try{if(localStorage.getItem('sgcc-accepted')==='1')window.__fixdigitalBoot();}catch(e){}";
-  const analyticsHead =
-    "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}window.gtag=gtag;" +
+    const analyticsHead =
+    "window.dataLayer=window.dataLayer||[];window.__rrGtagLoaded=false;window.__rrLoadGtag=function(){if(window.__rrGtagLoaded)return;window.__rrGtagLoaded=true;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-LEW836W718';s.setAttribute('nonce',window.__rrGtagNonce||'');document.head.appendChild(s);};function gtag(){dataLayer.push(arguments)}window.gtag=gtag;" +
     "gtag('consent','default',{analytics_storage:localStorage.getItem('sgcc-accepted')==='1'?'granted':'denied',wait_for_update:500});" +
     "gtag('js',new Date());gtag('config','G-LEW836W718',{send_page_view:false,anonymize_ip:true});";
   return (
@@ -313,18 +328,32 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
         {isHome ? (
-          <>
+        <>
             <link rel="stylesheet" href="/assets/home-critical.css" />
+            <link
+              rel="preload"
+              as="style"
+              href={appCss}
+              onLoad={(event) => {
+                const link = event.currentTarget as HTMLLinkElement;
+                link.rel = "stylesheet";
+              }}
+            />
+            <noscript>
+              <link rel="stylesheet" href={appCss} />
+            </noscript>
             <script dangerouslySetInnerHTML={{ __html: deferHeavyCss }} />
           </>
         ) : (
-          <link rel="stylesheet" href="/assets/elementor-site.css" data-heavy-css="1" />
+          <>
+            <link rel="stylesheet" href={appCss} />
+            <link rel="stylesheet" href="/assets/elementor-site.css" data-heavy-css="1" />
+          </>
         )}
         {/* Self-hosted fonts: inline @font-face (same-origin woff2 under
             /fonts/) replaces the blocking fonts.googleapis.com stylesheet,
             removing a third-party RTT from the critical path. */}
         <style dangerouslySetInnerHTML={{ __html: fontFaceCss }} />
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-LEW836W718" />
         <script dangerouslySetInnerHTML={{ __html: analyticsHead }} />
         {/* FixDigital: params are declared here, but the cookie IIFE and
             integrate.js only run via window.__fixdigitalBoot() once consent
@@ -347,15 +376,48 @@ function RootComponent() {
 
   useEffect(() => {
     if (isAdmin) return;
+    try {
+      if (localStorage.getItem("sgcc-accepted") === "1") {
+        (window as unknown as { __rrLoadGtag?: () => void }).__rrLoadGtag?.();
+      }
+    } catch {
+      /* noop */
+    }
     const run = () => {
-      enhanceElementor(document);
-      hydrateFixDigital();
+      void import("@/lib/elementor-enhance").then(({ enhanceElementor }) => {
+        enhanceElementor(document);
+      });
     };
-    run();
-    // One deferred pass picks up markup injected by route components after
-    // hydration. Both enhanceElementor and hydrateFixDigital are idempotent.
-    const raf = window.requestAnimationFrame(run);
-    return () => window.cancelAnimationFrame(raf);
+    let scheduleHandle: number | null = null;
+    let hasConsent = false;
+    try {
+      hasConsent = localStorage.getItem("sgcc-accepted") === "1";
+    } catch {
+      hasConsent = true;
+    }
+    if (hasConsent) {
+      (window as unknown as { __rrHydrateFixDigital?: () => void }).__rrHydrateFixDigital = hydrateFixDigital;
+    }
+
+    let timeoutId: number | null = null;
+    const isHomePage = pathname === "/" || pathname === "";
+    const isMobileViewport = window.matchMedia("(max-width: 767px)").matches;
+    const idleTimeout = isHomePage && isMobileViewport ? 4200 : 1200;
+    const fallbackDelay = isHomePage && isMobileViewport ? 2500 : 0;
+    if ("requestIdleCallback" in window) {
+      scheduleHandle = window.requestIdleCallback(run, { timeout: idleTimeout });
+    } else {
+      timeoutId = window.setTimeout(run, fallbackDelay);
+    }
+    return () => {
+      if (scheduleHandle !== null && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(scheduleHandle);
+      }
+      if (timeoutId !== null) window.clearTimeout(timeoutId);
+      if (scheduleHandle !== null && !("cancelIdleCallback" in window)) {
+        window.clearTimeout(scheduleHandle);
+      }
+    };
   }, [isAdmin, pathname]);
 
   return (
@@ -367,8 +429,49 @@ function RootComponent() {
       {!isAdmin && <SiteFooter />}
       {!isAdmin && <AccessibilityWidget />}
       {!isAdmin && <CookieBanner />}
-      {!isAdmin && <SocialRatingFloat />}
+      {!isAdmin && <DeferredSocialRating />}
       {!isAdmin && <GoogleAnalytics />}
     </QueryClientProvider>
   );
 }
+
+function DeferredSocialRating() {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const reveal = () => {
+      if (!cancelled) setShow(true);
+    };
+    const ric = (window as unknown as {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    }).requestIdleCallback;
+    let idleId: number | null = null;
+    let timeoutId: number | null = null;
+
+    if (typeof ric === "function") {
+      idleId = ric(reveal, { timeout: 3500 });
+    } else {
+      timeoutId = window.setTimeout(reveal, 2500);
+    }
+
+    return () => {
+      cancelled = true;
+      if (idleId !== null) {
+        (window as unknown as { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback?.(
+          idleId,
+        );
+      }
+      if (timeoutId !== null) window.clearTimeout(timeoutId);
+    };
+  }, []);
+
+  if (!show) return null;
+  return (
+    <Suspense fallback={null}>
+      <SocialRatingFloat />
+    </Suspense>
+  );
+}
+

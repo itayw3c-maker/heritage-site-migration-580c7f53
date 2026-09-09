@@ -247,21 +247,19 @@ const LCP_IMAGE_HINT = "רפאל-שמאות-רכוש.webp";
 // Only images in (or just below) the first viewport load eagerly; everything
 // else falls back to native lazy loading so the initial payload stays small.
 function applyLoadingPriority(root: ParentNode) {
-  const apply = () => {
-    const threshold = (typeof window !== "undefined" ? window.innerHeight : 800) * 1.5;
-    root.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
-      const src = img.getAttribute("src") ?? "";
-      if (src.includes(LCP_IMAGE_HINT) || decodeURIComponent(src).includes(LCP_IMAGE_HINT)) {
-        img.setAttribute("loading", "eager");
-        img.setAttribute("fetchpriority", "high");
-        return;
-      }
-      const top = img.getBoundingClientRect().top;
-      img.setAttribute("loading", top < threshold ? "eager" : "lazy");
-    });
-  };
-  if (typeof requestAnimationFrame === "function") requestAnimationFrame(apply);
-  else apply();
+  const imgs = Array.from(root.querySelectorAll<HTMLImageElement>("img"));
+  imgs.forEach((img, index) => {
+    const src = img.getAttribute("src") ?? "";
+    if (src.includes(LCP_IMAGE_HINT) || decodeURIComponent(src).includes(LCP_IMAGE_HINT)) {
+      img.setAttribute("loading", "eager");
+      img.setAttribute("fetchpriority", "high");
+      return;
+    }
+    if (!img.getAttribute("loading")) {
+      img.setAttribute("loading", index < 4 ? "eager" : "lazy");
+      if (!img.getAttribute("decoding")) img.setAttribute("decoding", "async");
+    }
+  });
 }
 
 // Remove leftover WP "Super Picture" lightbox placeholders (no runtime here) and
@@ -289,62 +287,75 @@ function extractYoutubeId(url: string): string | null {
   return m ? m[1] : null;
 }
 
+function buildYoutubeIframe(id: string, controls: string): HTMLIFrameElement {
+  const iframe = document.createElement("iframe");
+  iframe.className = "elementor-video-iframe";
+  iframe.src = `https://www.youtube-nocookie.com/embed/${id}?controls=${controls}&rel=0&autoplay=1`;
+  iframe.title = "YouTube video";
+  iframe.setAttribute("allowfullscreen", "");
+  iframe.setAttribute(
+    "allow",
+    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+  );
+  iframe.setAttribute("style", "width:100%;height:100%;border:0;display:block");
+  return iframe;
+}
+
 function injectVideos(root: ParentNode) {
   const widgets = root.querySelectorAll<HTMLElement>(
     ".elementor-widget-video[data-settings]",
   );
   widgets.forEach((widget) => {
-    if (widget.querySelector("iframe, .rr-youtube-facade")) return;
+    if (widget.querySelector("iframe") || widget.querySelector(".rr-yt-facade")) return;
     const s = parseSettings(widget);
     if (!s) return;
     const url = String(s.youtube_url ?? "");
     const id = url ? extractYoutubeId(url) : null;
     if (!id) return;
     const controls = s.controls === "yes" ? "1" : "0";
-    const videoEl = widget.querySelector<HTMLElement>(".elementor-video");
-    const host =
-      videoEl ??
-      widget.querySelector<HTMLElement>(".elementor-wrapper") ??
-      widget.querySelector<HTMLElement>(".elementor-widget-container") ??
-      widget;
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "rr-youtube-facade";
-    button.setAttribute("aria-label", "נגן סרטון YouTube");
 
-    const thumbnail = document.createElement("img");
-    thumbnail.src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
-    thumbnail.alt = "";
-    thumbnail.loading = "lazy";
-    thumbnail.width = 480;
-    thumbnail.height = 360;
-    button.appendChild(thumbnail);
+    // Facade: a thumbnail + play button. The real iframe is created only on
+    // activation, so the homepage ships zero YouTube iframes initially.
+    const facade = document.createElement("button");
+    facade.type = "button";
+    facade.className = "rr-yt-facade";
+    facade.setAttribute("aria-label", "נגן את הסרטון ביוטיוב");
+
+    const thumb = document.createElement("img");
+    thumb.className = "rr-yt-thumb";
+    thumb.src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+    thumb.alt = "";
+    thumb.loading = "lazy";
+    thumb.decoding = "async";
+    thumb.width = 480;
+    thumb.height = 360;
 
     const play = document.createElement("span");
-    play.className = "rr-youtube-play";
+    play.className = "rr-yt-play";
     play.setAttribute("aria-hidden", "true");
-    button.appendChild(play);
 
-    button.addEventListener(
-      "click",
-      () => {
-        const iframe = document.createElement("iframe");
-        iframe.className = "elementor-video-iframe";
-        iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&controls=${controls}&rel=0`;
-        iframe.title = "YouTube video";
-        iframe.setAttribute("allowfullscreen", "");
-        iframe.setAttribute(
-          "allow",
-          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
-        );
-        iframe.setAttribute("style", "width:100%;height:100%;border:0;display:block");
-        button.replaceWith(iframe);
-      },
-      { once: true },
-    );
-    host.replaceChildren(button);
+    facade.appendChild(thumb);
+    facade.appendChild(play);
+
+    const activate = () => {
+      const iframe = buildYoutubeIframe(id, controls);
+      facade.replaceWith(iframe);
+    };
+    facade.addEventListener("click", activate, { once: true });
+
+    const videoEl = widget.querySelector<HTMLElement>(".elementor-video");
+    if (videoEl) {
+      videoEl.replaceWith(facade);
+    } else {
+      const fallback =
+        widget.querySelector<HTMLElement>(".elementor-wrapper") ??
+        widget.querySelector<HTMLElement>(".elementor-widget-container") ??
+        widget;
+      fallback.appendChild(facade);
+    }
   });
 }
+
 
 function isOffCanvasHref(href: string): "open" | "close" | null {
   try {
@@ -436,17 +447,7 @@ function revealAnimations(root: ParentNode) {
     { rootMargin: "0px 0px -10% 0px", threshold: 0.01 },
   );
 
-  els.forEach((el) => {
-    const rect = el.getBoundingClientRect();
-    const inView =
-      rect.top < (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.bottom > 0;
-    if (inView) {
-      reveal(el);
-    } else {
-      io.observe(el);
-    }
-  });
+  els.forEach((el) => io.observe(el));
 }
 
 export function enhanceElementor(root: ParentNode = document) {
@@ -461,7 +462,6 @@ export function enhanceElementor(root: ParentNode = document) {
   revealAnimations(root);
   addSubmenuArrows(root);
   applyStickies(root);
-  mountTrustindexLazy();
   mountMenuReviews();
   // The floating Google badge is now the React SocialRatingFloat widget
   // (badge + reviews modal); the old static rpi badge is not injected anymore.
@@ -1042,82 +1042,6 @@ function applyStickies(root: ParentNode) {
   });
 }
 
-// Third-party reviews widget: keep it off the initial critical path. It mounts
-// when the reviews section approaches the viewport, or on idle after load.
-function mountTrustindexLazy() {
-  const tpl = document.getElementById("trustindex-google-widget-html");
-  if (!tpl) return;
-  const marked = tpl as HTMLElement & { _tiLazyWired?: boolean };
-  if (marked._tiLazyWired) return;
-  marked._tiLazyWired = true;
-
-  // The template itself lives inside a display:none container, which never
-  // intersects — observe the visible carrier <div> instead.
-  let target =
-    document.querySelector<HTMLElement>('div[data-src*="loader.js"]') ?? null;
-  if (!target) {
-    let p = tpl.parentElement;
-    while (p && getComputedStyle(p).display === "none") p = p.parentElement;
-    target = (p ?? document.body) as HTMLElement;
-  }
-  let done = false;
-  const fire = () => {
-    if (done) return;
-    done = true;
-    mountTrustindex();
-  };
-
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          io.disconnect();
-          fire();
-        }
-      },
-      { rootMargin: "600px 0px" },
-    );
-    io.observe(target);
-    return;
-  }
-
-  const idle = () => {
-    const w = window as unknown as Window & {
-      requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void;
-    };
-    if (w.requestIdleCallback) w.requestIdleCallback(fire, { timeout: 5000 });
-    else w.setTimeout(fire, 3000);
-  };
-  if (document.readyState === "complete") idle();
-  else (window as unknown as Window).addEventListener("load", idle, { once: true });
-}
-
-function mountTrustindex() {
-  const tpl = document.getElementById(
-    "trustindex-google-widget-html",
-  ) as HTMLTemplateElement | null;
-  if (!tpl) return;
-
-  const cssHref =
-    "/wp-content/uploads/trustindex-google-widget.css?1783314896";
-  if (!document.querySelector(`link[href="${cssHref}"]`)) {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = cssHref;
-    document.head.appendChild(link);
-  }
-
-  // Load the loader script itself once, WITHOUT a query string so the loader
-  // skips it as a widget candidate and just renders the carrier <div> above.
-  if (!document.querySelector("script[data-ti-loader]")) {
-    const s = document.createElement("script");
-    s.setAttribute("data-ti-loader", "1");
-    s.src = "/cdn.trustindex.loader.js";
-    s.async = true;
-    document.body.appendChild(s);
-  }
-}
-
 
 function mountRpiBadge() {
   if (document.getElementById("rpi-6226-static")) return;
@@ -1126,7 +1050,7 @@ function mountRpiBadge() {
   div.className = "rpi";
   div.setAttribute("data-id", "6226");
   div.innerHTML =
-    '<div class="rpi-badge-cnt rpi-badge-right"><div class="rpi-badge" data-id="ChIJRSmMi4xWVSURJZWuczwr72w" data-provider="google" style="display:inline-block"><div class="rpi-badge-line"></div><a class="rpi-badge-body rpi-flex rpi-badge-clickable" href="https://search.google.com/local/reviews?placeid=ChIJRSmMi4xWVSURJZWuczwr72w" target="_blank" rel="nofollow noopener" style="text-decoration:none;color:inherit"><div class="rpi-logo rpi-logo-google"></div><div class="rpi-info"><div class="rpi-name">Google ג גוגל</div><span class="rpi-stars" style="--rating:5.0">5.0</span><div class="rpi-based">מבוסס על 520 ביקורות</div></div></a></div></div>';
+    '<div class="rpi-badge-cnt rpi-badge-right"><div class="rpi-badge" data-id="ChIJRSmMi4xWVSURJZWuczwr72w" data-provider="google" style="display:inline-block"><div class="rpi-badge-line"></div><a class="rpi-badge-body rpi-flex rpi-badge-clickable" href="https://search.google.com/local/reviews?placeid=ChIJRSmMi4xWVSURJZWuczwr72w" target="_blank" rel="nofollow noopener" style="text-decoration:none;color:inherit"><div class="rpi-logo rpi-logo-google"></div><div class="rpi-info"><div class="rpi-name">Google ג גוגל</div><span class="rpi-stars" style="--rating:5.0">5.0</span><div class="rpi-based">מבוסס על 525 ביקורות</div></div></a></div></div>';
   document.body.appendChild(div);
 }
 
@@ -1139,10 +1063,10 @@ function mountMenuReviews() {
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "rr-menu-reviews";
-  btn.setAttribute("aria-label", "דירוג 5.0 בגוגל, 520 ביקורות — פתיחת הביקורות");
+  btn.setAttribute("aria-label", "דירוג 5.0 בגוגל, 525 ביקורות — פתיחת הביקורות");
   btn.innerHTML =
     '<span class="rr-menu-reviews__g"><svg width="30" height="30" viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.4 6.64v5.52h7.11c4.16-3.83 6.57-9.47 6.57-16.17z"></path><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.55-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.44 2.1-5.73 0-10.58-3.87-12.3-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"></path><path fill="#FBBC05" d="M11.7 28.18A13.4 13.4 0 0 1 11 24c0-1.45.25-2.86.7-4.18v-5.7H4.34A21.9 21.9 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.36-5.7z"></path><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.36 5.7c1.72-5.2 6.57-9.07 12.3-9.07z"></path></svg></span>' +
-    '<span class="rr-menu-reviews__txt"><span class="rr-menu-reviews__top"><b>5.0</b><span class="rr-menu-reviews__stars">★★★★★</span></span><small>520 ביקורות בגוגל</small></span>';
+    '<span class="rr-menu-reviews__txt"><span class="rr-menu-reviews__top"><b>5.0</b><span class="rr-menu-reviews__stars">★★★★★</span></span><small>525 ביקורות בגוגל</small></span>';
   btn.addEventListener("click", () => {
     window.dispatchEvent(new CustomEvent("rr:open-reviews", { detail: { trigger: btn } }));
   });

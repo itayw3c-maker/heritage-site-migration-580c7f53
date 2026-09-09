@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import mainHtml from "@/generated/main.html?raw";
 import { getSeoRecord } from "@/lib/seo.functions";
 import { augmentHomepagePrivateSeo, buildSeoHead } from "@/lib/seo-head";
+
 import { improveMigratedHtml } from "@/lib/migrated-html";
 
 const homepageCardImages = [
@@ -127,14 +128,14 @@ export const Route = createFileRoute("/")({
           rel: "preload",
           as: "image",
           href: "/wp-content/uploads/2025/12/רפאל-שמאות-רכוש.webp",
-          fetchpriority: "high",
+          fetchPriority: "high",
         },
         // Actual LCP element: the hero section background-image.
         {
           rel: "preload",
           as: "image",
           href: "/wp-content/uploads/2025/12/bg_main.webp",
-          fetchpriority: "high",
+          fetchPriority: "high",
         },
       ],
     };
@@ -149,38 +150,21 @@ function Index() {
     document.querySelectorAll(".e-con.e-parent").forEach((el) => {
       el.classList.add("e-lazyloaded");
     });
-    // The reviews module contains a large offline data set. Keep it out of the
-    // initial route bundle and only download/build the carousel when it is
-    // close enough to be useful to the visitor.
-    const reviewsAnchor = document.querySelector<HTMLElement>(
-      ".elementor-shortcode pre.ti-widget, .ti-widget-container",
-    );
-    const reviewsSection =
-      reviewsAnchor?.closest<HTMLElement>(".elementor-shortcode") ?? reviewsAnchor;
-    let reviewsObserver: IntersectionObserver | undefined;
-    let cancelled = false;
-    const mountReviews = () => {
-      reviewsObserver?.disconnect();
-      void import("@/lib/live-google-reviews").then(({ mountLiveGoogleReviews }) => {
-        if (!cancelled) mountLiveGoogleReviews(document);
-      });
-    };
-    if (reviewsSection && "IntersectionObserver" in window) {
-      reviewsObserver = new IntersectionObserver(
-        (entries) => {
-          if (entries.some((entry) => entry.isIntersecting)) mountReviews();
-        },
-        { rootMargin: "600px 0px" },
-      );
-      reviewsObserver.observe(reviewsSection);
-    } else {
-      mountReviews();
-    }
-    return () => {
-      cancelled = true;
-      reviewsObserver?.disconnect();
-    };
+
+    // Keep the first 4 responsive images eager (for fast mobile LCP),
+    // then lazy-load all remaining images and decode them asynchronously.
+    const imgs = Array.from(document.querySelectorAll("img"));
+    imgs.forEach((img, index) => {
+      if (index < 4) {
+        if (img.getAttribute("loading") == null) img.setAttribute("loading", "eager");
+      } else if (img.getAttribute("loading") == null) {
+        img.setAttribute("loading", "lazy");
+      }
+      if (!img.getAttribute("decoding")) img.setAttribute("decoding", "async");
+    });
+
   }, []);
+
 
   return <div dangerouslySetInnerHTML={{ __html: optimizedMainHtml + privateAppraiserAnswer }} />;
 }
