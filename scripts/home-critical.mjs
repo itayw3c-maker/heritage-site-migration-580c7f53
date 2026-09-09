@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Build src/generated/home-critical.css = the subset of the heavy Elementor CSS
-// that the HOME PAGE actually uses (shell + header + main + footer + runtime
-// classes added by src/lib/elementor-enhance.ts).
+// Build public/assets/home-critical.css = the subset of the heavy Elementor CSS
+// needed for the HOME PAGE's first viewport. The full app/Elementor styles are
+// loaded after first paint, so this file should stay aggressively small.
 import { PurgeCSS } from "purgecss";
 import postcss from "postcss";
 import discardDuplicates from "postcss-discard-duplicates";
@@ -19,31 +19,26 @@ const safelist = {
     "animated", "elementor-invisible", "elementor-in-view",
     "elementor-active", "e-active", "e-lazyloaded",
     "has-submenu", "submenu-open", "sub-arrow", "menu-item-has-children",
-    "elementor-off-canvas-open", "elementor-video-iframe",
-    "rr-field-error", "rr-injected", "rpi",
+    "elementor-off-canvas-open",
     "fix_smartphone", "fix_smartphone_href",
     "fix_smartphone1", "fix_smartphone_href1",
     "fix_smartphone2", "fix_smartphone_href2",
   ],
   deep: [
-    /^e-con/, /^e-parent/, /^e-child/, /^e-flex/, /^e-grid/, /^e-n-/, /^e-gallery/,
-    /^swiper/,
+    /^e-con/, /^e-parent/, /^e-child/, /^e-flex/, /^e-grid/,
     /^elementor-invisible/, /^elementor-animation-/, /^elementor-motion-/,
     /^page-id-57/, /^page-template/,
     /^menu-item/, /^sub-menu/,
     /^fadeIn/, /^fadeOut/, /^slideIn/, /^slideOut/, /^zoomIn/, /^zoomOut/,
     /^bounce/, /^flip/, /^pulse/, /^shake/, /^rubberBand/, /^animate/,
-    /^rpi-/, /^trustindex/, /^pojo-a11y/,
     /^rtl/, /-rtl$/,
   ],
   greedy: [
-    /swiper/, /e-n-tab/, /elementor-tab-/, /pojo-a11y/, /rpi/,
+    /e-n-tab/,
     /elementor-invisible/, /animated/, /e-lazyloaded/, /elementor-active/,
     /e-active/, /submenu-open/, /sub-arrow/, /has-submenu/,
     /elementor-off-canvas/, /elementor-menu-toggle/, /elementor-nav-menu/,
-    /elementor-video/, /elementor-message/, /elementor-lightbox/,
-    /elementor-slide/, /elementor-counter/, /elementor-pagination/,
-    /elementor-arrow/, /elementor-star/, /rr-field-error/, /rr-injected/,
+    /elementor-message/,
   ],
   variables: true,
   keyframes: true,
@@ -52,8 +47,7 @@ const safelist = {
 const content = [
   "src/generated/main.html",
   "src/generated/header.html",
-  "src/generated/footer.html",
-  "src/components/**/*.tsx",
+  "src/components/SiteHeader.tsx",
   "src/routes/__root.tsx",
   "src/routes/index.tsx",
 ];
