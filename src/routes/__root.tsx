@@ -315,6 +315,15 @@ function RootShell({ children }: { children: ReactNode }) {
     "l.setAttribute('data-heavy-css','1');document.head.appendChild(l);}" +
     "if(document.readyState==='complete'){('requestIdleCallback'in window)?requestIdleCallback(add,{timeout:2000}):setTimeout(add,200);}" +
     "else{window.addEventListener('load',function(){('requestIdleCallback'in window)?requestIdleCallback(add,{timeout:2000}):setTimeout(add,200);});}})();";
+  const deferAppCss =
+    "(function(){var h='" +
+    appCss +
+    "';" +
+    "function add(){if(document.querySelector('link[data-app-css]'))return;" +
+    "var l=document.createElement('link');l.rel='stylesheet';l.href=h;l.setAttribute('data-app-css','1');document.head.appendChild(l);}" +
+    "function schedule(){('requestIdleCallback'in window)?requestIdleCallback(add,{timeout:3500}):setTimeout(add,1200);}" +
+    "if(document.readyState==='complete')schedule();" +
+    "else window.addEventListener('load',schedule,{once:true});})();";
   // FixDigital writes first-party tracking cookies (referrer, query params) and
   // then loads its call-tracking script. Both are gated on the same consent flag
   // the analytics path already respects: previously the cookie IIFE ran in <head>
@@ -345,18 +354,10 @@ function RootShell({ children }: { children: ReactNode }) {
         {isHome ? (
         <>
             <link rel="stylesheet" href="/assets/home-critical.css" />
-            <link
-              rel="preload"
-              as="style"
-              href={appCss}
-              onLoad={(event) => {
-                const link = event.currentTarget as HTMLLinkElement;
-                link.rel = "stylesheet";
-              }}
-            />
             <noscript>
               <link rel="stylesheet" href={appCss} />
             </noscript>
+            <script dangerouslySetInnerHTML={{ __html: deferAppCss }} />
             <script dangerouslySetInnerHTML={{ __html: deferHeavyCss }} />
           </>
         ) : (
